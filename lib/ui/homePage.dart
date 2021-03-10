@@ -28,6 +28,16 @@ class _HomeViewState extends State<HomeView> {
     return SafeArea(
       child: Scaffold(
         // appBar: AppBar(
+        //   title: Text(
+        //     'Notes',
+        //     textAlign: TextAlign.left,
+        //     style: TextStyle(
+        //       fontSize: 50,
+        //       color: Colors.white,
+        //     ),
+        //   ),
+        //   elevation: 0,
+        //   backgroundColor: Color(0xff171c26),
         //   actions: [
         //     TextButton(
         //       onPressed: () async {
@@ -41,109 +51,134 @@ class _HomeViewState extends State<HomeView> {
         //       style: TextButton.styleFrom(primary: Colors.white),
         //     ),
         //   ],
+        //   automaticallyImplyLeading: false,
         // ),
-        body: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(color: Color(0xff171c26)),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      child: Text(
-                        'Notes',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontSize: 50,
-                          color: Colors.white,
-                        ),
-                      ),
+        body: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                actions: [
+                  IconButton(
+                    icon: Icon(Icons.logout),
+                    onPressed: () async {
+                      bool shouldNavigate = await logOut();
+                      if (shouldNavigate) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Register()));
+                      }
+                    },
+                  )
+                ],
+                elevation: 0,
+                automaticallyImplyLeading: false,
+                backgroundColor: Color(0xff171c26),
+                expandedHeight: 200.0,
+                floating: false,
+                pinned: true,
+                flexibleSpace: FlexibleSpaceBar(
+                  titlePadding: EdgeInsets.symmetric(horizontal: 15),
+                  title: Text(
+                    'Notes',
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 50,
+                      color: Colors.white,
                     ),
                   ),
                 ),
-                StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('Users')
-                      .doc(FirebaseAuth.instance.currentUser.uid)
-                      .collection('Notes')
-                      .snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (!snapshot.hasData) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    return GridView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2),
-                      itemCount:
-                          snapshot.hasData ? snapshot.data.docs.length : 0,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EditNote(
-                                  docToEdit: snapshot.data.docs[index],
-                                ),
-                              ),
-                            );
-                          },
-                          child: Card(
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                                // side: BorderSide(
-                                //     color: Colors.white, width: 0.01),
-                                borderRadius: BorderRadius.circular(10)),
-                            margin: EdgeInsets.all(10),
-                            color: Color(0xff272636),
-                            child: Column(
-                              children: [
-                                Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 15, vertical: 10),
-                                    child: Text(
-                                      snapshot.data.docs[index].data()["title"],
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 25),
-                                    ),
-                                  ),
-                                ),
-                                Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                    ),
-                                    child: Text(
-                                      snapshot.data.docs[index]
-                                          .data()["content"],
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 19),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+              ),
+            ];
+          },
+          body: Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(color: Color(0xff171c26)),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection('Users')
+                        .doc(FirebaseAuth.instance.currentUser.uid)
+                        .collection('Notes')
+                        .snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (!snapshot.hasData) {
+                        return Center(
+                          child: CircularProgressIndicator(),
                         );
-                      },
-                    );
-                  },
-                ),
-              ],
+                      }
+                      return GridView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2),
+                        itemCount:
+                            snapshot.hasData ? snapshot.data.docs.length : 0,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditNote(
+                                    docToEdit: snapshot.data.docs[index],
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Card(
+                              elevation: 3,
+                              shape: RoundedRectangleBorder(
+                                  // side: BorderSide(
+                                  //     color: Colors.white, width: 0.01),
+                                  borderRadius: BorderRadius.circular(10)),
+                              margin: EdgeInsets.all(10),
+                              color: Color(0xff272636),
+                              child: Column(
+                                children: [
+                                  Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 15, vertical: 10),
+                                      child: Text(
+                                        snapshot.data.docs[index]
+                                            .data()["title"],
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 25),
+                                      ),
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                      ),
+                                      child: Text(
+                                        snapshot.data.docs[index]
+                                            .data()["content"],
+                                        style: TextStyle(
+                                            color:
+                                                Colors.white.withOpacity(0.5),
+                                            fontSize: 19),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),
