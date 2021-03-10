@@ -20,11 +20,6 @@ class _RegisterState extends State<Register> {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => HomeView()));
       });
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Login()));
-      });
     }
     super.initState();
   }

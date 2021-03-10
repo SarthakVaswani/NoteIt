@@ -28,3 +28,8 @@ Future<bool> register(String email, String password) async {
   }
   return false;
 }
+
+Future<bool> logOut() async {
+  await FirebaseAuth.instance.signOut();
+  return true;
+}

@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:notes_app/service/auth.dart';
+import 'package:notes_app/ui/register_page.dart';
 
 import 'addNote.dart';
 import 'edtNote.dart';
@@ -15,6 +17,21 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          actions: [
+            TextButton(
+              onPressed: () async {
+                bool shouldNavigate = await logOut();
+                if (shouldNavigate) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Register()));
+                }
+              },
+              child: Text('LogOut'),
+              style: TextButton.styleFrom(primary: Colors.white),
+            ),
+          ],
+        ),
         body: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
