@@ -14,14 +14,14 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  List colors = [Colors.red, Colors.green, Colors.yellow];
-  Random random = new Random();
+  // List colors = [Colors.red, Colors.green, Colors.yellow];
+  // Random random = new Random();
 
-  int index = 0;
+  // int index = 0;
 
-  void changeIndex() {
-    setState(() => index = random.nextInt(3));
-  }
+  // void changeIndex() {
+  //   setState(() => index = random.nextInt(3));
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +73,7 @@ class _HomeViewState extends State<HomeView> {
                 ],
                 elevation: 0,
                 automaticallyImplyLeading: false,
-                backgroundColor: Color(0xff171c26),
+                backgroundColor: Color(0xff2c2b4b),
                 expandedHeight: 200.0,
                 floating: false,
                 pinned: true,
@@ -94,7 +94,9 @@ class _HomeViewState extends State<HomeView> {
           body: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(color: Color(0xff171c26)),
+            decoration: BoxDecoration(
+              color: Color(0xff2c2b4b),
+            ),
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -137,7 +139,7 @@ class _HomeViewState extends State<HomeView> {
                                   //     color: Colors.white, width: 0.01),
                                   borderRadius: BorderRadius.circular(10)),
                               margin: EdgeInsets.all(10),
-                              color: Color(0xff272636),
+                              color: Color(0xffddf0f7),
                               child: Column(
                                 children: [
                                   Align(
@@ -149,7 +151,7 @@ class _HomeViewState extends State<HomeView> {
                                         snapshot.data.docs[index]
                                             .data()["title"],
                                         style: TextStyle(
-                                            color: Colors.white, fontSize: 25),
+                                            color: Colors.black, fontSize: 25),
                                       ),
                                     ),
                                   ),
@@ -164,7 +166,7 @@ class _HomeViewState extends State<HomeView> {
                                             .data()["content"],
                                         style: TextStyle(
                                             color:
-                                                Colors.white.withOpacity(0.5),
+                                                Colors.black.withOpacity(0.5),
                                             fontSize: 19),
                                       ),
                                     ),
@@ -183,11 +185,15 @@ class _HomeViewState extends State<HomeView> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
+          backgroundColor: Color(0xffeb6765),
           onPressed: () {
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => AddNote()));
           },
-          child: Icon(Icons.add),
+          child: Icon(
+            Icons.edit,
+            color: Colors.white,
+          ),
         ),
       ),
     );

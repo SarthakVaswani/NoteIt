@@ -23,53 +23,154 @@ class _EditNoteState extends State<EditNote> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          TextButton(
-            onPressed: () {
-              widget.docToEdit.reference.update({
-                'title': title.text,
-                'content': content.text
-              }).whenComplete(() => Navigator.pop(context));
-            },
-            child: Text('Save'),
-            style: TextButton.styleFrom(primary: Colors.white),
-          ),
-          TextButton(
-            onPressed: () {
-              widget.docToEdit.reference
-                  .delete()
-                  .whenComplete(() => Navigator.pop(context));
-            },
-            child: Text('Delete'),
-            style: TextButton.styleFrom(primary: Colors.white),
-          ),
-        ],
-      ),
-      body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(border: Border.all()),
-              child: TextField(
-                controller: title,
-                decoration: InputDecoration(hintText: 'Title'),
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(border: Border.all()),
-                child: TextField(
-                  controller: content,
-                  maxLines: null,
-                  expands: true,
-                  decoration: InputDecoration(hintText: 'Content'),
+      backgroundColor: Color(0xffddf0f7),
+      // appBar: AppBar(
+      //   actions: [
+      //     TextButton(
+      //       onPressed: () {
+      //         widget.docToEdit.reference.update({
+      //           'title': title.text,
+      //           'content': content.text
+      //         }).whenComplete(() => Navigator.pop(context));
+      //       },
+      //       child: Text('Save'),
+      //       style: TextButton.styleFrom(primary: Colors.white),
+      //     ),
+      //     TextButton(
+      //       onPressed: () {
+      //         widget.docToEdit.reference
+      //             .delete()
+      //             .whenComplete(() => Navigator.pop(context));
+      //       },
+      //       child: Text('Delete'),
+      //       style: TextButton.styleFrom(primary: Colors.white),
+      //     ),
+      //   ],
+      // ),
+      body: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            SliverAppBar(
+              flexibleSpace: FlexibleSpaceBar(
+                titlePadding: EdgeInsets.symmetric(horizontal: 15),
+                title: TextFormField(
+                  enableInteractiveSelection: false,
+                  focusNode: FocusNode(),
+                  cursorColor: Color(0xffddf0f7),
+                  style: TextStyle(color: Colors.white, fontSize: 40),
+                  controller: title,
+                  decoration: InputDecoration(
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 5, vertical: 6),
+                    hintText: 'Title',
+                    hintStyle: TextStyle(color: Colors.white, fontSize: 40),
+                  ),
                 ),
               ),
+              elevation: 0,
+              automaticallyImplyLeading: false,
+              backgroundColor: Color(0xff2c2b4b),
+              expandedHeight: 200.0,
+              floating: false,
+              pinned: true,
+            ),
+          ];
+        },
+        body: Container(
+          margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Column(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(),
+                  child: TextFormField(
+                    enableInteractiveSelection: false,
+                    focusNode: FocusNode(),
+                    cursorColor: Color(0xff2c2b4b),
+                    style: TextStyle(color: Colors.black, fontSize: 25),
+                    controller: content,
+                    maxLines: null,
+                    expands: true,
+                    decoration: InputDecoration(
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                      ),
+                      hintText: 'Content',
+                      hintStyle: TextStyle(
+                          color: Colors.black.withOpacity(0.7), fontSize: 25),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButton: SingleChildScrollView(
+        child: Column(
+          children: [
+            MaterialButton(
+              elevation: 2,
+              minWidth: MediaQuery.of(context).size.width / 10,
+              height: MediaQuery.of(context).size.height / 15,
+              shape: CircleBorder(
+                  side: BorderSide(
+                width: 2,
+                color: Color(0xffeb6765),
+              )),
+              child: Icon(
+                Icons.arrow_back_ios_sharp,
+                color: Colors.white,
+              ),
+              color: Color(0xffeb6765),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            SizedBox(
+              height: 18,
+            ),
+            MaterialButton(
+              elevation: 2,
+              minWidth: MediaQuery.of(context).size.width / 10,
+              height: MediaQuery.of(context).size.height / 15,
+              shape: CircleBorder(
+                  side: BorderSide(
+                width: 2,
+                color: Color(0xffeb6765),
+              )),
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+              color: Color(0xffeb6765),
+              onPressed: () {
+                widget.docToEdit.reference
+                    .delete()
+                    .whenComplete(() => Navigator.pop(context));
+              },
+            ),
+            MaterialButton(
+              elevation: 3,
+              minWidth: MediaQuery.of(context).size.width / 7,
+              height: MediaQuery.of(context).size.height / 7,
+              shape: CircleBorder(
+                side: BorderSide(width: 2, color: Color(0xffeb6765)),
+              ),
+              child: Icon(
+                Icons.check,
+                color: Colors.white,
+              ),
+              color: Color(0xffeb6765),
+              onPressed: () {
+                widget.docToEdit.reference.update({
+                  'title': title.text,
+                  'content': content.text
+                }).whenComplete(() => Navigator.pop(context));
+              },
             ),
           ],
         ),
