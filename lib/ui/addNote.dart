@@ -115,10 +115,12 @@ class _AddNoteState extends State<AddNote> {
                 Navigator.of(context).pop();
               },
             ),
+            SizedBox(
+              height: 10,
+            ),
             MaterialButton(
               elevation: 3,
-              minWidth: MediaQuery.of(context).size.width / 7,
-              height: MediaQuery.of(context).size.height / 7,
+              height: MediaQuery.of(context).size.height / 12,
               shape: CircleBorder(
                 side: BorderSide(width: 2, color: Color(0xffeb6765)),
               ),

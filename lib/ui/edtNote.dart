@@ -91,7 +91,6 @@ class _EditNoteState extends State<EditNote> {
           children: [
             MaterialButton(
               elevation: 2,
-              minWidth: MediaQuery.of(context).size.width / 10,
               height: MediaQuery.of(context).size.height / 15,
               shape: CircleBorder(
                   side: BorderSide(
@@ -112,7 +111,6 @@ class _EditNoteState extends State<EditNote> {
             ),
             MaterialButton(
               elevation: 2,
-              minWidth: MediaQuery.of(context).size.width / 10,
               height: MediaQuery.of(context).size.height / 15,
               shape: CircleBorder(
                   side: BorderSide(
@@ -130,10 +128,12 @@ class _EditNoteState extends State<EditNote> {
                     .whenComplete(() => Navigator.pop(context));
               },
             ),
+            SizedBox(
+              height: 10,
+            ),
             MaterialButton(
               elevation: 3,
-              minWidth: MediaQuery.of(context).size.width / 7,
-              height: MediaQuery.of(context).size.height / 7,
+              height: MediaQuery.of(context).size.height / 10,
               shape: CircleBorder(
                 side: BorderSide(width: 2, color: Color(0xffeb6765)),
               ),

@@ -95,46 +95,55 @@ class _HomeViewState extends State<HomeView> {
                                 ),
                               );
                             },
-                            child: Card(
-                              elevation: 3,
-                              shape: RoundedRectangleBorder(
-                                  // side: BorderSide(
-                                  //     color: Colors.white, width: 0.01),
-                                  borderRadius: BorderRadius.circular(10)),
-                              margin: EdgeInsets.all(10),
-                              color: Color(0xffddf0f7),
-                              child: Column(
-                                children: [
-                                  Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 10),
-                                      child: Text(
-                                        snapshot.data.docs[index]
-                                            .data()["title"],
-                                        style: TextStyle(
-                                            color: Colors.black, fontSize: 25),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: Card(
+                                elevation: 3,
+                                shape: RoundedRectangleBorder(
+                                    // side: BorderSide(
+                                    //     color: Colors.white, width: 0.01),
+                                    borderRadius: BorderRadius.circular(10)),
+                                margin: EdgeInsets.all(10),
+                                color: Color(0xffddf0f7),
+                                child: Column(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 10),
+                                        child: Text(
+                                          snapshot.data.docs[index]
+                                              .data()["title"],
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 25),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                      ),
-                                      child: Text(
-                                        snapshot.data.docs[index]
-                                            .data()["content"],
-                                        style: TextStyle(
-                                            color:
-                                                Colors.black.withOpacity(0.5),
-                                            fontSize: 19),
+                                    Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                        ),
+                                        child: Container(
+                                          child: Text(
+                                            snapshot.data.docs[index]
+                                                .data()["content"],
+                                            style: TextStyle(
+                                                color: Colors.black
+                                                    .withOpacity(0.5),
+                                                fontSize: 19),
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: true,
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           );
