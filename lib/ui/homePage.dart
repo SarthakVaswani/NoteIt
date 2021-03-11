@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:notes_app/service/auth.dart';
 import 'package:notes_app/ui/register_page.dart';
 import 'addNote.dart';
+import 'package:transition/transition.dart';
+
 import 'edtNote.dart';
 
 class HomeView extends StatefulWidget {
@@ -87,13 +89,17 @@ class _HomeViewState extends State<HomeView> {
                           return GestureDetector(
                             onTap: () {
                               Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditNote(
-                                    docToEdit: snapshot.data.docs[index],
-                                  ),
-                                ),
-                              );
+                                  context,
+                                  Transition(
+                                      child: EditNote(
+                                          docToEdit: snapshot.data.docs[index]),
+                                      transitionEffect: TransitionEffect.FADE)
+                                  // MaterialPageRoute(
+                                  //   builder: (context) => EditNote(
+                                  //     docToEdit: snapshot.data.docs[index],
+                                  //   ),
+                                  // ),
+                                  );
                             },
                             child: Padding(
                               padding:
@@ -160,7 +166,9 @@ class _HomeViewState extends State<HomeView> {
           backgroundColor: Color(0xffeb6765),
           onPressed: () {
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => AddNote()));
+                context,
+                Transition(
+                    child: AddNote(), transitionEffect: TransitionEffect.FADE));
           },
           child: Icon(
             Icons.edit,

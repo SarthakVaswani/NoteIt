@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:notes_app/service/auth.dart';
 import 'package:notes_app/ui/homePage.dart';
 import 'package:notes_app/ui/login_page.dart';
+import 'package:transition/transition.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -37,9 +39,18 @@ class _RegisterState extends State<Register> {
           child: Column(
             children: [
               Padding(
+                padding: const EdgeInsets.only(top: 50),
+                child: TypewriterAnimatedTextKit(
+                  repeatForever: true,
+                  text: ['Note IT'],
+                  speed: Duration(milliseconds: 200),
+                  textStyle: TextStyle(fontSize: 50, color: Colors.white),
+                ),
+              ),
+              Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 200),
+                  padding: const EdgeInsets.only(top: 100),
                   child: Column(
                     children: [
                       Card(
@@ -111,8 +122,9 @@ class _RegisterState extends State<Register> {
                             if (shouldNavigate) {
                               Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                      builder: (context) => HomeView()));
+                                  Transition(
+                                      child: HomeView(),
+                                      transitionEffect: TransitionEffect.FADE));
                             } else {
                               return ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -163,8 +175,11 @@ class _RegisterState extends State<Register> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20)),
                       onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => Login()));
+                        Navigator.push(
+                            context,
+                            Transition(
+                                child: Login(),
+                                transitionEffect: TransitionEffect.FADE));
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(

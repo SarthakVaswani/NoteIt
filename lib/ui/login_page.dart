@@ -1,7 +1,9 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/service/auth.dart';
 import 'package:notes_app/ui/homePage.dart';
 import 'package:notes_app/ui/register_page.dart';
+import 'package:transition/transition.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -22,9 +24,18 @@ class _LoginState extends State<Login> {
           child: Column(
             children: [
               Padding(
+                padding: const EdgeInsets.only(top: 50),
+                child: TypewriterAnimatedTextKit(
+                  repeatForever: true,
+                  text: ['Note IT'],
+                  speed: Duration(milliseconds: 200),
+                  textStyle: TextStyle(fontSize: 50, color: Colors.white),
+                ),
+              ),
+              Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 200),
+                  padding: const EdgeInsets.only(top: 100),
                   child: Column(
                     children: [
                       Card(
@@ -97,8 +108,9 @@ class _LoginState extends State<Login> {
                             if (shouldNavigate) {
                               Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                      builder: (context) => HomeView()));
+                                  Transition(
+                                      child: HomeView(),
+                                      transitionEffect: TransitionEffect.FADE));
                             } else {
                               return ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -151,8 +163,9 @@ class _LoginState extends State<Login> {
                       onPressed: () {
                         Navigator.push(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => Register()));
+                            Transition(
+                                child: Register(),
+                                transitionEffect: TransitionEffect.FADE));
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
