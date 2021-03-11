@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -14,45 +12,10 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  // List colors = [Colors.red, Colors.green, Colors.yellow];
-  // Random random = new Random();
-
-  // int index = 0;
-
-  // void changeIndex() {
-  //   setState(() => index = random.nextInt(3));
-  // }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        // appBar: AppBar(
-        //   title: Text(
-        //     'Notes',
-        //     textAlign: TextAlign.left,
-        //     style: TextStyle(
-        //       fontSize: 50,
-        //       color: Colors.white,
-        //     ),
-        //   ),
-        //   elevation: 0,
-        //   backgroundColor: Color(0xff171c26),
-        //   actions: [
-        //     TextButton(
-        //       onPressed: () async {
-        //         bool shouldNavigate = await logOut();
-        //         if (shouldNavigate) {
-        //           Navigator.push(context,
-        //               MaterialPageRoute(builder: (context) => Register()));
-        //         }
-        //       },
-        //       child: Text('LogOut'),
-        //       style: TextButton.styleFrom(primary: Colors.white),
-        //     ),
-        //   ],
-        //   automaticallyImplyLeading: false,
-        // ),
         body: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[

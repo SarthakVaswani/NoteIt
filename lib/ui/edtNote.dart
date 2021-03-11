@@ -24,29 +24,6 @@ class _EditNoteState extends State<EditNote> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xffddf0f7),
-      // appBar: AppBar(
-      //   actions: [
-      //     TextButton(
-      //       onPressed: () {
-      //         widget.docToEdit.reference.update({
-      //           'title': title.text,
-      //           'content': content.text
-      //         }).whenComplete(() => Navigator.pop(context));
-      //       },
-      //       child: Text('Save'),
-      //       style: TextButton.styleFrom(primary: Colors.white),
-      //     ),
-      //     TextButton(
-      //       onPressed: () {
-      //         widget.docToEdit.reference
-      //             .delete()
-      //             .whenComplete(() => Navigator.pop(context));
-      //       },
-      //       child: Text('Delete'),
-      //       style: TextButton.styleFrom(primary: Colors.white),
-      //     ),
-      //   ],
-      // ),
       body: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
