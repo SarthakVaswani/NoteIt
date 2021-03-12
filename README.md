@@ -6,4 +6,4 @@ Just register and start adding notes, your reminders, or any stuff you would lik
 Need to change your note? No worry just click the note and edit it or delete it rightway.
 Being Cross Platform, NoteIt runs on Android,IOS devices as well on Web (noteit.live).
 
-just login and have your notes on the go.
+Just login and have your notes on the go.
