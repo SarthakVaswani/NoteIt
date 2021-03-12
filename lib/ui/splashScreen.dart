@@ -27,13 +27,13 @@ class _SplashScreenState extends State<SplashScreen> {
   changeScreen() {
     if (_user != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.push(
+        Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomeView()));
       });
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Login()));
+            context, MaterialPageRoute(builder: (context) => Register()));
       });
     }
   }
