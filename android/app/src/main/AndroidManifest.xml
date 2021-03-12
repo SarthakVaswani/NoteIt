@@ -2,8 +2,10 @@
     package="com.example.notes_app">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="notes_app"
-        android:icon="@mipmap/ic_launcher">
+        android:label="NoteIt"
+        android:icon="@mipmap/noteit"
+        >
+        
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
