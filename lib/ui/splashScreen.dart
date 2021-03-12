@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/ui/homePage.dart';
+import 'package:notes_app/ui/login_page.dart';
 import 'package:notes_app/ui/register_page.dart';
-import 'package:transition/transition.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -35,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Register()));
+            context, MaterialPageRoute(builder: (context) => Login()));
       });
     }
   }
