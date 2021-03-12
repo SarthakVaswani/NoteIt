@@ -166,9 +166,10 @@ class _HomeViewState extends State<HomeView> {
           backgroundColor: Color(0xffeb6765),
           onPressed: () {
             Navigator.push(
-                context,
-                Transition(
-                    child: AddNote(), transitionEffect: TransitionEffect.FADE));
+              context,
+              Transition(
+                  child: AddNote(), transitionEffect: TransitionEffect.FADE),
+            );
           },
           child: Icon(
             Icons.edit,

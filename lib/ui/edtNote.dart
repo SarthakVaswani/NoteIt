@@ -67,7 +67,7 @@ class _EditNoteState extends State<EditNote> {
                     enableInteractiveSelection: false,
                     focusNode: FocusNode(),
                     cursorColor: Color(0xff2c2b4b),
-                    style: TextStyle(color: Colors.black, fontSize: 25),
+                    style: TextStyle(color: Colors.black, fontSize: 23),
                     controller: content,
                     maxLines: null,
                     expands: true,
@@ -77,7 +77,7 @@ class _EditNoteState extends State<EditNote> {
                       ),
                       hintText: 'Content',
                       hintStyle: TextStyle(
-                          color: Colors.black.withOpacity(0.7), fontSize: 25),
+                          color: Colors.black.withOpacity(0.7), fontSize: 23),
                     ),
                   ),
                 ),
