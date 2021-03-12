@@ -121,6 +121,9 @@ class _LoginState extends State<Login> {
                                         transitionEffect:
                                             TransitionEffect.FADE));
                               } else {
+                                setState(() {
+                                  showSpinner1 = false;
+                                });
                                 return ScaffoldMessenger.of(context)
                                     .showSnackBar(
                                   SnackBar(

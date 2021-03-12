@@ -133,6 +133,9 @@ class _RegisterState extends State<Register> {
                                       transitionEffect: TransitionEffect.FADE),
                                 );
                               } else {
+                                setState(() {
+                                  showSpinner = false;
+                                });
                                 return ScaffoldMessenger.of(context)
                                     .showSnackBar(
                                   SnackBar(

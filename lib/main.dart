@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:notes_app/ui/register_page.dart';
 import 'package:notes_app/ui/splashScreen.dart';
 
 void main() async {
@@ -17,21 +16,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // final FirebaseAuth auth = FirebaseAuth.instance;
-  // User currentUser;
-  // @override
-  // void initState() {
-  //   User currentUser = FirebaseAuth.instance.currentUser;
-  //   if (currentUser != null) {
-  //     Navigator.push(
-  //         context, MaterialPageRoute(builder: (context) => HomeView()));
-  //   } else {
-  //     Navigator.push(
-  //         context, MaterialPageRoute(builder: (context) => Register()));
-  //   }
-  //   super.initState();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold();

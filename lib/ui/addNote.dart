@@ -34,6 +34,7 @@ class _AddNoteState extends State<AddNote> {
 
   @override
   Widget build(BuildContext context) {
+    final node = FocusScope.of(context);
     return Scaffold(
       backgroundColor: Color(0xffddf0f7),
       body: NestedScrollView(
@@ -43,6 +44,8 @@ class _AddNoteState extends State<AddNote> {
               flexibleSpace: FlexibleSpaceBar(
                 titlePadding: EdgeInsets.symmetric(horizontal: 15),
                 title: TextFormField(
+                  onEditingComplete: () => node.nextFocus(),
+                  autofocus: true,
                   cursorColor: Color(0xffddf0f7),
                   style: TextStyle(color: Colors.white, fontSize: 40),
                   controller: title,
