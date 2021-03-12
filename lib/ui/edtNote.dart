@@ -126,6 +126,12 @@ class _EditNoteState extends State<EditNote> {
                 widget.docToEdit.reference
                     .delete()
                     .whenComplete(() => Navigator.pop(context));
+                return ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    duration: Duration(seconds: 2),
+                    content: Text('Deleted'),
+                  ),
+                );
               },
             ),
             SizedBox(
@@ -147,6 +153,12 @@ class _EditNoteState extends State<EditNote> {
                   'title': title.text,
                   'content': content.text
                 }).whenComplete(() => Navigator.pop(context));
+                return ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    duration: Duration(seconds: 2),
+                    content: Text('Saved'),
+                  ),
+                );
               },
             ),
           ],

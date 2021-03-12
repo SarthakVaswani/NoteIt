@@ -135,6 +135,12 @@ class _AddNoteState extends State<AddNote> {
               onPressed: () {
                 enterNotes(title.text, content.text)
                     .whenComplete(() => Navigator.pop(context));
+                return ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    duration: Duration(seconds: 2),
+                    content: Text('Saved'),
+                  ),
+                );
               },
             ),
           ],

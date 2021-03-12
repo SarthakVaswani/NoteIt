@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/service/auth.dart';
 import 'package:notes_app/ui/register_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'addNote.dart';
+import 'package:url_launcher/link.dart';
 import 'package:transition/transition.dart';
 
 import 'edtNote.dart';
@@ -16,6 +18,10 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
+    const _url = 'https://flutter.dev';
+    void _launchURL() async => await canLaunch(_url)
+        ? await launch(_url)
+        : throw 'Could not launch $_url';
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -31,7 +37,12 @@ class _HomeViewState extends State<HomeView> {
                           MaterialPageRoute(builder: (context) => Register()));
                     }
                   },
-                )
+                ),
+                IconButton(
+                    icon: Icon(Icons.web_asset),
+                    onPressed: () {
+                      _launchURL();
+                    }),
               ],
               elevation: 0,
               automaticallyImplyLeading: false,
