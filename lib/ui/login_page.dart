@@ -56,6 +56,7 @@ class _LoginState extends State<Login> {
   TextEditingController _passField = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final node = FocusScope.of(context);
     return WillPopScope(
       onWillPop: () async => _exitApp(context),
       child: Scaffold(
@@ -89,6 +90,7 @@ class _LoginState extends State<Login> {
                           ),
                           color: Colors.white,
                           child: TextField(
+                            onEditingComplete: () => node.nextFocus(),
                             controller: _emailField,
                             decoration: InputDecoration(
                               fillColor: Colors.white,
@@ -212,17 +214,19 @@ class _LoginState extends State<Login> {
                       height: 20,
                       color: Color(0xffeb6765),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            Transition(
-                                child: Register(),
-                                transitionEffect: TransitionEffect.FADE));
+                          context,
+                          Transition(
+                              child: Register(),
+                              transitionEffect: TransitionEffect.FADE),
+                        );
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 7),
+                            horizontal: 4, vertical: 7),
                         child: Text(
                           'Register',
                           style: TextStyle(fontSize: 20, color: Colors.white),

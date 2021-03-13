@@ -69,6 +69,7 @@ class _RegisterState extends State<Register> {
   TextEditingController _passField = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final node = FocusScope.of(context);
     return WillPopScope(
       onWillPop: () async => _exitApp(context),
       child: Scaffold(
@@ -101,6 +102,7 @@ class _RegisterState extends State<Register> {
                               borderRadius: BorderRadius.circular(20)),
                           color: Colors.white,
                           child: TextField(
+                            onEditingComplete: () => node.nextFocus(),
                             controller: _emailField,
                             decoration: InputDecoration(
                               fillColor: Colors.white,
