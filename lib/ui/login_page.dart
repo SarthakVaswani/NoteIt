@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,13 +15,49 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  Future<bool> _exitApp(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        elevation: 2,
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+            // side: BorderSide(
+            //     color: Colors.white, width: 0.01),
+            borderRadius: BorderRadius.circular(10)),
+        title: Text(
+          'Are you sure want to Exit ?',
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
+        actions: [
+          FlatButton(
+            splashColor: Colors.blueGrey,
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(
+              'No',
+              style: TextStyle(color: Colors.black, fontSize: 17),
+            ),
+          ),
+          FlatButton(
+            splashColor: Colors.blueGrey,
+            onPressed: () => exit(0),
+            child: Text(
+              'Yes',
+              style: TextStyle(color: Colors.black, fontSize: 17),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   bool showSpinner1 = false;
   TextEditingController _emailField = TextEditingController();
   TextEditingController _passField = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false,
+      onWillPop: () async => _exitApp(context),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Color(0xff283793),
@@ -30,7 +68,7 @@ class _LoginState extends State<Login> {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 50),
+                  padding: const EdgeInsets.only(top: 60),
                   child: TypewriterAnimatedTextKit(
                     repeatForever: true,
                     text: ['Note IT'],
@@ -157,7 +195,7 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                 ),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.25),
                 Row(
                   children: [
                     Padding(

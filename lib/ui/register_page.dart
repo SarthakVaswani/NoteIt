@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/service/auth.dart';
@@ -13,6 +15,42 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
+  Future<bool> _exitApp(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        elevation: 2,
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+            // side: BorderSide(
+            //     color: Colors.white, width: 0.01),
+            borderRadius: BorderRadius.circular(10)),
+        title: Text(
+          'Are you sure want to Exit ?',
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
+        actions: [
+          FlatButton(
+            splashColor: Colors.blueGrey,
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(
+              'No',
+              style: TextStyle(color: Colors.black, fontSize: 17),
+            ),
+          ),
+          FlatButton(
+            splashColor: Colors.blueGrey,
+            onPressed: () => exit(0),
+            child: Text(
+              'Yes',
+              style: TextStyle(color: Colors.black, fontSize: 17),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   bool showSpinner = false;
   //  User currentUser;final FirebaseAuth auth = FirebaseAuth.instance;
   // @override
@@ -32,7 +70,7 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false,
+      onWillPop: () async => _exitApp(context),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Color(0xff283793),
@@ -43,7 +81,7 @@ class _RegisterState extends State<Register> {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 50),
+                  padding: const EdgeInsets.only(top: 60),
                   child: TypewriterAnimatedTextKit(
                     repeatForever: true,
                     text: ['Note IT'],
@@ -54,7 +92,7 @@ class _RegisterState extends State<Register> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 100),
+                    padding: const EdgeInsets.only(top: 80),
                     child: Column(
                       children: [
                         Card(
@@ -168,7 +206,7 @@ class _RegisterState extends State<Register> {
                     ),
                   ),
                 ),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.25),
                 Row(
                   children: [
                     Padding(

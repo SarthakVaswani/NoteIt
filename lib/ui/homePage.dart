@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -18,12 +20,48 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
+    Future<bool> _exitApp(BuildContext context) {
+      return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          elevation: 2,
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+              // side: BorderSide(
+              //     color: Colors.white, width: 0.01),
+              borderRadius: BorderRadius.circular(10)),
+          title: Text(
+            'Are you sure want to Exit ?',
+            style: TextStyle(color: Colors.black, fontSize: 18),
+          ),
+          actions: [
+            FlatButton(
+              splashColor: Colors.blueGrey,
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(
+                'No',
+                style: TextStyle(color: Colors.black, fontSize: 17),
+              ),
+            ),
+            FlatButton(
+              splashColor: Colors.blueGrey,
+              onPressed: () => exit(0),
+              child: Text(
+                'Yes',
+                style: TextStyle(color: Colors.black, fontSize: 17),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     const _url = 'https://noteit.live';
     void _launchURL() async => await canLaunch(_url)
         ? await launch(_url)
         : throw 'Could not launch $_url';
     return WillPopScope(
-      onWillPop: () async => false,
+      onWillPop: () async => _exitApp(context),
       child: Scaffold(
         body: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
