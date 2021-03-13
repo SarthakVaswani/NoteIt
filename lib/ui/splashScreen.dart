@@ -20,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future startTime() async {
     _user = await _auth.currentUser;
-    var _duration = Duration(seconds: 2);
+    var _duration = Duration(seconds: 5);
     return Timer(_duration, changeScreen());
   }
 
@@ -33,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Register()));
+            context, MaterialPageRoute(builder: (context) => Login()));
       });
     }
   }
