@@ -139,7 +139,7 @@ class _EditNoteState extends State<EditNote> {
             ),
             MaterialButton(
               elevation: 3,
-              height: MediaQuery.of(context).size.height / 10,
+              height: MediaQuery.of(context).size.height / 12,
               shape: CircleBorder(
                 side: BorderSide(width: 2, color: Color(0xffeb6765)),
               ),
