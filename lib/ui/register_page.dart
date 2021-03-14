@@ -1,6 +1,4 @@
 import 'dart:io';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/service/auth.dart';
 import 'package:notes_app/ui/homePage.dart';
@@ -130,6 +128,38 @@ class _RegisterState extends State<Register> {
                               borderRadius: BorderRadius.circular(20)),
                           color: Colors.white,
                           child: TextField(
+                            onSubmitted: (value) async {
+                              setState(() {
+                                showSpinner = true;
+                              });
+                              bool shouldNavigate = await register(
+                                  _emailField.text, _passField.text);
+                              if (shouldNavigate) {
+                                Navigator.push(
+                                  context,
+                                  Transition(
+                                      child: HomeView(),
+                                      transitionEffect: TransitionEffect.FADE),
+                                );
+                              } else {
+                                setState(() {
+                                  showSpinner = false;
+                                });
+                                return ScaffoldMessenger.of(context)
+                                    .showSnackBar(
+                                  SnackBar(
+                                    action: SnackBarAction(
+                                      label: "Enter Again",
+                                      onPressed: () {
+                                        _emailField.clear();
+                                        _passField.clear();
+                                      },
+                                    ),
+                                    content: Text('Enter Valid Login Info'),
+                                  ),
+                                );
+                              }
+                            },
                             obscureText: true,
                             controller: _passField,
                             decoration: InputDecoration(

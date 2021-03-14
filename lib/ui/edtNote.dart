@@ -31,7 +31,7 @@ class _EditNoteState extends State<EditNote> {
               flexibleSpace: FlexibleSpaceBar(
                 titlePadding: EdgeInsets.symmetric(horizontal: 15),
                 title: TextFormField(
-                  enableInteractiveSelection: false,
+                  enableInteractiveSelection: true,
                   focusNode: FocusNode(),
                   cursorColor: Color(0xffddf0f7),
                   style: TextStyle(color: Colors.white, fontSize: 40),
@@ -64,7 +64,7 @@ class _EditNoteState extends State<EditNote> {
                 child: Container(
                   decoration: BoxDecoration(),
                   child: TextFormField(
-                    enableInteractiveSelection: false,
+                    enableInteractiveSelection: true,
                     focusNode: FocusNode(),
                     cursorColor: Color(0xff2c2b4b),
                     style: TextStyle(color: Colors.black, fontSize: 23),

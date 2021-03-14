@@ -77,6 +77,16 @@ class _AddNoteState extends State<AddNote> {
                 child: Container(
                   decoration: BoxDecoration(),
                   child: TextFormField(
+                    onFieldSubmitted: (value) {
+                      enterNotes(title.text, content.text)
+                          .whenComplete(() => Navigator.pop(context));
+                      return ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: Duration(seconds: 2),
+                          content: Text('Saved'),
+                        ),
+                      );
+                    },
                     cursorColor: Color(0xff2c2b4b),
                     style: TextStyle(color: Colors.black, fontSize: 25),
                     controller: content,

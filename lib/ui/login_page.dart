@@ -1,11 +1,9 @@
 import 'dart:io';
-
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/service/auth.dart';
-import 'package:notes_app/ui/homePage.dart';
 import 'package:notes_app/ui/register_page.dart';
+import 'package:notes_app/ui/screenDecider.dart';
 import 'package:transition/transition.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
@@ -118,6 +116,36 @@ class _LoginState extends State<Login> {
                               borderRadius: BorderRadius.circular(20)),
                           color: Colors.white,
                           child: TextField(
+                            onSubmitted: (value) async {
+                              setState(() {
+                                showSpinner1 = true;
+                              });
+                              bool shouldNavigate = await login(
+                                  _emailField.text, _passField.text);
+                              if (shouldNavigate) {
+                                Navigator.push(
+                                    context,
+                                    Transition(
+                                        child: ScreenDecider(),
+                                        transitionEffect:
+                                            TransitionEffect.FADE));
+                              } else {
+                                setState(() {
+                                  showSpinner1 = false;
+                                });
+                                return ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  action: SnackBarAction(
+                                    label: "Enter Again",
+                                    onPressed: () {
+                                      _emailField.clear();
+                                      _passField.clear();
+                                    },
+                                  ),
+                                  content: Text('Enter Valid Login Info'),
+                                ));
+                              }
+                            },
                             obscureText: true,
                             controller: _passField,
                             decoration: InputDecoration(
@@ -160,7 +188,7 @@ class _LoginState extends State<Login> {
                                 Navigator.push(
                                     context,
                                     Transition(
-                                        child: HomeView(),
+                                        child: ScreenDecider(),
                                         transitionEffect:
                                             TransitionEffect.FADE));
                               } else {

@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/ui/homePage.dart';
 import 'package:notes_app/ui/login_page.dart';
-import 'package:notes_app/ui/register_page.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -20,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future startTime() async {
     _user = await _auth.currentUser;
-    var _duration = Duration(seconds: 5);
+    var _duration = Duration(seconds: 15);
     return Timer(_duration, changeScreen());
   }
 
