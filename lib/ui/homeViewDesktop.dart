@@ -17,10 +17,10 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
   final _scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
-    const _url = 'https://noteit.live';
-    void _launchURL() async => await canLaunch(_url)
-        ? await launch(_url)
-        : throw 'Could not launch $_url';
+    // const _url = 'https://noteit.live';
+    // void _launchURL() async => await canLaunch(_url)
+    //     ? await launch(_url)
+    //     : throw 'Could not launch $_url';
     return Scaffold(
       body: Scrollbar(
         thickness: 10,
@@ -33,22 +33,28 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
             return <Widget>[
               SliverAppBar(
                 actions: [
-                  IconButton(
-                    icon: Icon(Icons.logout),
-                    onPressed: () async {
-                      Navigator.pop(context, true);
-                      bool shouldNavigate = await logOut();
-                      if (shouldNavigate) {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => Login()));
-                      }
-                    },
+                  Padding(
+                    padding: const EdgeInsets.only(right: 27),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.logout,
+                        size: 40,
+                      ),
+                      onPressed: () async {
+                        Navigator.pop(context, true);
+                        bool shouldNavigate = await logOut();
+                        if (shouldNavigate) {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => Login()));
+                        }
+                      },
+                    ),
                   ),
-                  IconButton(
-                      icon: Icon(Icons.web_asset),
-                      onPressed: () {
-                        _launchURL();
-                      }),
+                  // IconButton(
+                  //     icon: Icon(Icons.web_asset),
+                  //     onPressed: () {
+                  //       _launchURL();
+                  //     }),
                 ],
                 elevation: 0,
                 automaticallyImplyLeading: false,
