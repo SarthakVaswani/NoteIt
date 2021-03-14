@@ -139,7 +139,7 @@ class _RegisterState extends State<Register> {
                                 Navigator.push(
                                   context,
                                   Transition(
-                                      child: HomeView(),
+                                      child: ScreenDecider(),
                                       transitionEffect: TransitionEffect.FADE),
                                 );
                               } else {
