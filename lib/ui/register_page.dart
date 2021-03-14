@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:notes_app/service/auth.dart';
 import 'package:notes_app/ui/homePage.dart';
 import 'package:notes_app/ui/login_page.dart';
+import 'package:notes_app/ui/screenDecider.dart';
 import 'package:transition/transition.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -201,7 +202,7 @@ class _RegisterState extends State<Register> {
                                 Navigator.push(
                                   context,
                                   Transition(
-                                      child: HomeView(),
+                                      child: ScreenDecider(),
                                       transitionEffect: TransitionEffect.FADE),
                                 );
                               } else {
