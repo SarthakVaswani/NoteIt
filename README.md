@@ -10,6 +10,6 @@ Being Cross Platform, NoteIt runs on Android,IOS devices as well on Web (noteit.
 
 Just login and have your notes on the go.
 
-![alt text](https://user-images.githubusercontent.com/55880923/111069859-0de69000-84f5-11eb-8d75-9672051564c8.png)
+![alt text](https://user-images.githubusercontent.com/55880923/111070921-df1ee880-84f9-11eb-97f8-2bffce1d9341.png)
 ![alt text](https://user-images.githubusercontent.com/55880923/111069919-5736df80-84f5-11eb-9701-c2e728451ad7.png)
 ![alt text](https://user-images.githubusercontent.com/55880923/111069903-48502d00-84f5-11eb-9638-d46125287760.png)
