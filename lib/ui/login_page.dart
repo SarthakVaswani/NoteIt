@@ -225,8 +225,9 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                 ),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.25),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.21),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 7),
