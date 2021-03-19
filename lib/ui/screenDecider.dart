@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:notes_app/ui/homePage.dart';
+import 'package:notes_app/ui/home/homePage.dart';
 
-import 'homeViewDesktop.dart';
+import 'home/homeViewDesktop.dart';
 
 class ScreenDecider extends StatelessWidget {
   @override

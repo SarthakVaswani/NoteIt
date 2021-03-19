@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:notes_app/service/auth.dart';
-import 'package:notes_app/ui/homePage.dart';
+import 'package:notes_app/ui/home/homePage.dart';
 import 'package:notes_app/ui/login_page.dart';
 import 'package:notes_app/ui/screenDecider.dart';
 import 'package:transition/transition.dart';
@@ -92,7 +92,7 @@ class _RegisterState extends State<Register> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 80),
+                    padding: const EdgeInsets.only(top: 100),
                     child: Column(
                       children: [
                         Card(
