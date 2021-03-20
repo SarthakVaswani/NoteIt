@@ -1,18 +1,19 @@
 import 'dart:io';
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/service/auth.dart';
-import 'package:notes_app/ui/register_page.dart';
+import 'package:notes_app/ui/mobile/homePage.dart';
+import 'package:notes_app/ui/mobile/login_page.dart';
 import 'package:notes_app/ui/screenDecider.dart';
 import 'package:transition/transition.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
-class Login extends StatefulWidget {
+class Register extends StatefulWidget {
   @override
-  _LoginState createState() => _LoginState();
+  _RegisterState createState() => _RegisterState();
 }
 
-class _LoginState extends State<Login> {
+class _RegisterState extends State<Register> {
   Future<bool> _exitApp(BuildContext context) {
     return showDialog(
       context: context,
@@ -49,7 +50,20 @@ class _LoginState extends State<Login> {
     );
   }
 
-  bool showSpinner1 = false;
+  bool showSpinner = false;
+  //  User currentUser;final FirebaseAuth auth = FirebaseAuth.instance;
+  // @override
+  // void initState() {
+  //   User currentUser = FirebaseAuth.instance.currentUser;
+  //   if (currentUser != null) {
+  //     WidgetsBinding.instance.addPostFrameCallback((_) {
+  //       Navigator.push(
+  //           context, MaterialPageRoute(builder: (context) => HomeView()));
+  //     });
+  //   }
+  //   super.initState();
+  // }
+
   TextEditingController _emailField = TextEditingController();
   TextEditingController _passField = TextEditingController();
   @override
@@ -61,7 +75,7 @@ class _LoginState extends State<Login> {
         resizeToAvoidBottomInset: false,
         backgroundColor: Color(0xff283793),
         body: ModalProgressHUD(
-          inAsyncCall: showSpinner1,
+          inAsyncCall: showSpinner,
           child: SingleChildScrollView(
             physics: ClampingScrollPhysics(),
             child: Column(
@@ -84,8 +98,7 @@ class _LoginState extends State<Login> {
                         Card(
                           elevation: 5,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
+                              borderRadius: BorderRadius.circular(20)),
                           color: Colors.white,
                           child: TextField(
                             onEditingComplete: () => node.nextFocus(),
@@ -118,32 +131,34 @@ class _LoginState extends State<Login> {
                           child: TextField(
                             onSubmitted: (value) async {
                               setState(() {
-                                showSpinner1 = true;
+                                showSpinner = true;
                               });
-                              bool shouldNavigate = await login(
+                              bool shouldNavigate = await register(
                                   _emailField.text, _passField.text);
                               if (shouldNavigate) {
                                 Navigator.push(
-                                    context,
-                                    Transition(
-                                        child: ScreenDecider(),
-                                        transitionEffect:
-                                            TransitionEffect.FADE));
+                                  context,
+                                  Transition(
+                                      child: ScreenDecider(),
+                                      transitionEffect: TransitionEffect.FADE),
+                                );
                               } else {
                                 setState(() {
-                                  showSpinner1 = false;
+                                  showSpinner = false;
                                 });
                                 return ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
-                                  action: SnackBarAction(
-                                    label: "Enter Again",
-                                    onPressed: () {
-                                      _emailField.clear();
-                                      _passField.clear();
-                                    },
+                                    .showSnackBar(
+                                  SnackBar(
+                                    action: SnackBarAction(
+                                      label: "Enter Again",
+                                      onPressed: () {
+                                        _emailField.clear();
+                                        _passField.clear();
+                                      },
+                                    ),
+                                    content: Text('Enter Valid Login Info'),
                                   ),
-                                  content: Text('Enter Valid Login Info'),
-                                ));
+                                );
                               }
                             },
                             obscureText: true,
@@ -176,24 +191,23 @@ class _LoginState extends State<Login> {
                             height: 20,
                             color: Color(0xffeb6765),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
+                                borderRadius: BorderRadius.circular(20)),
                             onPressed: () async {
                               setState(() {
-                                showSpinner1 = true;
+                                showSpinner = true;
                               });
-                              bool shouldNavigate = await login(
+                              bool shouldNavigate = await register(
                                   _emailField.text, _passField.text);
                               if (shouldNavigate) {
                                 Navigator.push(
-                                    context,
-                                    Transition(
-                                        child: ScreenDecider(),
-                                        transitionEffect:
-                                            TransitionEffect.FADE));
+                                  context,
+                                  Transition(
+                                      child: ScreenDecider(),
+                                      transitionEffect: TransitionEffect.FADE),
+                                );
                               } else {
                                 setState(() {
-                                  showSpinner1 = false;
+                                  showSpinner = false;
                                 });
                                 return ScaffoldMessenger.of(context)
                                     .showSnackBar(
@@ -214,7 +228,7 @@ class _LoginState extends State<Login> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 7),
                               child: Text(
-                                'Login',
+                                'Register',
                                 style: TextStyle(
                                     fontSize: 30, color: Colors.white),
                               ),
@@ -232,8 +246,8 @@ class _LoginState extends State<Login> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 7),
                       child: Text(
-                        'New here? Lets Register ',
-                        style: TextStyle(color: Colors.white, fontSize: 17),
+                        'Already Registered? Lets Login ',
+                        style: TextStyle(color: Colors.white, fontSize: 14),
                       ),
                     ),
                     SizedBox(
@@ -243,21 +257,20 @@ class _LoginState extends State<Login> {
                       height: 20,
                       color: Color(0xffeb6765),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
+                          borderRadius: BorderRadius.circular(20)),
                       onPressed: () {
                         Navigator.push(
                           context,
                           Transition(
-                              child: Register(),
+                              child: Login(),
                               transitionEffect: TransitionEffect.FADE),
                         );
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 4, vertical: 7),
+                            horizontal: 7, vertical: 7),
                         child: Text(
-                          'Register',
+                          'Login',
                           style: TextStyle(fontSize: 20, color: Colors.white),
                         ),
                       ),
@@ -272,6 +285,3 @@ class _LoginState extends State<Login> {
     );
   }
 }
-
-
-// 

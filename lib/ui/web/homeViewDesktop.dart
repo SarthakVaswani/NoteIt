@@ -1,86 +1,63 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/service/auth.dart';
+import 'package:notes_app/ui/screenDecider.dart';
+import 'package:transition/transition.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../noteview/addNote.dart';
-import 'package:transition/transition.dart';
 import '../noteview/edtNote.dart';
-import '../login_page.dart';
+import '../mobile/login_page.dart';
 
-class HomeView extends StatefulWidget {
+class HomeViewDesktop extends StatefulWidget {
   @override
-  _HomeViewState createState() => _HomeViewState();
+  _HomeViewDesktopState createState() => _HomeViewDesktopState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeViewDesktopState extends State<HomeViewDesktop> {
+  final _scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
-    Future<bool> _exitApp(BuildContext context) {
-      return showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          elevation: 2,
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-              // side: BorderSide(
-              //     color: Colors.white, width: 0.01),
-              borderRadius: BorderRadius.circular(10)),
-          title: Text(
-            'Are you sure want to Exit ?',
-            style: TextStyle(color: Colors.black, fontSize: 18),
-          ),
-          actions: [
-            FlatButton(
-              splashColor: Colors.blueGrey,
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(
-                'No',
-                style: TextStyle(color: Colors.black, fontSize: 17),
-              ),
-            ),
-            FlatButton(
-              splashColor: Colors.blueGrey,
-              onPressed: () => exit(0),
-              child: Text(
-                'Yes',
-                style: TextStyle(color: Colors.black, fontSize: 17),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    const _url = 'https://noteit.live';
-    void _launchURL() async => await canLaunch(_url)
-        ? await launch(_url)
-        : throw 'Could not launch $_url';
-    return WillPopScope(
-      onWillPop: () async => _exitApp(context),
-      child: Scaffold(
-        body: NestedScrollView(
+    // const _url = 'https://noteit.live';
+    // void _launchURL() async => await canLaunch(_url)
+    //     ? await launch(_url)
+    //     : throw 'Could not launch $_url';
+    return Scaffold(
+      body: Scrollbar(
+        thickness: 10,
+        showTrackOnHover: true,
+        controller: _scrollController,
+        isAlwaysShown: true,
+        child: NestedScrollView(
+          controller: _scrollController,
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
                 actions: [
-                  IconButton(
-                    icon: Icon(Icons.logout),
-                    onPressed: () async {
-                      Navigator.pop(context, true);
-                      bool shouldNavigate = await logOut();
-                      if (shouldNavigate) {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => Login()));
-                      }
-                    },
+                  Padding(
+                    padding: const EdgeInsets.only(right: 27),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.logout,
+                        size: 40,
+                      ),
+                      onPressed: () async {
+                        Navigator.pop(context, true);
+                        bool shouldNavigate = await logOut();
+                        if (shouldNavigate) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AuthDecider()));
+                        }
+                      },
+                    ),
                   ),
-                  IconButton(
-                      icon: Icon(Icons.web_asset),
-                      onPressed: () {
-                        _launchURL();
-                      }),
+                  // IconButton(
+                  //     icon: Icon(Icons.web_asset),
+                  //     onPressed: () {
+                  //       _launchURL();
+                  //     }),
                 ],
                 elevation: 0,
                 automaticallyImplyLeading: false,
@@ -116,6 +93,7 @@ class _HomeViewState extends State<HomeView> {
                         .collection('Users')
                         .doc(FirebaseAuth.instance.currentUser.uid)
                         .collection('Notes')
+                        .orderBy('dateTime', descending: true)
                         .snapshots(),
                     builder: (BuildContext context,
                         AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -125,10 +103,10 @@ class _HomeViewState extends State<HomeView> {
                         );
                       }
                       return GridView.builder(
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: ScrollPhysics(),
                         shrinkWrap: true,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2),
+                            crossAxisCount: 5),
                         itemCount:
                             snapshot.hasData ? snapshot.data.docs.length : 0,
                         itemBuilder: (context, index) {
@@ -208,19 +186,19 @@ class _HomeViewState extends State<HomeView> {
             ),
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Color(0xffeb6765),
-          onPressed: () {
-            Navigator.push(
-              context,
-              Transition(
-                  child: AddNote(), transitionEffect: TransitionEffect.FADE),
-            );
-          },
-          child: Icon(
-            Icons.edit,
-            color: Colors.white,
-          ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(0xffeb6765),
+        onPressed: () {
+          Navigator.push(
+            context,
+            Transition(
+                child: AddNote(), transitionEffect: TransitionEffect.FADE),
+          );
+        },
+        child: Icon(
+          Icons.edit,
+          color: Colors.white,
         ),
       ),
     );

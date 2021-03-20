@@ -14,15 +14,20 @@ class _AddNoteState extends State<AddNote> {
   Future<bool> enterNotes(String title, String content) async {
     try {
       String uid = FirebaseAuth.instance.currentUser.uid;
+      String dateCreated = DateTime.now().toIso8601String();
       DocumentReference ref = FirebaseFirestore.instance
           .collection('Users')
           .doc(uid)
           .collection('Notes')
-          .doc(title);
+          .doc(dateCreated);
       FirebaseFirestore.instance.runTransaction((transaction) async {
         DocumentSnapshot snapshot = await transaction.get(ref);
         if (!snapshot.exists) {
-          ref.set({'title': title, 'content': content});
+          ref.set({
+            'dateTime': FieldValue.serverTimestamp(),
+            'title': title,
+            'content': content
+          });
           return true;
         }
         return true;

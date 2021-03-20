@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:notes_app/ui/home/homePage.dart';
-import 'package:notes_app/ui/login_page.dart';
+import 'package:notes_app/ui/mobile/homePage.dart';
+import 'package:notes_app/ui/mobile/login_page.dart';
+import 'package:notes_app/ui/screenDecider.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -32,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Login()));
+            context, MaterialPageRoute(builder: (context) => AuthDecider()));
       });
     }
   }
