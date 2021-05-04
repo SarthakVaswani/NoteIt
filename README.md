@@ -1,6 +1,6 @@
 ![alt text](https://user-images.githubusercontent.com/55880923/111069791-b516f780-84f4-11eb-8af6-bdb33bdded0a.png)
 
-NoteIt
+#NoteIt
 
 A Minimalistic Notes app built with Flutter and Firebase.
 Easy to use.
