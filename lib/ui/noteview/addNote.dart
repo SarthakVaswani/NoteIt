@@ -125,7 +125,7 @@ class _AddNoteState extends State<AddNote> {
                 color: Color(0xffeb6765),
               )),
               child: Icon(
-                Icons.arrow_back_ios_sharp,
+                Icons.close_rounded,
                 color: Colors.white,
               ),
               color: Color(0xffeb6765),
@@ -145,6 +145,7 @@ class _AddNoteState extends State<AddNote> {
               child: Icon(
                 Icons.check,
                 color: Colors.white,
+                size: 25,
               ),
               color: Color(0xffeb6765),
               onPressed: () {
