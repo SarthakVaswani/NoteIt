@@ -18,10 +18,6 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
   final _scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
-    // const _url = 'https://noteit.live';
-    // void _launchURL() async => await canLaunch(_url)
-    //     ? await launch(_url)
-    //     : throw 'Could not launch $_url';
     return Scaffold(
       body: Scrollbar(
         thickness: 10,

@@ -1,15 +1,37 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase/firebase.dart' as firebase;
+import 'package:flutter/foundation.dart';
+
+//Web
 Future<bool> login(String email, String password) async {
   try {
-    await FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: email, password: password);
-    return true;
+    if ((defaultTargetPlatform == TargetPlatform.iOS) ||
+        (defaultTargetPlatform == TargetPlatform.android)) {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      return true;
+    } else if ((defaultTargetPlatform == TargetPlatform.windows)) {
+      await firebase.auth().signInWithEmailAndPassword(email, password);
+      return true;
+    }
   } catch (e) {
     print(e);
     return false;
   }
 }
+
+// Future<bool> login(String email, String password) async {
+//   try {
+//     await FirebaseAuth.instance
+//         .signInWithEmailAndPassword(email: email, password: password);
+//     return true;
+//   } catch (e) {
+//     print(e);
+//     return false;
+//   }
+// }
 
 Future<bool> register(String email, String password) async {
   try {

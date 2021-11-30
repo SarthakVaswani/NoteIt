@@ -13,6 +13,13 @@ class LoginWeb extends StatefulWidget {
 }
 
 class _LoginWebState extends State<LoginWeb> {
+  bool _showPassword = false;
+  void _togglevisibility() {
+    setState(() {
+      _showPassword = !_showPassword;
+    });
+  }
+
   bool showSpinner1 = false;
   TextEditingController _emailField = TextEditingController();
   TextEditingController _passField = TextEditingController();
@@ -115,9 +122,24 @@ class _LoginWebState extends State<LoginWeb> {
                                   ));
                                 }
                               },
-                              obscureText: true,
+                              obscureText: !_showPassword,
                               controller: _passField,
                               decoration: InputDecoration(
+                                suffixIcon: InkWell(
+                                  onTap: () {
+                                    _togglevisibility();
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    child: Icon(
+                                      _showPassword
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                ),
                                 fillColor: Colors.white,
                                 focusColor: Colors.white,
                                 focusedBorder: OutlineInputBorder(

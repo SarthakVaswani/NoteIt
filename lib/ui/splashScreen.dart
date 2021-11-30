@@ -15,33 +15,32 @@ class _SplashScreenState extends State<SplashScreen> {
   User _user;
   Future<User> _getUser() async {
     _user = await _auth.currentUser;
+
     return _user;
   }
 
   Future startTime() async {
-    _user = await _auth.currentUser;
+    _user = _auth.currentUser;
     var _duration = Duration(seconds: 1500);
     return Timer(_duration, changeScreen());
   }
 
   changeScreen() {
-    if (_user != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => HomeView()));
-      });
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+    FirebaseAuth.instance.authStateChanges().listen((User user) {
+      if (user == null) {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => AuthDecider()));
-      });
-    }
+      } else {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => ScreenDecider()));
+      }
+    });
   }
 
   @override
   void initState() {
-    _getUser();
-    startTime();
+    // _getUser();
+    changeScreen();
     super.initState();
   }
 

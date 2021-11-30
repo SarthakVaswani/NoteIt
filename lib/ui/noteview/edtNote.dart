@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:flutter/foundation.dart';
+import 'package:notes_app/ui/screenDecider.dart';
 
 class EditNote extends StatefulWidget {
   DocumentSnapshot docToEdit;
@@ -23,203 +25,256 @@ class _EditNoteState extends State<EditNote> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xffddf0f7),
-      body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            SliverAppBar(
-              flexibleSpace: FlexibleSpaceBar(
-                titlePadding: EdgeInsets.symmetric(horizontal: 15),
-                title: TextFormField(
-                  enableInteractiveSelection: true,
-                  focusNode: FocusNode(),
-                  cursorColor: Color(0xffddf0f7),
-                  style: TextStyle(color: Colors.white, fontSize: 40),
-                  controller: title,
-                  decoration: InputDecoration(
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white),
-                    ),
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 5, vertical: 6),
-                    hintText: 'Title',
-                    hintStyle: TextStyle(color: Colors.white, fontSize: 40),
-                  ),
-                ),
-              ),
-              elevation: 0,
-              automaticallyImplyLeading: false,
-              backgroundColor: Color(0xff2c2b4b),
-              expandedHeight: 200.0,
-              floating: false,
-              pinned: true,
-            ),
-          ];
-        },
-        body: Container(
-          margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Column(
-            children: [
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(),
-                  child: TextFormField(
+    if ((defaultTargetPlatform == TargetPlatform.iOS) ||
+        (defaultTargetPlatform == TargetPlatform.android)) {
+      return Scaffold(
+        backgroundColor: Color(0xffddf0f7),
+        body: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                flexibleSpace: FlexibleSpaceBar(
+                  titlePadding: EdgeInsets.symmetric(horizontal: 15),
+                  title: TextFormField(
                     enableInteractiveSelection: true,
                     focusNode: FocusNode(),
-                    cursorColor: Color(0xff2c2b4b),
-                    style: TextStyle(color: Colors.black, fontSize: 23),
-                    controller: content,
-                    maxLines: null,
-                    expands: true,
+                    cursorColor: Color(0xffddf0f7),
+                    style: TextStyle(color: Colors.white, fontSize: 40),
+                    controller: title,
                     decoration: InputDecoration(
                       focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide.none,
+                        borderSide: BorderSide(color: Colors.white),
                       ),
-                      hintText: 'Content',
-                      hintStyle: TextStyle(
-                          color: Colors.black.withOpacity(0.7), fontSize: 23),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 5, vertical: 6),
+                      hintText: 'Title',
+                      hintStyle: TextStyle(color: Colors.white, fontSize: 40),
                     ),
                   ),
                 ),
+                elevation: 0,
+                automaticallyImplyLeading: false,
+                backgroundColor: Color(0xff2c2b4b),
+                expandedHeight: 200.0,
+                floating: false,
+                pinned: true,
               ),
-            ],
+            ];
+          },
+          body: Container(
+            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(),
+                    child: TextFormField(
+                      enableInteractiveSelection: true,
+                      focusNode: FocusNode(),
+                      cursorColor: Color(0xff2c2b4b),
+                      style: TextStyle(color: Colors.black, fontSize: 23),
+                      controller: content,
+                      maxLines: null,
+                      expands: true,
+                      decoration: InputDecoration(
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        hintText: 'Content',
+                        hintStyle: TextStyle(
+                            color: Colors.black.withOpacity(0.7), fontSize: 23),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-      floatingActionButton: SpeedDial(
-        overlayOpacity: 0.0,
-        openCloseDial: isDialOpen,
-        overlayColor: Colors.white.withOpacity(.2),
-        elevation: 7,
-        icon: Icons.edit,
-        iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: Color(0xffeb6765),
-        children: [
-          SpeedDialChild(
-              backgroundColor: Color(0xffeb6765),
-              child: Icon(
-                Icons.check,
-                color: Colors.white,
-              ),
-              onTap: () {
-                widget.docToEdit.reference.update({
-                  'title': title.text,
-                  'content': content.text
-                }).whenComplete(() => Navigator.pop(context));
-                return ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    duration: Duration(seconds: 2),
-                    content: Text('Saved'),
+        floatingActionButton: SpeedDial(
+          overlayOpacity: 0.0,
+          openCloseDial: isDialOpen,
+          overlayColor: Colors.white.withOpacity(.2),
+          elevation: 7,
+          icon: Icons.edit,
+          iconTheme: IconThemeData(color: Colors.white),
+          backgroundColor: Color(0xffeb6765),
+          children: [
+            SpeedDialChild(
+                backgroundColor: Color(0xffeb6765),
+                child: Icon(
+                  Icons.check,
+                  color: Colors.white,
+                ),
+                onTap: () {
+                  widget.docToEdit.reference.update({
+                    'title': title.text,
+                    'content': content.text
+                  }).whenComplete(() => Navigator.pop(context));
+                  return ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      duration: Duration(seconds: 2),
+                      content: Text('Saved'),
+                    ),
+                  );
+                }),
+            SpeedDialChild(
+                backgroundColor: Color(0xffeb6765),
+                child: Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                ),
+                onTap: () {
+                  widget.docToEdit.reference
+                      .delete()
+                      .whenComplete(() => Navigator.pop(context));
+                  return ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      duration: Duration(seconds: 2),
+                      content: Text('Deleted'),
+                    ),
+                  );
+                }),
+            SpeedDialChild(
+                backgroundColor: Color(0xffeb6765),
+                child: Icon(
+                  Icons.arrow_back_ios_outlined,
+                  color: Colors.white,
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                }),
+          ],
+        ),
+      );
+    } else if ((defaultTargetPlatform == TargetPlatform.windows)) {
+      return WillPopScope(
+          onWillPop: () async => Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => ScreenDecider())),
+          child: Scaffold(
+            backgroundColor: Color(0xffddf0f7),
+            body: NestedScrollView(
+              headerSliverBuilder:
+                  (BuildContext context, bool innerBoxIsScrolled) {
+                return <Widget>[
+                  SliverAppBar(
+                    flexibleSpace: FlexibleSpaceBar(
+                      titlePadding: EdgeInsets.symmetric(horizontal: 15),
+                      title: TextFormField(
+                        enableInteractiveSelection: true,
+                        focusNode: FocusNode(),
+                        cursorColor: Color(0xffddf0f7),
+                        style: TextStyle(color: Colors.white, fontSize: 40),
+                        controller: title,
+                        decoration: InputDecoration(
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 5, vertical: 6),
+                          hintText: 'Title',
+                          hintStyle:
+                              TextStyle(color: Colors.white, fontSize: 40),
+                        ),
+                      ),
+                    ),
+                    elevation: 0,
+                    automaticallyImplyLeading: false,
+                    backgroundColor: Color(0xff2c2b4b),
+                    expandedHeight: 200.0,
+                    floating: false,
+                    pinned: true,
                   ),
-                );
-              }),
-          SpeedDialChild(
-              backgroundColor: Color(0xffeb6765),
-              child: Icon(
-                Icons.delete,
-                color: Colors.white,
+                ];
+              },
+              body: Container(
+                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(),
+                        child: TextFormField(
+                          enableInteractiveSelection: true,
+                          focusNode: FocusNode(),
+                          cursorColor: Color(0xff2c2b4b),
+                          style: TextStyle(color: Colors.black, fontSize: 23),
+                          controller: content,
+                          maxLines: null,
+                          expands: true,
+                          decoration: InputDecoration(
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide.none,
+                            ),
+                            hintText: 'Content',
+                            hintStyle: TextStyle(
+                                color: Colors.black.withOpacity(0.7),
+                                fontSize: 23),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              onTap: () {
-                widget.docToEdit.reference
-                    .delete()
-                    .whenComplete(() => Navigator.pop(context));
-                return ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    duration: Duration(seconds: 2),
-                    content: Text('Deleted'),
-                  ),
-                );
-              }),
-          SpeedDialChild(
+            ),
+            floatingActionButton: SpeedDial(
+              overlayOpacity: 0.0,
+              openCloseDial: isDialOpen,
+              overlayColor: Colors.white.withOpacity(.2),
+              elevation: 7,
+              icon: Icons.edit,
+              iconTheme: IconThemeData(color: Colors.white),
               backgroundColor: Color(0xffeb6765),
-              child: Icon(
-                Icons.arrow_back_ios_outlined,
-                color: Colors.white,
-              ),
-              onTap: () {
-                Navigator.of(context).pop();
-              }),
-        ],
-      ),
-      // floatingActionButton: SingleChildScrollView(
-      //   child: Column(
-      //     children: [
-      //       MaterialButton(
-      //         elevation: 2,
-      //         height: MediaQuery.of(context).size.height / 15,
-      //         shape: CircleBorder(
-      //             side: BorderSide(
-      //           width: 2,
-      //           color: Color(0xffeb6765),
-      //         )),
-      //         child: Icon(
-      //           Icons.arrow_back_ios_sharp,
-      //           color: Colors.white,
-      //         ),
-      //         color: Color(0xffeb6765),
-      //         onPressed: () {
-      //           Navigator.of(context).pop();
-      //         },
-      //       ),
-      //       SizedBox(
-      //         height: 18,
-      //       ),
-      //       MaterialButton(
-      //         elevation: 2,
-      //         height: MediaQuery.of(context).size.height / 15,
-      //         shape: CircleBorder(
-      //             side: BorderSide(
-      //           width: 2,
-      //           color: Color(0xffeb6765),
-      //         )),
-      //         child: Icon(
-      //           Icons.delete,
-      //           color: Colors.white,
-      //         ),
-      //         color: Color(0xffeb6765),
-      //         onPressed: () {
-      //           widget.docToEdit.reference
-      //               .delete()
-      //               .whenComplete(() => Navigator.pop(context));
-      //           return ScaffoldMessenger.of(context).showSnackBar(
-      //             SnackBar(
-      //               duration: Duration(seconds: 2),
-      //               content: Text('Deleted'),
-      //             ),
-      //           );
-      //         },
-      //       ),
-      //       SizedBox(
-      //         height: 10,
-      //       ),
-      //       MaterialButton(
-      //         elevation: 3,
-      //         height: MediaQuery.of(context).size.height / 12,
-      //         shape: CircleBorder(
-      //           side: BorderSide(width: 2, color: Color(0xffeb6765)),
-      //         ),
-      //         child: Icon(
-      //           Icons.check,
-      //           color: Colors.white,
-      //         ),
-      //         color: Color(0xffeb6765),
-      //         onPressed: () {
-      //           widget.docToEdit.reference.update({
-      //             'title': title.text,
-      //             'content': content.text
-      //           }).whenComplete(() => Navigator.pop(context));
-      //           return ScaffoldMessenger.of(context).showSnackBar(
-      //             SnackBar(
-      //               duration: Duration(seconds: 2),
-      //               content: Text('Saved'),
-      //             ),
-      //           );
-      //         },
-      //       ),
-      //     ],
-      //   ),
-      // ),
-    );
+              children: [
+                SpeedDialChild(
+                    backgroundColor: Color(0xffeb6765),
+                    child: Icon(
+                      Icons.check,
+                      color: Colors.white,
+                    ),
+                    onTap: () {
+                      widget.docToEdit.reference.update({
+                        'title': title.text,
+                        'content': content.text
+                      }).whenComplete(() => Navigator.pop(context));
+                      return ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: Duration(seconds: 2),
+                          content: Text('Saved'),
+                        ),
+                      );
+                    }),
+                SpeedDialChild(
+                    backgroundColor: Color(0xffeb6765),
+                    child: Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                    onTap: () {
+                      widget.docToEdit.reference
+                          .delete()
+                          .whenComplete(() => Navigator.pop(context));
+                      return ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: Duration(seconds: 2),
+                          content: Text('Deleted'),
+                        ),
+                      );
+                    }),
+                SpeedDialChild(
+                    backgroundColor: Color(0xffeb6765),
+                    child: Icon(
+                      Icons.arrow_back_ios_outlined,
+                      color: Colors.white,
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    }),
+              ],
+            ),
+          ) // ),
+          );
+    }
   }
 }
