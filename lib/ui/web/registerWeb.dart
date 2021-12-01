@@ -12,19 +12,14 @@ class RegisterWeb extends StatefulWidget {
 }
 
 class _RegisterWebState extends State<RegisterWeb> {
+  bool _showPassword = false;
+  void _togglevisibility() {
+    setState(() {
+      _showPassword = !_showPassword;
+    });
+  }
+
   bool showSpinner = false;
-  //  User currentUser;final FirebaseAuth auth = FirebaseAuth.instance;
-  // @override
-  // void initState() {
-  //   User currentUser = FirebaseAuth.instance.currentUser;
-  //   if (currentUser != null) {
-  //     WidgetsBinding.instance.addPostFrameCallback((_) {
-  //       Navigator.push(
-  //           context, MaterialPageRoute(builder: (context) => HomeView()));
-  //     });
-  //   }
-  //   super.initState();
-  // }
 
   TextEditingController _emailField = TextEditingController();
   TextEditingController _passField = TextEditingController();
@@ -129,9 +124,24 @@ class _RegisterWebState extends State<RegisterWeb> {
                                   );
                                 }
                               },
-                              obscureText: true,
+                              obscureText: _showPassword,
                               controller: _passField,
                               decoration: InputDecoration(
+                                suffixIcon: InkWell(
+                                  onTap: () {
+                                    _togglevisibility();
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    child: Icon(
+                                      _showPassword
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                ),
                                 fillColor: Colors.white,
                                 focusColor: Colors.white,
                                 focusedBorder: OutlineInputBorder(

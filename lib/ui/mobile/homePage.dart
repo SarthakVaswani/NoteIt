@@ -8,7 +8,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../noteview/addNote.dart';
 import 'package:transition/transition.dart';
 import '../noteview/edtNote.dart';
-import 'login_page.dart';
 
 class HomeView extends StatefulWidget {
   @override

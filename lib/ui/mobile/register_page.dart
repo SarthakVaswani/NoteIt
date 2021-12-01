@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:notes_app/service/auth.dart';
-import 'package:notes_app/ui/mobile/homePage.dart';
 import 'package:notes_app/ui/mobile/login_page.dart';
 import 'package:notes_app/ui/screenDecider.dart';
 import 'package:transition/transition.dart';
@@ -14,6 +13,13 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
+  bool _showPassword = false;
+  void _togglevisibility() {
+    setState(() {
+      _showPassword = !_showPassword;
+    });
+  }
+
   Future<bool> _exitApp(BuildContext context) {
     return showDialog(
       context: context,
@@ -161,9 +167,24 @@ class _RegisterState extends State<Register> {
                                 );
                               }
                             },
-                            obscureText: true,
+                            obscureText: _showPassword,
                             controller: _passField,
                             decoration: InputDecoration(
+                              suffixIcon: InkWell(
+                                onTap: () {
+                                  _togglevisibility();
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: Icon(
+                                    _showPassword
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
                               fillColor: Colors.white,
                               focusColor: Colors.white,
                               focusedBorder: OutlineInputBorder(

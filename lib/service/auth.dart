@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase/firebase.dart' as firebase;
 import 'package:flutter/foundation.dart';
@@ -53,5 +51,10 @@ Future<bool> register(String email, String password) async {
 
 Future<bool> logOut() async {
   await FirebaseAuth.instance.signOut();
+  return true;
+}
+
+Future<bool> forgotPassword(String email) async {
+  FirebaseAuth.instance.sendPasswordResetEmail(email: email);
   return true;
 }

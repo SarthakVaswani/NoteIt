@@ -7,12 +7,21 @@ import 'package:notes_app/ui/screenDecider.dart';
 import 'package:transition/transition.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
+import 'forgotPassword.dart';
+
 class Login extends StatefulWidget {
   @override
   _LoginState createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
+  bool _showPassword = false;
+  void _togglevisibility() {
+    setState(() {
+      _showPassword = !_showPassword;
+    });
+  }
+
   Future<bool> _exitApp(BuildContext context) {
     return showDialog(
       context: context,
@@ -146,9 +155,24 @@ class _LoginState extends State<Login> {
                                 ));
                               }
                             },
-                            obscureText: true,
+                            obscureText: _showPassword,
                             controller: _passField,
                             decoration: InputDecoration(
+                              suffixIcon: InkWell(
+                                onTap: () {
+                                  _togglevisibility();
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: Icon(
+                                    _showPassword
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
                               fillColor: Colors.white,
                               focusColor: Colors.white,
                               focusedBorder: OutlineInputBorder(
@@ -263,6 +287,32 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                   ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: FlatButton(
+                    height: 14,
+                    color: Color(0xffeb6765),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        Transition(
+                            child: ForgotPassword(),
+                            transitionEffect: TransitionEffect.FADE),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 7),
+                      child: Text(
+                        'Forgot Password?',
+                        style: TextStyle(fontSize: 15, color: Colors.white),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

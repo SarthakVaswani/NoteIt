@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:notes_app/service/auth.dart';
 import 'package:notes_app/ui/screenDecider.dart';
 import 'package:transition/transition.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../noteview/addNote.dart';
 import '../noteview/edtNote.dart';
-import '../mobile/login_page.dart';
 
 class HomeViewDesktop extends StatefulWidget {
   @override

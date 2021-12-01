@@ -6,6 +6,7 @@ import 'package:notes_app/ui/web/registerWeb.dart';
 import 'package:transition/transition.dart';
 
 import '../screenDecider.dart';
+import 'forgotPasswordWeb.dart';
 
 class LoginWeb extends StatefulWidget {
   @override
@@ -258,6 +259,35 @@ class _LoginWebState extends State<LoginWeb> {
                       ),
                     ),
                   ],
+                ),
+                SizedBox(
+                  height: 23,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: FlatButton(
+                    height: 14,
+                    color: Color(0xffeb6765),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        Transition(
+                            child: ForgotPasswordWeb(),
+                            transitionEffect: TransitionEffect.FADE),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 7),
+                      child: Text(
+                        'Forgot Password?',
+                        style: TextStyle(fontSize: 15, color: Colors.white),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
