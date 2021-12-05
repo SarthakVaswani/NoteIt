@@ -1,40 +1,60 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase/firebase.dart' as firebase;
+// import 'package:firebase/firebase.dart' as firebase;
 import 'package:flutter/foundation.dart';
 
-//Web
-Future<bool> login(String email, String password) async {
-  try {
-    if ((defaultTargetPlatform == TargetPlatform.iOS) ||
-        (defaultTargetPlatform == TargetPlatform.android)) {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-      return true;
-    } else if ((defaultTargetPlatform == TargetPlatform.windows)) {
-      await firebase.auth().signInWithEmailAndPassword(email, password);
-      return true;
-    }
-  } catch (e) {
-    print(e);
-    return false;
-  }
-}
-
+// Web
 // Future<bool> login(String email, String password) async {
 //   try {
-//     await FirebaseAuth.instance
-//         .signInWithEmailAndPassword(email: email, password: password);
-//     return true;
+//     if ((defaultTargetPlatform == TargetPlatform.iOS) ||
+//         (defaultTargetPlatform == TargetPlatform.android)) {
+//       await FirebaseAuth.instance
+//           .signInWithEmailAndPassword(email: email, password: password);
+//       return true;
+//     } else if ((defaultTargetPlatform == TargetPlatform.windows)) {
+//       await firebase.auth().signInWithEmailAndPassword(email, password);
+//       return true;
+//     }
 //   } catch (e) {
 //     print(e);
 //     return false;
 //   }
 // }
 
+Future<bool> login(String email, String password) async {
+  try {
+    await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: password);
+
+    return true;
+  } catch (e) {
+    print(e);
+    return false;
+  }
+}
+
 Future<bool> register(String email, String password) async {
   try {
     await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
+    var firebaseUser = await FirebaseAuth.instance.currentUser;
+    String uid = FirebaseAuth.instance.currentUser.uid;
+    String dateCreated = DateTime.now().toIso8601String();
+    DocumentReference ref = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(firebaseUser.email)
+        .collection('UserDetails')
+        .doc(firebaseUser.email);
+    FirebaseFirestore.instance.runTransaction((transaction) async {
+      DocumentSnapshot snapshot = await transaction.get(ref);
+      if (!snapshot.exists) {
+        ref.set({'email': email, 'password': password, 'userId': uid});
+        print(ref.id);
+
+        return true;
+      }
+      return true;
+    });
     return true;
   } on FirebaseAuthException catch (e) {
     if (e.code == 'weak-password') {
@@ -57,4 +77,13 @@ Future<bool> logOut() async {
 Future<bool> forgotPassword(String email) async {
   FirebaseAuth.instance.sendPasswordResetEmail(email: email);
   return true;
+}
+
+Future userSearch(String keyword) async {
+  return FirebaseFirestore.instance
+      .collection("Users")
+      .doc(keyword)
+      .collection("UserDetails")
+      .where("email", isGreaterThanOrEqualTo: keyword)
+      .get();
 }

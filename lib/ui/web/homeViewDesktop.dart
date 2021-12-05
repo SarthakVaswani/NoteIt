@@ -13,7 +13,32 @@ class HomeViewDesktop extends StatefulWidget {
 }
 
 class _HomeViewDesktopState extends State<HomeViewDesktop> {
+  var firebaseUser = FirebaseAuth.instance.currentUser;
   final _scrollController = ScrollController();
+  void getUserData() async {
+    var firebaseUser = await FirebaseAuth.instance.currentUser;
+    FirebaseFirestore.instance
+        .collection("Users")
+        .doc(firebaseUser.uid)
+        .get()
+        .then((value) {
+      print(value.id);
+    });
+  }
+
+  void getUserNotes() async {
+    var firebaseUser = await FirebaseAuth.instance.currentUser;
+    FirebaseFirestore.instance
+        .collection("Users")
+        .doc(firebaseUser.uid)
+        .collection('Notes')
+        .doc()
+        .get()
+        .then((value) {
+      print(value.id);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,6 +61,7 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                         size: 40,
                       ),
                       onPressed: () async {
+                        // getUserData();
                         Navigator.pop(context, true);
                         bool shouldNavigate = await logOut();
                         if (shouldNavigate) {
@@ -85,7 +111,7 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                   StreamBuilder(
                     stream: FirebaseFirestore.instance
                         .collection('Users')
-                        .doc(FirebaseAuth.instance.currentUser.uid)
+                        .doc(FirebaseAuth.instance.currentUser.email)
                         .collection('Notes')
                         .orderBy('dateTime', descending: true)
                         .snapshots(),

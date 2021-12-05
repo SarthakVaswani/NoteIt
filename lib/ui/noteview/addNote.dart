@@ -10,14 +10,16 @@ class AddNote extends StatefulWidget {
 class _AddNoteState extends State<AddNote> {
   TextEditingController title = TextEditingController();
   TextEditingController content = TextEditingController();
+  var noteId;
 
   Future<bool> enterNotes(String title, String content) async {
     try {
       String uid = FirebaseAuth.instance.currentUser.uid;
+      var firebaseUser = FirebaseAuth.instance.currentUser;
       String dateCreated = DateTime.now().toIso8601String();
       DocumentReference ref = FirebaseFirestore.instance
           .collection('Users')
-          .doc(uid)
+          .doc(firebaseUser.email)
           .collection('Notes')
           .doc(dateCreated);
       FirebaseFirestore.instance.runTransaction((transaction) async {
@@ -26,8 +28,14 @@ class _AddNoteState extends State<AddNote> {
           ref.set({
             'dateTime': FieldValue.serverTimestamp(),
             'title': title,
-            'content': content
+            'content': content,
+            'sharedTo': null,
+            'createdBy': firebaseUser.email
           });
+          print(ref.id);
+          // setState(() {
+          //   noteId = ref.id;
+          // });
           return true;
         }
         return true;

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter/foundation.dart';
+import 'package:notes_app/ui/mobile/searchUser.dart';
 import 'package:notes_app/ui/screenDecider.dart';
 
 class EditNote extends StatefulWidget {
@@ -21,6 +22,60 @@ class _EditNoteState extends State<EditNote> {
     content = TextEditingController(text: widget.docToEdit.data()['content']);
 
     super.initState();
+  }
+
+  Future<bool> enterNotes() async {
+    try {
+      String dateCreated = DateTime.now().toIso8601String();
+      DocumentReference ref = FirebaseFirestore.instance
+          .collection('Users')
+          .doc("project90@gmail.com")
+          .collection('Notes')
+          .doc(dateCreated);
+
+      FirebaseFirestore.instance.runTransaction((transaction) async {
+        FirebaseFirestore.instance
+            .collection('Users')
+            .doc("project90@gmail.com")
+            .collection('Notes')
+            .doc(widget.docToEdit.id)
+            .set({
+          'dateTime': widget.docToEdit.data()['dateTime'],
+          'title': widget.docToEdit.data()['title'],
+          'content': widget.docToEdit.data()['content'],
+          'sharedTo': widget.docToEdit.data()['sharedTo'],
+          'createdBy': widget.docToEdit.data()['createdBy'],
+        });
+      });
+      // FirebaseFirestore.instance.runTransaction((transaction) async {
+      //   DocumentSnapshot snapshot = await transaction.get(ref);
+      //   if (!snapshot.exists) {
+      //     ref.set({
+      //       'dateTime': await widget.docToEdit.reference.get().then((title) {
+      //         snapshot.data()['dateTime'].toString();
+      //       }),
+      //       'title': await widget.docToEdit.reference.get().then((title) {
+      //         snapshot.data()['dateTime'].toString();
+      //       }),
+      //       'content': await widget.docToEdit.reference.get().then((title) {
+      //         snapshot.data()['dateTime'].toString();
+      //       }),
+      //       'sharedTo': await widget.docToEdit.reference.get().then((title) {
+      //         snapshot.data()['dateTime'].toString();
+      //       }),
+      //     });
+      //     print(widget.docToEdit.data()['title']);
+      //     print(ref.id);
+      //     // setState(() {
+      //     //   noteId = ref.id;
+      //     // });
+      //     return true;
+      //   }
+      //   return true;
+      // });
+    } catch (e) {
+      return false;
+    }
   }
 
   @override
@@ -107,9 +162,20 @@ class _EditNoteState extends State<EditNote> {
                   color: Colors.white,
                 ),
                 onTap: () {
-                  widget.docToEdit.reference.update({
-                    'title': title.text,
-                    'content': content.text
+                  widget.docToEdit.reference
+                      .update({'title': title.text, 'content': content.text});
+                  FirebaseFirestore.instance
+                      .runTransaction((transaction) async {
+                    FirebaseFirestore.instance
+                        .collection('Users')
+                        .doc("project90@gmail.com")
+                        .collection('Notes')
+                        .doc(widget.docToEdit.id)
+                        .update({
+                      'title': title.text,
+                      'content': content.text,
+                      'sharedTo': widget.docToEdit.data()['sharedTo']
+                    });
                   }).whenComplete(() => Navigator.pop(context));
                   return ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -125,9 +191,14 @@ class _EditNoteState extends State<EditNote> {
                   color: Colors.white,
                 ),
                 onTap: () {
-                  widget.docToEdit.reference
-                      .delete()
-                      .whenComplete(() => Navigator.pop(context));
+                  widget.docToEdit.reference.update({"sharedTo": selectedUser});
+                  print(selectedUser);
+
+                  // print(widget.docToEdit.reference.id);
+                  enterNotes();
+                  // widget.docToEdit.reference
+                  //     .delete()
+                  //     .whenComplete(() => Navigator.pop(context));
                   return ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       duration: Duration(seconds: 2),
@@ -234,9 +305,20 @@ class _EditNoteState extends State<EditNote> {
                       color: Colors.white,
                     ),
                     onTap: () {
-                      widget.docToEdit.reference.update({
-                        'title': title.text,
-                        'content': content.text
+                      widget.docToEdit.reference.update(
+                          {'title': title.text, 'content': content.text});
+                      FirebaseFirestore.instance
+                          .runTransaction((transaction) async {
+                        FirebaseFirestore.instance
+                            .collection('Users')
+                            .doc("project90@gmail.com")
+                            .collection('Notes')
+                            .doc(widget.docToEdit.id)
+                            .update({
+                          'title': title.text,
+                          'content': content.text,
+                          'sharedTo': widget.docToEdit.data()['sharedTo']
+                        });
                       }).whenComplete(() => Navigator.pop(context));
                       return ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -252,9 +334,15 @@ class _EditNoteState extends State<EditNote> {
                       color: Colors.white,
                     ),
                     onTap: () {
+                      String dateCreated = DateTime.now().toIso8601String();
                       widget.docToEdit.reference
-                          .delete()
-                          .whenComplete(() => Navigator.pop(context));
+                          .update({"sharedTo": "project90@gmail.com"});
+                      String noteId = widget.docToEdit.reference.id;
+                      // print(widget.docToEdit.reference.id);
+                      enterNotes();
+                      // widget.docToEdit.reference
+                      //     .delete()
+                      //     .whenComplete(() => Navigator.pop(context));
                       return ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           duration: Duration(seconds: 2),

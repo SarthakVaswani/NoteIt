@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/service/auth.dart';
+import 'package:notes_app/ui/mobile/searchUser.dart';
 import 'package:notes_app/ui/screenDecider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../noteview/addNote.dart';
@@ -15,6 +16,7 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  var firebaseUser = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
     Future<bool> _exitApp(BuildContext context) {
@@ -81,7 +83,10 @@ class _HomeViewState extends State<HomeView> {
                   IconButton(
                       icon: Icon(Icons.web_asset),
                       onPressed: () {
-                        _launchURL();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SearchUsers()));
                       }),
                 ],
                 elevation: 0,
@@ -116,7 +121,7 @@ class _HomeViewState extends State<HomeView> {
                   StreamBuilder(
                     stream: FirebaseFirestore.instance
                         .collection('Users')
-                        .doc(FirebaseAuth.instance.currentUser.uid)
+                        .doc(FirebaseAuth.instance.currentUser.email)
                         .collection('Notes')
                         .orderBy('dateTime', descending: true)
                         .snapshots(),
