@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -16,6 +18,15 @@ class _AddNoteState extends State<AddNote> {
   TextEditingController content = TextEditingController();
   var noteId;
   static var firebaseUser;
+  bool desktop = false;
+  checkPlatfrom() {
+    if ((defaultTargetPlatform == TargetPlatform.windows)) {
+      setState(() {
+        desktop = true;
+      });
+    }
+  }
+
   getUser() async {
     firebaseUser = await FirebaseAuth.instance.currentUser;
   }
@@ -23,10 +34,10 @@ class _AddNoteState extends State<AddNote> {
   List<File> _images = [];
   File _image; // Used only if you need a single picture
   bool imagepicked = false;
-
+  PickedFile pickedFile;
   Future getImage(bool gallery) async {
     ImagePicker picker = ImagePicker();
-    PickedFile pickedFile;
+
     // Let user select photo from gallery
     if (gallery) {
       pickedFile = await picker.getImage(
@@ -59,10 +70,15 @@ class _AddNoteState extends State<AddNote> {
   }
 
   String returnURL;
+
   uploadFile(File _image) async {
+    Uint8List bytes = await pickedFile.readAsBytes();
     FirebaseStorage storage = FirebaseStorage.instance;
     Reference ref = storage.ref().child("image1" + DateTime.now().toString());
-    UploadTask uploadTask = ref.putFile(_image);
+    UploadTask uploadTask;
+    uploadTask = desktop
+        ? ref.putData(bytes, SettableMetadata(contentType: 'image/png'))
+        : ref.putFile(_image);
 
     await uploadTask.whenComplete(() async {
       await ref.getDownloadURL().then((fileURL) {
@@ -123,6 +139,7 @@ class _AddNoteState extends State<AddNote> {
   @override
   void initState() {
     getUser();
+    checkPlatfrom();
     super.initState();
   }
 

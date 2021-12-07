@@ -1,9 +1,11 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,6 +22,7 @@ class EditNote extends StatefulWidget {
 
 class _EditNoteState extends State<EditNote> {
   static String selectedUser;
+  DropzoneViewController controller1;
   TextEditingController title = TextEditingController();
   TextEditingController content = TextEditingController();
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
@@ -38,6 +41,7 @@ class _EditNoteState extends State<EditNote> {
     title = TextEditingController(text: widget.docToEdit.data()['title']);
     content = TextEditingController(text: widget.docToEdit.data()['content']);
     checkImage();
+
     super.initState();
   }
 
@@ -104,6 +108,8 @@ class _EditNoteState extends State<EditNote> {
     }
   }
 
+  bool desktop = false;
+
   TextEditingController search = TextEditingController();
   QuerySnapshot snapshot;
   bool isExecuted = false;
@@ -135,9 +141,10 @@ class _EditNoteState extends State<EditNote> {
     await uploadFile(_image);
   }
 
+  PickedFile pickedFile;
   Future getImage(bool gallery) async {
     ImagePicker picker = ImagePicker();
-    PickedFile pickedFile;
+
     // Let user select photo from gallery
     if (gallery) {
       pickedFile = await picker.getImage(
@@ -167,9 +174,12 @@ class _EditNoteState extends State<EditNote> {
 
   String returnURL;
   uploadFile(File _image) async {
+    Uint8List bytes = await pickedFile.readAsBytes();
     FirebaseStorage storage = FirebaseStorage.instance;
     Reference ref = storage.ref().child("image1" + DateTime.now().toString());
-    UploadTask uploadTask = ref.putFile(_image);
+    UploadTask uploadTask = desktop
+        ? ref.putData(bytes, SettableMetadata(contentType: 'image/png'))
+        : ref.putFile(_image);
 
     await uploadTask.whenComplete(() async {
       await ref.getDownloadURL().then((fileURL) {
@@ -524,6 +534,9 @@ class _EditNoteState extends State<EditNote> {
         ),
       );
     } else if ((defaultTargetPlatform == TargetPlatform.windows)) {
+      setState(() {
+        desktop = true;
+      });
       return WillPopScope(
           onWillPop: () async => Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => ScreenDecider())),
@@ -590,6 +603,54 @@ class _EditNoteState extends State<EditNote> {
                         ),
                       ),
                     ),
+                    hasImage
+                        ? InkWell(
+                            onLongPress: () {
+                              widget.docToEdit.reference
+                                  .update({'images': null}).whenComplete(
+                                      () => Navigator.pop(context));
+                              return ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: Duration(seconds: 2),
+                                  content: Text('Deleted'),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.25,
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              child: InteractiveViewer(
+                                panEnabled: false, // Set it to false
+                                boundaryMargin: EdgeInsets.all(100),
+                                minScale: 0.5,
+                                maxScale: 2,
+                                child: Image.network(
+                                  imageUrl,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          )
+                        : SizedBox(
+                            height: 5,
+                          )
                   ],
                 ),
               ),
@@ -609,34 +670,68 @@ class _EditNoteState extends State<EditNote> {
                       Icons.check,
                       color: Colors.white,
                     ),
-                    onTap: () {
-                      widget.docToEdit.reference.update({
-                        'title': title.text,
-                        'content': content.text
-                      }).whenComplete(() {
-                        Navigator.pop(context);
-                        return ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: Duration(seconds: 2),
-                            content: Text('Saved'),
-                          ),
-                        );
-                      });
+                    onTap: () async {
+                      imagepicked
+                          ? await finalUpload().then((value) =>
+                              widget.docToEdit.reference.update({
+                                'title': title.text,
+                                'content': content.text,
+                                'images': returnURL
+                              }).whenComplete(() {
+                                Navigator.pop(context);
+                                return ScaffoldMessenger.of(context)
+                                    .showSnackBar(
+                                  SnackBar(
+                                    duration: Duration(seconds: 2),
+                                    content: Text('Saved'),
+                                  ),
+                                );
+                              }))
+                          : widget.docToEdit.reference.update({
+                              'title': title.text,
+                              'content': content.text
+                            }).whenComplete(() {
+                              Navigator.pop(context);
+                              return ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: Duration(seconds: 2),
+                                  content: Text('Saved'),
+                                ),
+                              );
+                            });
 
                       if (widget.docToEdit.data()['sharedTo'] != null) {
-                        FirebaseFirestore.instance
-                            .runTransaction((transaction) async {
-                          FirebaseFirestore.instance
-                              .collection('Users')
-                              .doc(widget.docToEdit.data()['sharedTo'])
-                              .collection('Notes')
-                              .doc(widget.docToEdit.id)
-                              .update({
-                            'title': title.text,
-                            'content': content.text,
-                            'sharedTo': widget.docToEdit.data()['sharedTo']
-                          });
-                        }).whenComplete(() => Navigator.pop(context));
+                        imagepicked
+                            ? await finalUpload().then((value) =>
+                                FirebaseFirestore.instance
+                                    .runTransaction((transaction) async {
+                                  FirebaseFirestore.instance
+                                      .collection('Users')
+                                      .doc(widget.docToEdit.data()['sharedTo'])
+                                      .collection('Notes')
+                                      .doc(widget.docToEdit.id)
+                                      .update({
+                                    'title': title.text,
+                                    'content': content.text,
+                                    'sharedTo':
+                                        widget.docToEdit.data()['sharedTo'],
+                                    'images': returnURL
+                                  });
+                                }).whenComplete(() => Navigator.pop(context)))
+                            : FirebaseFirestore.instance
+                                .runTransaction((transaction) async {
+                                FirebaseFirestore.instance
+                                    .collection('Users')
+                                    .doc(widget.docToEdit.data()['sharedTo'])
+                                    .collection('Notes')
+                                    .doc(widget.docToEdit.id)
+                                    .update({
+                                  'title': title.text,
+                                  'content': content.text,
+                                  'sharedTo':
+                                      widget.docToEdit.data()['sharedTo']
+                                });
+                              }).whenComplete(() => Navigator.pop(context));
                         return ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             duration: Duration(seconds: 2),
@@ -672,6 +767,15 @@ class _EditNoteState extends State<EditNote> {
                     ),
                     onTap: () {
                       _addPeople(context);
+                    }),
+                SpeedDialChild(
+                    backgroundColor: Color(0xffeb6765),
+                    child: Icon(
+                      Icons.image,
+                      color: Colors.white,
+                    ),
+                    onTap: () {
+                      getImage(true);
                     }),
                 SpeedDialChild(
                     backgroundColor: Color(0xffeb6765),
