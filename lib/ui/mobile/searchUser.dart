@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/service/auth.dart';
 
-String selectedUser;
-
 class SearchUsers extends StatefulWidget {
   const SearchUsers({Key key}) : super(key: key);
 
@@ -15,6 +13,7 @@ class _SearchUsersState extends State<SearchUsers> {
   TextEditingController search = TextEditingController();
   QuerySnapshot snapshot;
   bool isExecuted = false;
+  String selectedUser;
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +54,6 @@ class _SearchUsersState extends State<SearchUsers> {
         ),
         body: snapshot != null
             ? searchedData()
-            : Center(child: CircularProgressIndicator()));
+            : Center(child: Text('Search your notes')));
   }
 }

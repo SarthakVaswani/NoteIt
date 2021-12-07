@@ -35,10 +35,9 @@ dependencies:
   transition: ^2.0.0
   url_launcher: ^6.0.2
   firebase: ^9.0.2
-  json_serializable: ^3.3.0
-  json_annotation: ^3.0.1
-  uuid: ^2.2.0
-  provider: ^4.3.1
+  # flutter_local_notifications: 
+  # firebase_messaging:
+  flutter_email_sender: ^5.0.2  
 
 dev_dependencies:
   flutter_test:

@@ -44,7 +44,7 @@ Future<bool> register(String email, String password) async {
         .collection('Users')
         .doc(firebaseUser.email)
         .collection('UserDetails')
-        .doc(firebaseUser.email);
+        .doc(dateCreated);
     FirebaseFirestore.instance.runTransaction((transaction) async {
       DocumentSnapshot snapshot = await transaction.get(ref);
       if (!snapshot.exists) {
@@ -85,5 +85,14 @@ Future userSearch(String keyword) async {
       .doc(keyword)
       .collection("UserDetails")
       .where("email", isGreaterThanOrEqualTo: keyword)
+      .get();
+}
+
+Future userNotes({String currentUser, String keyword}) async {
+  return FirebaseFirestore.instance
+      .collection("Users")
+      .doc(currentUser)
+      .collection("Notes")
+      .where("title", isGreaterThanOrEqualTo: keyword)
       .get();
 }
