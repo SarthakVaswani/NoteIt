@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-import 'package:notes_app/service/auth.dart';
+import 'package:notes_app/service/services.dart';
 import 'package:notes_app/ui/mobile/register_page.dart';
 import 'package:notes_app/ui/screenDecider.dart';
 import 'package:transition/transition.dart';

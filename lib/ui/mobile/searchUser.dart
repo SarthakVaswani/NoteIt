@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:notes_app/service/auth.dart';
+import 'package:notes_app/service/services.dart';
 
 class SearchUsers extends StatefulWidget {
   const SearchUsers({Key key}) : super(key: key);

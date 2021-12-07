@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:notes_app/service/auth.dart';
+import 'package:notes_app/service/services.dart';
 import 'package:notes_app/ui/mobile/login_page.dart';
 import 'package:notes_app/ui/screenDecider.dart';
 import 'package:transition/transition.dart';

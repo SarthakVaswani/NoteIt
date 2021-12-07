@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:notes_app/service/auth.dart';
+import 'package:notes_app/service/services.dart';
 import 'package:notes_app/ui/mobile/searchNotes.dart';
 import 'package:notes_app/ui/mobile/searchUser.dart';
 import 'package:notes_app/ui/screenDecider.dart';
@@ -65,7 +65,7 @@ class _HomeViewState extends State<HomeView> {
   //     }
   //   });
   // }
-  bool changeView = false;
+  bool changeView = true;
   @override
   Widget build(BuildContext context) {
     Future<bool> _exitApp(BuildContext context) {
