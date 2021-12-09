@@ -39,7 +39,9 @@ dependencies:
   # firebase_messaging:
   image_picker:
   firebase_storage:   
-  flutter_dropzone:  
+  whiteboardkit: ^0.2.2
+  onesignal_flutter:
+  http:
 
 dev_dependencies:
   flutter_test:

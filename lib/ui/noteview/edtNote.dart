@@ -5,12 +5,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:notes_app/main.dart';
 import 'package:notes_app/service/services.dart';
-import 'package:notes_app/ui/mobile/searchUser.dart';
 import 'package:notes_app/ui/screenDecider.dart';
 
 class EditNote extends StatefulWidget {
@@ -22,7 +21,7 @@ class EditNote extends StatefulWidget {
 
 class _EditNoteState extends State<EditNote> {
   static String selectedUser;
-  DropzoneViewController controller1;
+  String selectedUserName;
   TextEditingController title = TextEditingController();
   TextEditingController content = TextEditingController();
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
@@ -172,6 +171,7 @@ class _EditNoteState extends State<EditNote> {
     });
   }
 
+  String selectedUserToken;
   String returnURL;
   uploadFile(File _image) async {
     Uint8List bytes = await pickedFile.readAsBytes();
@@ -205,7 +205,9 @@ class _EditNoteState extends State<EditNote> {
                     onTap: () {
                       setState(() {
                         selectedUser = snapshot.docs[index].get('email');
-                        print(selectedUser);
+                        selectedUserToken = snapshot.docs[index].get('tokenId');
+                        selectedUserName = snapshot.docs[index].get('email');
+                        print(selectedUserToken);
                         setState(() {
                           widget.docToEdit.reference
                               .update({"sharedTo": selectedUser});
@@ -217,6 +219,9 @@ class _EditNoteState extends State<EditNote> {
                                     Text('Notes shared with $selectedUser'),
                               ),
                             );
+                            sendNotification(
+                                tokenIdi: selectedUserToken,
+                                userName: selectedUserName);
                           });
                           print(selectedUser);
 

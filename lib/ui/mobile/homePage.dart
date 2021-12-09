@@ -4,8 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/service/services.dart';
 import 'package:notes_app/ui/mobile/searchNotes.dart';
-import 'package:notes_app/ui/mobile/searchUser.dart';
 import 'package:notes_app/ui/screenDecider.dart';
+import 'package:notes_app/ui/web/widgets/whiteboard.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../noteview/addNote.dart';
 import 'package:transition/transition.dart';
@@ -68,7 +68,6 @@ class _HomeViewState extends State<HomeView> {
   //     }
   //   });
   // }
-  // QuerySnapshot snapshotPinned;
 
   @override
   void initState() {
@@ -141,10 +140,11 @@ class _HomeViewState extends State<HomeView> {
                   IconButton(
                       icon: Icon(Icons.web_asset),
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SearchUsers()));
+                        // Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (context) => WhiteBoardPage()));
+                        _launchURL();
                       }),
                 ],
                 elevation: 0,

@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase/firebase.dart' as firebase;
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart';
+
+import '../main.dart';
 
 // Web
 // Future<bool> login(String email, String password) async {
@@ -48,7 +53,12 @@ Future<bool> register(String email, String password) async {
     FirebaseFirestore.instance.runTransaction((transaction) async {
       DocumentSnapshot snapshot = await transaction.get(ref);
       if (!snapshot.exists) {
-        ref.set({'email': email, 'password': password, 'userId': uid});
+        ref.set({
+          'email': email,
+          'password': password,
+          'userId': uid,
+          'tokenId': tokenId
+        });
         print(ref.id);
 
         return true;
@@ -104,4 +114,34 @@ Future checkPinned({String currentUser, String keyword}) async {
       .collection("Notes")
       .where("Pin", isGreaterThanOrEqualTo: "true")
       .snapshots();
+}
+
+Future<Response> sendNotification({String tokenIdi, String userName}) async {
+  return await post(
+    Uri.parse('https://onesignal.com/api/v1/notifications'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, dynamic>{
+      "app_id":
+          kAppId, //kAppId is the App Id that one get from the OneSignal When the application is registered.
+
+      "include_player_ids": [
+        tokenIdi
+      ], //tokenIdList Is the List of All the Token Id to to Whom notification must be sent.
+
+      // android_accent_color reprsent the color of the heading text in the notifiction
+      "android_accent_color": "FF9976D2",
+
+      "small_icon":
+          "https://user-images.githubusercontent.com/55880923/111069791-b516f780-84f4-11eb-8af6-bdb33bdded0a.png",
+
+      "large_icon":
+          "https://user-images.githubusercontent.com/55880923/111069791-b516f780-84f4-11eb-8af6-bdb33bdded0a.png",
+
+      "headings": {"en": userName},
+
+      "contents": {"en": "Shared Notes with you"},
+    }),
+  );
 }

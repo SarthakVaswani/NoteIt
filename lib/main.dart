@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/ui/splashScreen.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 // const AndroidNotificationChannel channel = AndroidNotificationChannel(
 //     'high_importance_channel', // id
@@ -15,10 +16,28 @@ import 'package:notes_app/ui/splashScreen.dart';
 //   await Firebase.initializeApp();
 //   print('A bg message just showed up :  ${message.messageId}');
 // }
+String kAppId = "8aedfc1b-f167-4754-bb9f-69c71e0d673e";
+String tokenId;
+Future<void> initPlatformState() async {
+  OneSignal.shared.setAppId(kAppId);
+
+  var status = await OneSignal.shared.getDeviceState();
+  tokenId = status.userId;
+  print(tokenId);
+  OneSignal.shared.setNotificationOpenedHandler((openedResult) {
+    return OSNotificationDisplayType.notification;
+  });
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  initPlatformState();
+
+// The promptForPushNotificationsWithUserResponse function will show the iOS push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
+  // OneSignal.shared.promptUserForPushNotificationPermission().then((accepted) {
+  //   print("Accepted permission: $accepted");
+  // });
   // FirebaseMessaging.instance.getToken().then((value) {
   //   String token = value;
   //   print("test = $token");

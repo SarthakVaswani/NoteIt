@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/service/services.dart';
 import 'package:notes_app/ui/mobile/searchNotes.dart';
@@ -29,7 +32,37 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
     });
   }
 
-  bool isPinned = false;
+  Future<void> _onPointerDown(PointerDownEvent event) async {
+    // Check if right mouse button clicked
+    if (event.kind == PointerDeviceKind.mouse &&
+        event.buttons == kSecondaryMouseButton) {
+      final overlay =
+          Overlay.of(context).context.findRenderObject() as RenderBox;
+      final menuItem = await showMenu<int>(
+          context: context,
+          items: [
+            PopupMenuItem(child: Text('Copy'), value: 1),
+            PopupMenuItem(child: Text('Cut'), value: 2),
+          ],
+          position: RelativeRect.fromSize(
+              event.position & Size(48.0, 48.0), overlay.size));
+      // Check if menu item clicked
+      switch (menuItem) {
+        case 1:
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Copy clicket'),
+            behavior: SnackBarBehavior.floating,
+          ));
+          break;
+        case 2:
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Cut clicked'),
+              behavior: SnackBarBehavior.floating));
+          break;
+        default:
+      }
+    }
+  }
 
   void getUserNotes() async {
     var firebaseUser = await FirebaseAuth.instance.currentUser;
@@ -42,6 +75,14 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
         .then((value) {
       print(value.id);
     });
+  }
+
+  bool isPinned = false;
+  @override
+  void initState() {
+    // document.onContextMenu.listen((event) => event.preventDefault());
+    // TODO: implement initState
+    super.initState();
   }
 
   @override
@@ -112,6 +153,7 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
             ),
             child: SingleChildScrollView(
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     flex: 4,
@@ -120,17 +162,22 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                         Align(
                             alignment: Alignment.topRight,
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        changeView = !changeView;
-                                      });
-                                    },
-                                    icon: changeView
-                                        ? Icon(Icons.list, color: Colors.white)
-                                        : Icon(Icons.grid_view,
-                                            color: Colors.white)),
+                                Listener(
+                                  onPointerDown: _onPointerDown,
+                                  child: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          changeView = !changeView;
+                                        });
+                                      },
+                                      icon: changeView
+                                          ? Icon(Icons.list,
+                                              color: Colors.white)
+                                          : Icon(Icons.grid_view,
+                                              color: Colors.white)),
+                                ),
                                 IconButton(
                                     onPressed: () {
                                       setState(() {
