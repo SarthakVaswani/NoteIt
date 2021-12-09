@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -32,37 +33,77 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
     });
   }
 
-  Future<void> _onPointerDown(PointerDownEvent event) async {
-    // Check if right mouse button clicked
-    if (event.kind == PointerDeviceKind.mouse &&
-        event.buttons == kSecondaryMouseButton) {
-      final overlay =
-          Overlay.of(context).context.findRenderObject() as RenderBox;
-      final menuItem = await showMenu<int>(
-          context: context,
-          items: [
-            PopupMenuItem(child: Text('Copy'), value: 1),
-            PopupMenuItem(child: Text('Cut'), value: 2),
-          ],
-          position: RelativeRect.fromSize(
-              event.position & Size(48.0, 48.0), overlay.size));
-      // Check if menu item clicked
-      switch (menuItem) {
-        case 1:
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Copy clicket'),
-            behavior: SnackBarBehavior.floating,
-          ));
-          break;
-        case 2:
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('Cut clicked'),
-              behavior: SnackBarBehavior.floating));
-          break;
-        default:
-      }
-    }
+  Future<bool> _exitApp(
+      {BuildContext context,
+      Function call1,
+      Function call2,
+      String text1,
+      String text2}) {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        elevation: 2,
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+            // side: BorderSide(
+            //     color: Colors.white, width: 0.01),
+            borderRadius: BorderRadius.circular(10)),
+        title: Text(
+          'Choose action',
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
+        actions: [
+          FlatButton(
+            splashColor: Colors.blueGrey,
+            onPressed: () => call1(),
+            child: Text(
+              text1,
+              style: TextStyle(color: Colors.black, fontSize: 17),
+            ),
+          ),
+          FlatButton(
+            splashColor: Colors.blueGrey,
+            onPressed: () => call2(),
+            child: Text(
+              text2,
+              style: TextStyle(color: Colors.black, fontSize: 17),
+            ),
+          ),
+        ],
+      ),
+    );
   }
+  // Future<void> _onPointerDown(PointerDownEvent event) async {
+  //   // Check if right mouse button clicked
+  //   if (event.kind == PointerDeviceKind.mouse &&
+  //       event.buttons == kSecondaryMouseButton) {
+  //     final overlay =
+  //         Overlay.of(context).context.findRenderObject() as RenderBox;
+  //     final menuItem = await showMenu<int>(
+  //         context: context,
+  //         items: [
+  //           PopupMenuItem(child: Text('Copy'), value: 1),
+  //           PopupMenuItem(child: Text('Cut'), value: 2),
+  //         ],
+  //         position: RelativeRect.fromSize(
+  //             event.position & Size(48.0, 48.0), overlay.size));
+  //     // Check if menu item clicked
+  //     switch (menuItem) {
+  //       case 1:
+  //         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //           content: Text('Copy clicket'),
+  //           behavior: SnackBarBehavior.floating,
+  //         ));
+  //         break;
+  //       case 2:
+  //         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //             content: Text('Cut clicked'),
+  //             behavior: SnackBarBehavior.floating));
+  //         break;
+  //       default:
+  //     }
+  //   }
+  // }
 
   void getUserNotes() async {
     var firebaseUser = await FirebaseAuth.instance.currentUser;
@@ -80,7 +121,6 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
   bool isPinned = false;
   @override
   void initState() {
-    // document.onContextMenu.listen((event) => event.preventDefault());
     // TODO: implement initState
     super.initState();
   }
@@ -164,20 +204,16 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Listener(
-                                  onPointerDown: _onPointerDown,
-                                  child: IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          changeView = !changeView;
-                                        });
-                                      },
-                                      icon: changeView
-                                          ? Icon(Icons.list,
-                                              color: Colors.white)
-                                          : Icon(Icons.grid_view,
-                                              color: Colors.white)),
-                                ),
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        changeView = !changeView;
+                                      });
+                                    },
+                                    icon: changeView
+                                        ? Icon(Icons.list, color: Colors.white)
+                                        : Icon(Icons.grid_view,
+                                            color: Colors.white)),
                                 IconButton(
                                     onPressed: () {
                                       setState(() {
@@ -218,7 +254,7 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                                           shrinkWrap: true,
                                           gridDelegate:
                                               SliverGridDelegateWithFixedCrossAxisCount(
-                                                  crossAxisCount: 2),
+                                                  crossAxisCount: 5),
                                           itemCount: snapshotPinned.hasData
                                               ? snapshotPinned.data.docs.length
                                               : 0,
@@ -228,150 +264,52 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                                               child: InkWell(
                                                 splashColor: Colors.redAccent,
                                                 onLongPress: () {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(SnackBar(
-                                                          duration:
-                                                              Duration(days: 1),
-                                                          backgroundColor:
-                                                              Color(0xff131616),
-                                                          content: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceEvenly,
-                                                            children: [
-                                                              SizedBox(
-                                                                width: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width *
-                                                                    0.35,
-                                                                child:
-                                                                    MaterialButton(
-                                                                  onPressed:
-                                                                      () {
-                                                                    snapshotPinned
-                                                                        .data
-                                                                        .docs[
-                                                                            index]
-                                                                        .reference
-                                                                        .update({
-                                                                      'Pin':
-                                                                          "false"
-                                                                    });
-
-                                                                    ScaffoldMessenger.of(
-                                                                            context)
-                                                                        .hideCurrentSnackBar();
-                                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                                                        duration: Duration(
-                                                                            seconds:
-                                                                                1),
-                                                                        content:
-                                                                            Text('The note is unpinned')));
-                                                                  },
-                                                                  child: Text(
-                                                                    "Unpin",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontSize:
-                                                                            17),
-                                                                  ),
-                                                                  color: Colors
-                                                                      .white
-                                                                      .withOpacity(
-                                                                          0.8),
-                                                                  minWidth: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.8,
-                                                                  shape: RoundedRectangleBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              18.0),
-                                                                      side: BorderSide(
-                                                                          color:
-                                                                              Colors.white)),
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                width: 10,
-                                                              ),
-                                                              SizedBox(
-                                                                width: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width *
-                                                                    0.35,
-                                                                child:
-                                                                    MaterialButton(
-                                                                  onPressed:
-                                                                      () {
-                                                                    snapshotPinned
-                                                                        .data
-                                                                        .docs[
-                                                                            index]
-                                                                        .reference
-                                                                        .delete();
-                                                                    ScaffoldMessenger.of(
-                                                                            context)
-                                                                        .hideCurrentSnackBar();
-                                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                                                        duration: Duration(
-                                                                            seconds:
-                                                                                1),
-                                                                        content:
-                                                                            Text('Deleted')));
-                                                                  },
-                                                                  child: Text(
-                                                                    "Delete",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontSize:
-                                                                            17),
-                                                                  ),
-                                                                  color: Colors
-                                                                      .white
-                                                                      .withOpacity(
-                                                                          0.8),
-                                                                  minWidth: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.8,
-                                                                  shape: RoundedRectangleBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              18.0),
-                                                                      side: BorderSide(
-                                                                          color:
-                                                                              Colors.white)),
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                width: 10,
-                                                              ),
-                                                              CircleAvatar(
-                                                                backgroundColor:
-                                                                    Colors
-                                                                        .blueAccent,
-                                                                child:
-                                                                    IconButton(
-                                                                        onPressed:
-                                                                            () {
-                                                                          ScaffoldMessenger.of(context)
-                                                                              .hideCurrentSnackBar();
-                                                                        },
-                                                                        icon:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .close,
-                                                                        )),
-                                                              )
-                                                            ],
-                                                          )));
+                                                  _exitApp(
+                                                      text1: 'Unpin',
+                                                      text2: 'delete',
+                                                      context: context,
+                                                      call1: () {
+                                                        snapshotPinned
+                                                            .data
+                                                            .docs[index]
+                                                            .reference
+                                                            .update({
+                                                          'Pin': "false"
+                                                        });
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .hideCurrentSnackBar();
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(SnackBar(
+                                                                duration:
+                                                                    Duration(
+                                                                        seconds:
+                                                                            1),
+                                                                content: Text(
+                                                                    'The note is unpinned')));
+                                                        Navigator.pop(context);
+                                                      },
+                                                      call2: () {
+                                                        snapshotPinned
+                                                            .data
+                                                            .docs[index]
+                                                            .reference
+                                                            .delete();
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .hideCurrentSnackBar();
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(SnackBar(
+                                                                duration:
+                                                                    Duration(
+                                                                        seconds:
+                                                                            1),
+                                                                content: Text(
+                                                                    'Deleted')));
+                                                        Navigator.pop(context);
+                                                      });
                                                 },
                                                 onTap: () {
                                                   Navigator.push(
@@ -489,150 +427,51 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                                               child: InkWell(
                                                 splashColor: Colors.redAccent,
                                                 onLongPress: () {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(SnackBar(
-                                                          duration:
-                                                              Duration(days: 1),
-                                                          backgroundColor:
-                                                              Color(0xff131616),
-                                                          content: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceEvenly,
-                                                            children: [
-                                                              SizedBox(
-                                                                width: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width *
-                                                                    0.35,
-                                                                child:
-                                                                    MaterialButton(
-                                                                  onPressed:
-                                                                      () {
-                                                                    snapshotPinned
-                                                                        .data
-                                                                        .docs[
-                                                                            index]
-                                                                        .reference
-                                                                        .update({
-                                                                      'Pin':
-                                                                          "false"
-                                                                    });
-
-                                                                    ScaffoldMessenger.of(
-                                                                            context)
-                                                                        .hideCurrentSnackBar();
-                                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                                                        duration: Duration(
-                                                                            seconds:
-                                                                                1),
-                                                                        content:
-                                                                            Text('The note is unpinned')));
-                                                                  },
-                                                                  child: Text(
-                                                                    "Unpin",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontSize:
-                                                                            17),
-                                                                  ),
-                                                                  color: Colors
-                                                                      .white
-                                                                      .withOpacity(
-                                                                          0.8),
-                                                                  minWidth: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.8,
-                                                                  shape: RoundedRectangleBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              18.0),
-                                                                      side: BorderSide(
-                                                                          color:
-                                                                              Colors.white)),
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                width: 10,
-                                                              ),
-                                                              SizedBox(
-                                                                width: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width *
-                                                                    0.35,
-                                                                child:
-                                                                    MaterialButton(
-                                                                  onPressed:
-                                                                      () {
-                                                                    snapshotPinned
-                                                                        .data
-                                                                        .docs[
-                                                                            index]
-                                                                        .reference
-                                                                        .delete();
-                                                                    ScaffoldMessenger.of(
-                                                                            context)
-                                                                        .hideCurrentSnackBar();
-                                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                                                        duration: Duration(
-                                                                            seconds:
-                                                                                1),
-                                                                        content:
-                                                                            Text('Deleted')));
-                                                                  },
-                                                                  child: Text(
-                                                                    "Delete",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontSize:
-                                                                            17),
-                                                                  ),
-                                                                  color: Colors
-                                                                      .white
-                                                                      .withOpacity(
-                                                                          0.8),
-                                                                  minWidth: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.8,
-                                                                  shape: RoundedRectangleBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              18.0),
-                                                                      side: BorderSide(
-                                                                          color:
-                                                                              Colors.white)),
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                width: 10,
-                                                              ),
-                                                              CircleAvatar(
-                                                                backgroundColor:
-                                                                    Colors
-                                                                        .blueAccent,
-                                                                child:
-                                                                    IconButton(
-                                                                        onPressed:
-                                                                            () {
-                                                                          ScaffoldMessenger.of(context)
-                                                                              .hideCurrentSnackBar();
-                                                                        },
-                                                                        icon:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .close,
-                                                                        )),
-                                                              )
-                                                            ],
-                                                          )));
+                                                  _exitApp(
+                                                      text1: 'Unpin',
+                                                      text2: 'delete',
+                                                      context: context,
+                                                      call1: () {
+                                                        snapshotPinned
+                                                            .data
+                                                            .docs[index]
+                                                            .reference
+                                                            .update({
+                                                          'Pin': "false"
+                                                        });
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .hideCurrentSnackBar();
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(SnackBar(
+                                                                duration:
+                                                                    Duration(
+                                                                        seconds:
+                                                                            1),
+                                                                content: Text(
+                                                                    'The note is unpinned')));
+                                                        Navigator.pop(context);
+                                                      },
+                                                      call2: () {
+                                                        snapshotPinned
+                                                            .data
+                                                            .docs[index]
+                                                            .reference
+                                                            .delete();
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .hideCurrentSnackBar();
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(SnackBar(
+                                                                duration:
+                                                                    Duration(
+                                                                        seconds:
+                                                                            1),
+                                                                content: Text(
+                                                                    'Deleted')));
+                                                      });
                                                 },
                                                 onTap: () {
                                                   Navigator.push(
@@ -765,93 +604,149 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                                               ? snapshot.data.docs.length
                                               : 0,
                                           itemBuilder: (context, index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                Navigator.push(
-                                                    context,
-                                                    Transition(
-                                                        child: EditNote(
-                                                            docToEdit: snapshot
-                                                                .data
-                                                                .docs[index]),
-                                                        transitionEffect:
-                                                            TransitionEffect
-                                                                .FADE)
-                                                    // MaterialPageRoute(
-                                                    //   builder: (context) => EditNote(
-                                                    //     docToEdit: snapshot.data.docs[index],
-                                                    //   ),
-                                                    // ),
-                                                    );
-                                              },
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 10),
-                                                child: Card(
-                                                  elevation: 3,
-                                                  shape: RoundedRectangleBorder(
-                                                      // side: BorderSide(
-                                                      //     color: Colors.white, width: 0.01),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10)),
-                                                  margin: EdgeInsets.all(10),
-                                                  color: Color(0xffddf0f7),
-                                                  child: Column(
-                                                    children: [
-                                                      Align(
-                                                        alignment:
-                                                            Alignment.topLeft,
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .symmetric(
-                                                                  horizontal:
-                                                                      15,
-                                                                  vertical: 10),
-                                                          child: Text(
-                                                            snapshot.data
-                                                                    .docs[index]
-                                                                    .data()[
-                                                                "title"],
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .black,
-                                                                fontSize: 25),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Align(
-                                                        alignment:
-                                                            Alignment.topLeft,
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                            horizontal: 16,
-                                                          ),
-                                                          child: Container(
+                                            return Material(
+                                              color: Colors.transparent,
+                                              child: InkWell(
+                                                splashColor: Colors.redAccent,
+                                                onLongPress: () {
+                                                  _exitApp(
+                                                      text1: 'Pin',
+                                                      text2: 'delete',
+                                                      context: context,
+                                                      call1: () {
+                                                        snapshot
+                                                            .data
+                                                            .docs[index]
+                                                            .reference
+                                                            .update({
+                                                          'Pin': "true"
+                                                        });
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .hideCurrentSnackBar();
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(SnackBar(
+                                                                duration:
+                                                                    Duration(
+                                                                        seconds:
+                                                                            1),
+                                                                content: Text(
+                                                                    'The note is pinned')));
+                                                        Navigator.pop(context);
+                                                      },
+                                                      call2: () {
+                                                        snapshot
+                                                            .data
+                                                            .docs[index]
+                                                            .reference
+                                                            .delete();
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .hideCurrentSnackBar();
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(SnackBar(
+                                                                duration:
+                                                                    Duration(
+                                                                        seconds:
+                                                                            1),
+                                                                content: Text(
+                                                                    'Deleted')));
+                                                      });
+                                                },
+                                                onTap: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      Transition(
+                                                          child: EditNote(
+                                                              docToEdit:
+                                                                  snapshot.data
+                                                                          .docs[
+                                                                      index]),
+                                                          transitionEffect:
+                                                              TransitionEffect
+                                                                  .FADE)
+                                                      // MaterialPageRoute(
+                                                      //   builder: (context) => EditNote(
+                                                      //     docToEdit: snapshot.data.docs[index],
+                                                      //   ),
+                                                      // ),
+                                                      );
+                                                },
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 10),
+                                                  child: Card(
+                                                    elevation: 3,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            // side: BorderSide(
+                                                            //     color: Colors.white, width: 0.01),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10)),
+                                                    margin: EdgeInsets.all(10),
+                                                    color: Color(0xffddf0f7),
+                                                    child: Column(
+                                                      children: [
+                                                        Align(
+                                                          alignment:
+                                                              Alignment.topLeft,
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .symmetric(
+                                                                    horizontal:
+                                                                        15,
+                                                                    vertical:
+                                                                        10),
                                                             child: Text(
                                                               snapshot.data
                                                                       .docs[index]
                                                                       .data()[
-                                                                  "content"],
+                                                                  "title"],
                                                               style: TextStyle(
                                                                   color: Colors
-                                                                      .black
-                                                                      .withOpacity(
-                                                                          0.5),
-                                                                  fontSize: 19),
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              softWrap: true,
+                                                                      .black,
+                                                                  fontSize: 25),
                                                             ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ],
+                                                        Align(
+                                                          alignment:
+                                                              Alignment.topLeft,
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                              horizontal: 16,
+                                                            ),
+                                                            child: Container(
+                                                              child: Text(
+                                                                snapshot.data
+                                                                        .docs[index]
+                                                                        .data()[
+                                                                    "content"],
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .black
+                                                                        .withOpacity(
+                                                                            0.5),
+                                                                    fontSize:
+                                                                        19),
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                softWrap: true,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
                                               ),
@@ -866,96 +761,151 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                                               ? snapshot.data.docs.length
                                               : 0,
                                           itemBuilder: (context, index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                Navigator.push(
-                                                    context,
-                                                    Transition(
-                                                        child: EditNote(
-                                                            docToEdit: snapshot
-                                                                .data
-                                                                .docs[index]),
-                                                        transitionEffect:
-                                                            TransitionEffect
-                                                                .FADE)
-                                                    // MaterialPageRoute(
-                                                    //   builder: (context) => EditNote(
-                                                    //     docToEdit: snapshot.data.docs[index],
-                                                    //   ),
-                                                    // ),
-                                                    );
-                                              },
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8),
-                                                child: Card(
-                                                  elevation: 3,
-                                                  shape: RoundedRectangleBorder(
-                                                      // side: BorderSide(
-                                                      //     color: Colors.white, width: 0.01),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10)),
-                                                  margin: EdgeInsets.all(10),
-                                                  color: Color(0xffddf0f7),
-                                                  child: Column(
-                                                    children: [
-                                                      Align(
-                                                        alignment:
-                                                            Alignment.topLeft,
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .symmetric(
-                                                                  horizontal:
-                                                                      15,
-                                                                  vertical: 10),
-                                                          child: Text(
-                                                            snapshot.data
-                                                                    .docs[index]
-                                                                    .data()[
-                                                                "title"],
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .black,
-                                                                fontSize: 23),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Align(
-                                                        alignment:
-                                                            Alignment.topLeft,
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                            horizontal: 16,
-                                                          ),
-                                                          child: Container(
+                                            return Material(
+                                              color: Colors.transparent,
+                                              child: InkWell(
+                                                splashColor: Colors.redAccent,
+                                                onLongPress: () {
+                                                  _exitApp(
+                                                      text1: 'Pin',
+                                                      text2: 'delete',
+                                                      context: context,
+                                                      call1: () {
+                                                        snapshot
+                                                            .data
+                                                            .docs[index]
+                                                            .reference
+                                                            .update({
+                                                          'Pin': "true"
+                                                        });
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .hideCurrentSnackBar();
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(SnackBar(
+                                                                duration:
+                                                                    Duration(
+                                                                        seconds:
+                                                                            1),
+                                                                content: Text(
+                                                                    'The note is pinned')));
+                                                        Navigator.pop(context);
+                                                      },
+                                                      call2: () {
+                                                        snapshot
+                                                            .data
+                                                            .docs[index]
+                                                            .reference
+                                                            .delete();
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .hideCurrentSnackBar();
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(SnackBar(
+                                                                duration:
+                                                                    Duration(
+                                                                        seconds:
+                                                                            1),
+                                                                content: Text(
+                                                                    'Deleted')));
+                                                      });
+                                                },
+                                                onTap: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      Transition(
+                                                          child: EditNote(
+                                                              docToEdit:
+                                                                  snapshot.data
+                                                                          .docs[
+                                                                      index]),
+                                                          transitionEffect:
+                                                              TransitionEffect
+                                                                  .FADE)
+                                                      // MaterialPageRoute(
+                                                      //   builder: (context) => EditNote(
+                                                      //     docToEdit: snapshot.data.docs[index],
+                                                      //   ),
+                                                      // ),
+                                                      );
+                                                },
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(horizontal: 8),
+                                                  child: Card(
+                                                    elevation: 3,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            // side: BorderSide(
+                                                            //     color: Colors.white, width: 0.01),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10)),
+                                                    margin: EdgeInsets.all(10),
+                                                    color: Color(0xffddf0f7),
+                                                    child: Column(
+                                                      children: [
+                                                        Align(
+                                                          alignment:
+                                                              Alignment.topLeft,
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .symmetric(
+                                                                    horizontal:
+                                                                        15,
+                                                                    vertical:
+                                                                        10),
                                                             child: Text(
                                                               snapshot.data
                                                                       .docs[index]
                                                                       .data()[
-                                                                  "content"],
+                                                                  "title"],
                                                               style: TextStyle(
                                                                   color: Colors
-                                                                      .black
-                                                                      .withOpacity(
-                                                                          0.5),
-                                                                  fontSize: 19),
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              softWrap: true,
+                                                                      .black,
+                                                                  fontSize: 23),
                                                             ),
                                                           ),
                                                         ),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 10,
-                                                      ),
-                                                    ],
+                                                        Align(
+                                                          alignment:
+                                                              Alignment.topLeft,
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                              horizontal: 16,
+                                                            ),
+                                                            child: Container(
+                                                              child: Text(
+                                                                snapshot.data
+                                                                        .docs[index]
+                                                                        .data()[
+                                                                    "content"],
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .black
+                                                                        .withOpacity(
+                                                                            0.5),
+                                                                    fontSize:
+                                                                        19),
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                softWrap: true,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 10,
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
                                               ),
