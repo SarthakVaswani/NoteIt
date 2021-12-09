@@ -113,6 +113,7 @@ class _AddNoteState extends State<AddNote> {
                     'title': title,
                     'content': content,
                     'sharedTo': null,
+                    'Pin': "false",
                     'createdBy': firebaseUser.email,
                     'images': returnURL
                   }))
@@ -120,6 +121,7 @@ class _AddNoteState extends State<AddNote> {
                   'dateTime': FieldValue.serverTimestamp(),
                   'title': title,
                   'content': content,
+                  'Pin': "false",
                   'sharedTo': null,
                   'createdBy': firebaseUser.email
                 });

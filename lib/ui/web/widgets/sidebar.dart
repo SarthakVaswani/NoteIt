@@ -35,7 +35,7 @@ class _SideLayoutState extends State<SideLayout> {
           left: BorderSide(width: 2.0, color: Colors.black),
         ),
       ),
-      height: MediaQuery.of(context).size.height * 1.63,
+      height: MediaQuery.of(context).size.height * 2,
       child: Column(
         children: <Widget>[
           Text(

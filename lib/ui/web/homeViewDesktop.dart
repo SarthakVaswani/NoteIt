@@ -29,6 +29,8 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
     });
   }
 
+  bool isPinned = false;
+
   void getUserNotes() async {
     var firebaseUser = await FirebaseAuth.instance.currentUser;
     FirebaseFirestore.instance
@@ -116,215 +118,805 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                     child: Column(
                       children: [
                         Align(
-                          alignment: Alignment.topRight,
-                          child: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  changeView = !changeView;
-                                });
-                              },
-                              icon: changeView
-                                  ? Icon(
-                                      Icons.list,
-                                      color: Colors.white,
-                                      size: 30,
-                                    )
-                                  : Icon(Icons.grid_view,
-                                      color: Colors.white, size: 30)),
-                        ),
-                        StreamBuilder(
-                          stream: FirebaseFirestore.instance
-                              .collection('Users')
-                              .doc(FirebaseAuth.instance.currentUser.email)
-                              .collection('Notes')
-                              .orderBy('dateTime', descending: true)
-                              .snapshots(),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<QuerySnapshot> snapshot) {
-                            if (!snapshot.hasData) {
-                              return Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-                            return changeView
-                                ? GridView.builder(
-                                    physics: ScrollPhysics(),
-                                    shrinkWrap: true,
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 5),
-                                    itemCount: snapshot.hasData
-                                        ? snapshot.data.docs.length
-                                        : 0,
-                                    itemBuilder: (context, index) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              Transition(
-                                                  child: EditNote(
-                                                      docToEdit: snapshot
-                                                          .data.docs[index]),
-                                                  transitionEffect:
-                                                      TransitionEffect.FADE)
-                                              // MaterialPageRoute(
-                                              //   builder: (context) => EditNote(
-                                              //     docToEdit: snapshot.data.docs[index],
-                                              //   ),
-                                              // ),
-                                              );
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          child: Card(
-                                            elevation: 3,
-                                            shape: RoundedRectangleBorder(
-                                                // side: BorderSide(
-                                                //     color: Colors.white, width: 0.01),
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                            margin: EdgeInsets.all(10),
-                                            color: Color(0xffddf0f7),
-                                            child: Column(
-                                              children: [
-                                                Align(
-                                                  alignment: Alignment.topLeft,
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        horizontal: 15,
-                                                        vertical: 10),
-                                                    child: Text(
-                                                      snapshot.data.docs[index]
-                                                          .data()["title"],
-                                                      style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 25),
-                                                    ),
-                                                  ),
-                                                ),
-                                                Align(
-                                                  alignment: Alignment.topLeft,
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                      horizontal: 16,
-                                                    ),
-                                                    child: Container(
-                                                      child: Text(
-                                                        snapshot
-                                                            .data.docs[index]
-                                                            .data()["content"],
-                                                        style: TextStyle(
-                                                            color: Colors.black
-                                                                .withOpacity(
-                                                                    0.5),
-                                                            fontSize: 19),
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        softWrap: true,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      );
+                            alignment: Alignment.topRight,
+                            child: Row(
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        changeView = !changeView;
+                                      });
                                     },
-                                  )
-                                : ListView.builder(
-                                    physics: NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    itemCount: snapshot.hasData
-                                        ? snapshot.data.docs.length
-                                        : 0,
-                                    itemBuilder: (context, index) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              Transition(
-                                                  child: EditNote(
-                                                      docToEdit: snapshot
-                                                          .data.docs[index]),
-                                                  transitionEffect:
-                                                      TransitionEffect.FADE)
-                                              // MaterialPageRoute(
-                                              //   builder: (context) => EditNote(
-                                              //     docToEdit: snapshot.data.docs[index],
-                                              //   ),
-                                              // ),
-                                              );
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8),
-                                          child: Card(
-                                            elevation: 3,
-                                            shape: RoundedRectangleBorder(
-                                                // side: BorderSide(
-                                                //     color: Colors.white, width: 0.01),
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                            margin: EdgeInsets.all(10),
-                                            color: Color(0xffddf0f7),
-                                            child: Column(
-                                              children: [
-                                                Align(
-                                                  alignment: Alignment.topLeft,
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        horizontal: 15,
-                                                        vertical: 10),
-                                                    child: Text(
-                                                      snapshot.data.docs[index]
-                                                          .data()["title"],
-                                                      style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 23),
-                                                    ),
-                                                  ),
-                                                ),
-                                                Align(
-                                                  alignment: Alignment.topLeft,
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                      horizontal: 16,
-                                                    ),
-                                                    child: Container(
-                                                      child: Text(
-                                                        snapshot
-                                                            .data.docs[index]
-                                                            .data()["content"],
-                                                        style: TextStyle(
-                                                            color: Colors.black
-                                                                .withOpacity(
-                                                                    0.5),
-                                                            fontSize: 19),
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        softWrap: true,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  height: 10,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      );
+                                    icon: changeView
+                                        ? Icon(Icons.list, color: Colors.white)
+                                        : Icon(Icons.grid_view,
+                                            color: Colors.white)),
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        isPinned = !isPinned;
+                                      });
                                     },
-                                  );
-                          },
-                        ),
+                                    icon: isPinned
+                                        ? CircleAvatar(
+                                            child: Icon(Icons.bookmark,
+                                                color: Colors.white),
+                                          )
+                                        : Icon(Icons.bookmark,
+                                            color: Colors.white)),
+                              ],
+                            )),
+                        isPinned
+                            ? StreamBuilder(
+                                stream: FirebaseFirestore.instance
+                                    .collection('Users')
+                                    .doc(
+                                        FirebaseAuth.instance.currentUser.email)
+                                    .collection('Notes')
+                                    .where("Pin",
+                                        isGreaterThanOrEqualTo: "true")
+                                    .snapshots(),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<QuerySnapshot>
+                                        snapshotPinned) {
+                                  if (!snapshotPinned.hasData) {
+                                    return Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                  return changeView
+                                      ? GridView.builder(
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true,
+                                          gridDelegate:
+                                              SliverGridDelegateWithFixedCrossAxisCount(
+                                                  crossAxisCount: 2),
+                                          itemCount: snapshotPinned.hasData
+                                              ? snapshotPinned.data.docs.length
+                                              : 0,
+                                          itemBuilder: (context, index) {
+                                            return Material(
+                                              color: Colors.transparent,
+                                              child: InkWell(
+                                                splashColor: Colors.redAccent,
+                                                onLongPress: () {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(SnackBar(
+                                                          duration:
+                                                              Duration(days: 1),
+                                                          backgroundColor:
+                                                              Color(0xff131616),
+                                                          content: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceEvenly,
+                                                            children: [
+                                                              SizedBox(
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.35,
+                                                                child:
+                                                                    MaterialButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    snapshotPinned
+                                                                        .data
+                                                                        .docs[
+                                                                            index]
+                                                                        .reference
+                                                                        .update({
+                                                                      'Pin':
+                                                                          "false"
+                                                                    });
+
+                                                                    ScaffoldMessenger.of(
+                                                                            context)
+                                                                        .hideCurrentSnackBar();
+                                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                                                        duration: Duration(
+                                                                            seconds:
+                                                                                1),
+                                                                        content:
+                                                                            Text('The note is unpinned')));
+                                                                  },
+                                                                  child: Text(
+                                                                    "Unpin",
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .black,
+                                                                        fontSize:
+                                                                            17),
+                                                                  ),
+                                                                  color: Colors
+                                                                      .white
+                                                                      .withOpacity(
+                                                                          0.8),
+                                                                  minWidth: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.8,
+                                                                  shape: RoundedRectangleBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              18.0),
+                                                                      side: BorderSide(
+                                                                          color:
+                                                                              Colors.white)),
+                                                                ),
+                                                              ),
+                                                              SizedBox(
+                                                                width: 10,
+                                                              ),
+                                                              SizedBox(
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.35,
+                                                                child:
+                                                                    MaterialButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    snapshotPinned
+                                                                        .data
+                                                                        .docs[
+                                                                            index]
+                                                                        .reference
+                                                                        .delete();
+                                                                    ScaffoldMessenger.of(
+                                                                            context)
+                                                                        .hideCurrentSnackBar();
+                                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                                                        duration: Duration(
+                                                                            seconds:
+                                                                                1),
+                                                                        content:
+                                                                            Text('Deleted')));
+                                                                  },
+                                                                  child: Text(
+                                                                    "Delete",
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .black,
+                                                                        fontSize:
+                                                                            17),
+                                                                  ),
+                                                                  color: Colors
+                                                                      .white
+                                                                      .withOpacity(
+                                                                          0.8),
+                                                                  minWidth: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.8,
+                                                                  shape: RoundedRectangleBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              18.0),
+                                                                      side: BorderSide(
+                                                                          color:
+                                                                              Colors.white)),
+                                                                ),
+                                                              ),
+                                                              SizedBox(
+                                                                width: 10,
+                                                              ),
+                                                              CircleAvatar(
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .blueAccent,
+                                                                child:
+                                                                    IconButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          ScaffoldMessenger.of(context)
+                                                                              .hideCurrentSnackBar();
+                                                                        },
+                                                                        icon:
+                                                                            Icon(
+                                                                          Icons
+                                                                              .close,
+                                                                        )),
+                                                              )
+                                                            ],
+                                                          )));
+                                                },
+                                                onTap: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      Transition(
+                                                          child: EditNote(
+                                                              docToEdit:
+                                                                  snapshotPinned
+                                                                          .data
+                                                                          .docs[
+                                                                      index]),
+                                                          transitionEffect:
+                                                              TransitionEffect
+                                                                  .FADE)
+                                                      // MaterialPageRoute(
+                                                      //   builder: (context) => EditNote(
+                                                      //     docToEdit: snapshot.data.docs[index],
+                                                      //   ),
+                                                      // ),
+                                                      );
+                                                  ScaffoldMessenger.of(context)
+                                                      .hideCurrentSnackBar();
+                                                },
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 10),
+                                                  child: Card(
+                                                    elevation: 3,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            // side: BorderSide(
+                                                            //     color: Colors.white, width: 0.01),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10)),
+                                                    margin: EdgeInsets.all(10),
+                                                    color: Color(0xffddf0f7),
+                                                    child: Column(
+                                                      children: [
+                                                        Align(
+                                                          alignment:
+                                                              Alignment.topLeft,
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .symmetric(
+                                                                    horizontal:
+                                                                        15,
+                                                                    vertical:
+                                                                        10),
+                                                            child: Text(
+                                                              snapshotPinned
+                                                                      .data
+                                                                      .docs[index]
+                                                                      .data()[
+                                                                  "title"],
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontSize: 25),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Align(
+                                                          alignment:
+                                                              Alignment.topLeft,
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                              horizontal: 16,
+                                                            ),
+                                                            child: Container(
+                                                              child: Text(
+                                                                snapshotPinned
+                                                                        .data
+                                                                        .docs[index]
+                                                                        .data()[
+                                                                    "content"],
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .black
+                                                                        .withOpacity(
+                                                                            0.5),
+                                                                    fontSize:
+                                                                        19),
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                softWrap: true,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        )
+                                      : ListView.builder(
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemCount: snapshotPinned.hasData
+                                              ? snapshotPinned.data.docs.length
+                                              : 0,
+                                          itemBuilder: (context, index) {
+                                            return Material(
+                                              color: Colors.transparent,
+                                              child: InkWell(
+                                                splashColor: Colors.redAccent,
+                                                onLongPress: () {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(SnackBar(
+                                                          duration:
+                                                              Duration(days: 1),
+                                                          backgroundColor:
+                                                              Color(0xff131616),
+                                                          content: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceEvenly,
+                                                            children: [
+                                                              SizedBox(
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.35,
+                                                                child:
+                                                                    MaterialButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    snapshotPinned
+                                                                        .data
+                                                                        .docs[
+                                                                            index]
+                                                                        .reference
+                                                                        .update({
+                                                                      'Pin':
+                                                                          "false"
+                                                                    });
+
+                                                                    ScaffoldMessenger.of(
+                                                                            context)
+                                                                        .hideCurrentSnackBar();
+                                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                                                        duration: Duration(
+                                                                            seconds:
+                                                                                1),
+                                                                        content:
+                                                                            Text('The note is unpinned')));
+                                                                  },
+                                                                  child: Text(
+                                                                    "Unpin",
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .black,
+                                                                        fontSize:
+                                                                            17),
+                                                                  ),
+                                                                  color: Colors
+                                                                      .white
+                                                                      .withOpacity(
+                                                                          0.8),
+                                                                  minWidth: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.8,
+                                                                  shape: RoundedRectangleBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              18.0),
+                                                                      side: BorderSide(
+                                                                          color:
+                                                                              Colors.white)),
+                                                                ),
+                                                              ),
+                                                              SizedBox(
+                                                                width: 10,
+                                                              ),
+                                                              SizedBox(
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.35,
+                                                                child:
+                                                                    MaterialButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    snapshotPinned
+                                                                        .data
+                                                                        .docs[
+                                                                            index]
+                                                                        .reference
+                                                                        .delete();
+                                                                    ScaffoldMessenger.of(
+                                                                            context)
+                                                                        .hideCurrentSnackBar();
+                                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                                                        duration: Duration(
+                                                                            seconds:
+                                                                                1),
+                                                                        content:
+                                                                            Text('Deleted')));
+                                                                  },
+                                                                  child: Text(
+                                                                    "Delete",
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .black,
+                                                                        fontSize:
+                                                                            17),
+                                                                  ),
+                                                                  color: Colors
+                                                                      .white
+                                                                      .withOpacity(
+                                                                          0.8),
+                                                                  minWidth: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.8,
+                                                                  shape: RoundedRectangleBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              18.0),
+                                                                      side: BorderSide(
+                                                                          color:
+                                                                              Colors.white)),
+                                                                ),
+                                                              ),
+                                                              SizedBox(
+                                                                width: 10,
+                                                              ),
+                                                              CircleAvatar(
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .blueAccent,
+                                                                child:
+                                                                    IconButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          ScaffoldMessenger.of(context)
+                                                                              .hideCurrentSnackBar();
+                                                                        },
+                                                                        icon:
+                                                                            Icon(
+                                                                          Icons
+                                                                              .close,
+                                                                        )),
+                                                              )
+                                                            ],
+                                                          )));
+                                                },
+                                                onTap: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      Transition(
+                                                          child: EditNote(
+                                                              docToEdit:
+                                                                  snapshotPinned
+                                                                          .data
+                                                                          .docs[
+                                                                      index]),
+                                                          transitionEffect:
+                                                              TransitionEffect
+                                                                  .FADE)
+                                                      // MaterialPageRoute(
+                                                      //   builder: (context) => EditNote(
+                                                      //     docToEdit: snapshot.data.docs[index],
+                                                      //   ),
+                                                      // ),
+                                                      );
+                                                },
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(horizontal: 8),
+                                                  child: Card(
+                                                    elevation: 3,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            // side: BorderSide(
+                                                            //     color: Colors.white, width: 0.01),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10)),
+                                                    margin: EdgeInsets.all(10),
+                                                    color: Color(0xffddf0f7),
+                                                    child: Column(
+                                                      children: [
+                                                        Align(
+                                                          alignment:
+                                                              Alignment.topLeft,
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .symmetric(
+                                                                    horizontal:
+                                                                        15,
+                                                                    vertical:
+                                                                        10),
+                                                            child: Text(
+                                                              snapshotPinned
+                                                                      .data
+                                                                      .docs[index]
+                                                                      .data()[
+                                                                  "title"],
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontSize: 23),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Align(
+                                                          alignment:
+                                                              Alignment.topLeft,
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                              horizontal: 16,
+                                                            ),
+                                                            child: Container(
+                                                              child: Text(
+                                                                snapshotPinned
+                                                                        .data
+                                                                        .docs[index]
+                                                                        .data()[
+                                                                    "content"],
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .black
+                                                                        .withOpacity(
+                                                                            0.5),
+                                                                    fontSize:
+                                                                        19),
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                softWrap: true,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 10,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                },
+                              )
+                            : StreamBuilder(
+                                stream: FirebaseFirestore.instance
+                                    .collection('Users')
+                                    .doc(
+                                        FirebaseAuth.instance.currentUser.email)
+                                    .collection('Notes')
+                                    .orderBy('dateTime', descending: true)
+                                    .snapshots(),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                  return changeView
+                                      ? GridView.builder(
+                                          physics: ScrollPhysics(),
+                                          shrinkWrap: true,
+                                          gridDelegate:
+                                              SliverGridDelegateWithFixedCrossAxisCount(
+                                                  crossAxisCount: 5),
+                                          itemCount: snapshot.hasData
+                                              ? snapshot.data.docs.length
+                                              : 0,
+                                          itemBuilder: (context, index) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    Transition(
+                                                        child: EditNote(
+                                                            docToEdit: snapshot
+                                                                .data
+                                                                .docs[index]),
+                                                        transitionEffect:
+                                                            TransitionEffect
+                                                                .FADE)
+                                                    // MaterialPageRoute(
+                                                    //   builder: (context) => EditNote(
+                                                    //     docToEdit: snapshot.data.docs[index],
+                                                    //   ),
+                                                    // ),
+                                                    );
+                                              },
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 10),
+                                                child: Card(
+                                                  elevation: 3,
+                                                  shape: RoundedRectangleBorder(
+                                                      // side: BorderSide(
+                                                      //     color: Colors.white, width: 0.01),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10)),
+                                                  margin: EdgeInsets.all(10),
+                                                  color: Color(0xffddf0f7),
+                                                  child: Column(
+                                                    children: [
+                                                      Align(
+                                                        alignment:
+                                                            Alignment.topLeft,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  horizontal:
+                                                                      15,
+                                                                  vertical: 10),
+                                                          child: Text(
+                                                            snapshot.data
+                                                                    .docs[index]
+                                                                    .data()[
+                                                                "title"],
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 25),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Align(
+                                                        alignment:
+                                                            Alignment.topLeft,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                            horizontal: 16,
+                                                          ),
+                                                          child: Container(
+                                                            child: Text(
+                                                              snapshot.data
+                                                                      .docs[index]
+                                                                      .data()[
+                                                                  "content"],
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black
+                                                                      .withOpacity(
+                                                                          0.5),
+                                                                  fontSize: 19),
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              softWrap: true,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        )
+                                      : ListView.builder(
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemCount: snapshot.hasData
+                                              ? snapshot.data.docs.length
+                                              : 0,
+                                          itemBuilder: (context, index) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    Transition(
+                                                        child: EditNote(
+                                                            docToEdit: snapshot
+                                                                .data
+                                                                .docs[index]),
+                                                        transitionEffect:
+                                                            TransitionEffect
+                                                                .FADE)
+                                                    // MaterialPageRoute(
+                                                    //   builder: (context) => EditNote(
+                                                    //     docToEdit: snapshot.data.docs[index],
+                                                    //   ),
+                                                    // ),
+                                                    );
+                                              },
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8),
+                                                child: Card(
+                                                  elevation: 3,
+                                                  shape: RoundedRectangleBorder(
+                                                      // side: BorderSide(
+                                                      //     color: Colors.white, width: 0.01),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10)),
+                                                  margin: EdgeInsets.all(10),
+                                                  color: Color(0xffddf0f7),
+                                                  child: Column(
+                                                    children: [
+                                                      Align(
+                                                        alignment:
+                                                            Alignment.topLeft,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  horizontal:
+                                                                      15,
+                                                                  vertical: 10),
+                                                          child: Text(
+                                                            snapshot.data
+                                                                    .docs[index]
+                                                                    .data()[
+                                                                "title"],
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 23),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Align(
+                                                        alignment:
+                                                            Alignment.topLeft,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                            horizontal: 16,
+                                                          ),
+                                                          child: Container(
+                                                            child: Text(
+                                                              snapshot.data
+                                                                      .docs[index]
+                                                                      .data()[
+                                                                  "content"],
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black
+                                                                      .withOpacity(
+                                                                          0.5),
+                                                                  fontSize: 19),
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              softWrap: true,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 10,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                },
+                              ),
                       ],
                     ),
                   ),

@@ -96,3 +96,12 @@ Future userNotes({String currentUser, String keyword}) async {
       .where("title", isGreaterThanOrEqualTo: keyword)
       .get();
 }
+
+Future checkPinned({String currentUser, String keyword}) async {
+  return FirebaseFirestore.instance
+      .collection("Users")
+      .doc(currentUser)
+      .collection("Notes")
+      .where("Pin", isGreaterThanOrEqualTo: "true")
+      .snapshots();
+}
