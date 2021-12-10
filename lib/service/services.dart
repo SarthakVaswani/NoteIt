@@ -38,7 +38,7 @@ Future<bool> login(String email, String password) async {
   }
 }
 
-Future<bool> register(String email, String password) async {
+Future<bool> register(String email, String password, String fullName) async {
   try {
     await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
@@ -56,6 +56,7 @@ Future<bool> register(String email, String password) async {
         ref.set({
           'email': email,
           'password': password,
+          'fullname': fullName,
           'userId': uid,
           'tokenId': tokenId
         });
@@ -116,7 +117,8 @@ Future checkPinned({String currentUser, String keyword}) async {
       .snapshots();
 }
 
-Future<Response> sendNotification({String tokenIdi, String userName}) async {
+Future<Response> sendNotification(
+    {String tokenIdi, String userName, String fullName}) async {
   return await post(
     Uri.parse('https://onesignal.com/api/v1/notifications'),
     headers: <String, String>{
@@ -132,6 +134,7 @@ Future<Response> sendNotification({String tokenIdi, String userName}) async {
 
       // android_accent_color reprsent the color of the heading text in the notifiction
       "android_accent_color": "FF9976D2",
+      "isAnyWeb": true,
 
       "small_icon":
           "https://user-images.githubusercontent.com/55880923/111069791-b516f780-84f4-11eb-8af6-bdb33bdded0a.png",
@@ -141,7 +144,16 @@ Future<Response> sendNotification({String tokenIdi, String userName}) async {
 
       "headings": {"en": userName},
 
-      "contents": {"en": "Shared Notes with you"},
+      "contents": {"en": "$fullName, shared Notes with you"},
     }),
   );
+}
+
+Future checkNote({String currentUser, String keyword}) async {
+  return FirebaseFirestore.instance
+      .collection("Users")
+      .doc(currentUser)
+      .collection("Notes")
+      .where("noteId", isGreaterThanOrEqualTo: keyword)
+      .get();
 }

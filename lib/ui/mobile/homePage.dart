@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/service/services.dart';
+import 'package:notes_app/ui/mobile/profile.dart';
 import 'package:notes_app/ui/mobile/searchNotes.dart';
 import 'package:notes_app/ui/screenDecider.dart';
 import 'package:notes_app/ui/web/widgets/whiteboard.dart';
@@ -125,25 +126,16 @@ class _HomeViewState extends State<HomeView> {
               SliverAppBar(
                 actions: [
                   IconButton(
-                    icon: Icon(Icons.logout),
-                    onPressed: () async {
-                      Navigator.pop(context, true);
-                      bool shouldNavigate = await logOut();
-                      if (shouldNavigate) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AuthDecider()));
-                      }
-                    },
-                  ),
+                      icon: Icon(Icons.account_circle),
+                      onPressed: () async {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => Profile()));
+                      }),
                   IconButton(
                       icon: Icon(Icons.web_asset),
                       onPressed: () {
-                        // Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (context) => WhiteBoardPage()));
+                        // Navigator.push(context,
+                        //     MaterialPageRoute(builder: (context) => Profile()));
                         _launchURL();
                       }),
                 ],

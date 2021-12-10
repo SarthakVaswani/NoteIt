@@ -21,6 +21,7 @@ class EditNote extends StatefulWidget {
 
 class _EditNoteState extends State<EditNote> {
   static String selectedUser;
+  String SelctedUserFullame;
   String selectedUserName;
   TextEditingController title = TextEditingController();
   TextEditingController content = TextEditingController();
@@ -206,7 +207,9 @@ class _EditNoteState extends State<EditNote> {
                       setState(() {
                         selectedUser = snapshot.docs[index].get('email');
                         selectedUserToken = snapshot.docs[index].get('tokenId');
-                        selectedUserName = snapshot.docs[index].get('email');
+                        SelctedUserFullame =
+                            snapshot.docs[index].get('fullname');
+                        selectedUserName = firebaseUser.email;
                         print(selectedUserToken);
                         setState(() {
                           widget.docToEdit.reference
@@ -220,6 +223,7 @@ class _EditNoteState extends State<EditNote> {
                               ),
                             );
                             sendNotification(
+                                fullName: SelctedUserFullame,
                                 tokenIdi: selectedUserToken,
                                 userName: selectedUserName);
                           });
@@ -228,6 +232,28 @@ class _EditNoteState extends State<EditNote> {
                           search = TextEditingController(text: "");
                           Navigator.pop(context);
                           isExecuted = true;
+                          var firebaseUser = FirebaseAuth.instance.currentUser;
+                          String dateCreated = DateTime.now().toIso8601String();
+                          DocumentReference ref = FirebaseFirestore.instance
+                              .collection('Users')
+                              .doc(selectedUser)
+                              .collection('Notifications')
+                              .doc(dateCreated);
+                          FirebaseFirestore.instance
+                              .runTransaction((transaction) async {
+                            DocumentSnapshot snapshot =
+                                await transaction.get(ref);
+                            if (!snapshot.exists) {
+                              ref.set({
+                                'sharedBy': firebaseUser.email,
+                                'SharedTo': selectedUser,
+                                'title': title.text,
+                                'contents': "Shared Notes with you",
+                                'dateTime': dateCreated
+                              });
+                              print(ref.id);
+                            }
+                          });
                         });
                       });
                     },

@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/service/services.dart';
+import 'package:notes_app/ui/mobile/profile.dart';
 import 'package:notes_app/ui/mobile/searchNotes.dart';
 import 'package:notes_app/ui/screenDecider.dart';
 import 'package:notes_app/ui/web/widgets/sidebar.dart';
@@ -142,22 +143,13 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                   Padding(
                     padding: const EdgeInsets.only(right: 27),
                     child: IconButton(
-                      icon: Icon(
-                        Icons.logout,
-                        size: 40,
-                      ),
-                      onPressed: () async {
-                        // getUserData();
-                        Navigator.pop(context, true);
-                        bool shouldNavigate = await logOut();
-                        if (shouldNavigate) {
+                        icon: Icon(Icons.account_circle),
+                        onPressed: () async {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => AuthDecider()));
-                        }
-                      },
-                    ),
+                                  builder: (context) => Profile()));
+                        }),
                   ),
                   // IconButton(
                   //     icon: Icon(Icons.web_asset),

@@ -23,6 +23,7 @@ class _RegisterWebState extends State<RegisterWeb> {
 
   TextEditingController _emailField = TextEditingController();
   TextEditingController _passField = TextEditingController();
+  TextEditingController _fullName = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final node = FocusScope.of(context);
@@ -54,6 +55,37 @@ class _RegisterWebState extends State<RegisterWeb> {
                       padding: const EdgeInsets.only(top: 100),
                       child: Column(
                         children: [
+                          Card(
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            color: Colors.white,
+                            child: TextField(
+                              onEditingComplete: () => node.nextFocus(),
+                              controller: _fullName,
+                              decoration: InputDecoration(
+                                fillColor: Colors.white,
+                                focusColor: Colors.white,
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide:
+                                        BorderSide(color: Colors.white)),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide:
+                                        BorderSide(color: Colors.white)),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide:
+                                        BorderSide(color: Colors.white)),
+                                hintText: 'Full Name',
+                                hintStyle: TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
                           Card(
                             elevation: 5,
                             shape: RoundedRectangleBorder(
@@ -96,7 +128,9 @@ class _RegisterWebState extends State<RegisterWeb> {
                                   showSpinner = true;
                                 });
                                 bool shouldNavigate = await register(
-                                    _emailField.text, _passField.text);
+                                    _emailField.text,
+                                    _passField.text,
+                                    _fullName.text);
                                 if (shouldNavigate) {
                                   Navigator.push(
                                     context,
@@ -178,7 +212,9 @@ class _RegisterWebState extends State<RegisterWeb> {
                                   showSpinner = true;
                                 });
                                 bool shouldNavigate = await register(
-                                    _emailField.text, _passField.text);
+                                    _emailField.text,
+                                    _passField.text,
+                                    _fullName.text);
                                 if (shouldNavigate) {
                                   Navigator.push(
                                     context,
