@@ -43,6 +43,7 @@ dependencies:
   onesignal_flutter:
   http:
   universal_html: ^2.0.8
+  bottom_navy_bar: ^6.0.0
 
 dev_dependencies:
   flutter_test:

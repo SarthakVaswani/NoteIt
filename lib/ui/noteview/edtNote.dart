@@ -298,7 +298,7 @@ class _EditNoteState extends State<EditNote> {
                       TextButton(
                           style: TextButton.styleFrom(
                             primary: Colors.white,
-                            backgroundColor: Color(0xffeb6765),
+                            backgroundColor: Colors.black,
                             onSurface: Colors.grey,
                           ),
                           onPressed: () async {
@@ -335,233 +335,255 @@ class _EditNoteState extends State<EditNote> {
     if ((defaultTargetPlatform == TargetPlatform.iOS) ||
         (defaultTargetPlatform == TargetPlatform.android)) {
       return Scaffold(
-        backgroundColor: Color(0xffddf0f7),
-        body: NestedScrollView(
-          physics: ScrollPhysics(),
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                flexibleSpace: FlexibleSpaceBar(
-                  titlePadding: EdgeInsets.symmetric(horizontal: 15),
-                  title: TextFormField(
-                    enableInteractiveSelection: true,
-                    focusNode: FocusNode(),
-                    cursorColor: Color(0xffddf0f7),
-                    style: TextStyle(color: Colors.white, fontSize: 40),
-                    controller: title,
-                    decoration: InputDecoration(
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                      ),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 5, vertical: 6),
-                      hintText: 'Title',
-                      hintStyle: TextStyle(color: Colors.white, fontSize: 40),
-                    ),
+        appBar: AppBar(
+          iconTheme: IconThemeData(
+            color: Colors.black, //change your color here
+          ),
+          title: Column(
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'Edit Note',
+                    style: TextStyle(color: Colors.black, fontSize: 28),
                   ),
-                ),
-                elevation: 0,
-                automaticallyImplyLeading: false,
-                backgroundColor: Color(0xff2c2b4b),
-                expandedHeight: 200.0,
-                floating: false,
-                pinned: true,
-              ),
-            ];
-          },
-          body: Container(
-            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Column(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(),
-                    child: TextFormField(
-                      enableInteractiveSelection: true,
-                      focusNode: FocusNode(),
-                      cursorColor: Color(0xff2c2b4b),
-                      style: TextStyle(color: Colors.black, fontSize: 23),
-                      controller: content,
-                      maxLines: null,
-                      expands: true,
-                      decoration: InputDecoration(
-                        hintText: 'Content',
-                        hintStyle: TextStyle(
-                            color: Colors.black.withOpacity(0.7), fontSize: 23),
-                      ),
-                    ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.38,
                   ),
-                ),
-                hasImage
-                    ? InkWell(
-                        onLongPress: () {
-                          widget.docToEdit.reference
-                              .update({'images': null}).whenComplete(
-                                  () => Navigator.pop(context));
-                          return ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              duration: Duration(seconds: 2),
-                              content: Text('Deleted'),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          height: MediaQuery.of(context).size.height * 0.25,
-                          width: MediaQuery.of(context).size.width * 0.5,
-                          child: InteractiveViewer(
-                            panEnabled: false, // Set it to false
-                            boundaryMargin: EdgeInsets.all(100),
-                            minScale: 0.5,
-                            maxScale: 2,
-                            child: Image.network(
-                              imageUrl,
-                              fit: BoxFit.cover,
-                              loadingBuilder: (BuildContext context,
-                                  Widget child,
-                                  ImageChunkEvent loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes !=
-                                            null
-                                        ? loadingProgress
-                                                .cumulativeBytesLoaded /
-                                            loadingProgress.expectedTotalBytes
-                                        : null,
+                  CircleAvatar(
+                    backgroundColor: Colors.black,
+                    child: IconButton(
+                      onPressed: () async {
+                        imagepicked
+                            ? await finalUpload().then((value) =>
+                                widget.docToEdit.reference.update({
+                                  'title': title.text,
+                                  'content': content.text,
+                                  'images': returnURL
+                                }).whenComplete(() {
+                                  Navigator.pop(context);
+                                  return ScaffoldMessenger.of(context)
+                                      .showSnackBar(
+                                    SnackBar(
+                                      duration: Duration(seconds: 2),
+                                      content: Text('Saved'),
+                                    ),
+                                  );
+                                }))
+                            : widget.docToEdit.reference.update({
+                                'title': title.text,
+                                'content': content.text
+                              }).whenComplete(() {
+                                Navigator.pop(context);
+                                return ScaffoldMessenger.of(context)
+                                    .showSnackBar(
+                                  SnackBar(
+                                    duration: Duration(seconds: 2),
+                                    content: Text('Saved'),
                                   ),
                                 );
-                              },
-                            ),
-                          ),
-                        ),
-                      )
-                    : SizedBox(
-                        height: 5,
-                      )
-              ],
-            ),
-          ),
-        ),
-        floatingActionButton: SpeedDial(
-          overlayOpacity: 0.0,
-          openCloseDial: isDialOpen,
-          overlayColor: Colors.white.withOpacity(.2),
-          elevation: 7,
-          icon: Icons.edit,
-          iconTheme: IconThemeData(color: Colors.white),
-          backgroundColor: Color(0xffeb6765),
-          children: [
-            SpeedDialChild(
-                backgroundColor: Color(0xffeb6765),
-                child: Icon(
-                  Icons.check,
-                  color: Colors.white,
-                ),
-                onTap: () async {
-                  imagepicked
-                      ? await finalUpload().then((value) =>
-                          widget.docToEdit.reference.update({
-                            'title': title.text,
-                            'content': content.text,
-                            'images': returnURL
-                          }).whenComplete(() {
-                            Navigator.pop(context);
-                            return ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                duration: Duration(seconds: 2),
-                                content: Text('Saved'),
-                              ),
-                            );
-                          }))
-                      : widget.docToEdit.reference.update({
-                          'title': title.text,
-                          'content': content.text
-                        }).whenComplete(() {
-                          Navigator.pop(context);
+                              });
+
+                        if (widget.docToEdit.data()['sharedTo'] != null) {
+                          imagepicked
+                              ? await finalUpload().then((value) =>
+                                  FirebaseFirestore.instance
+                                      .runTransaction((transaction) async {
+                                    FirebaseFirestore.instance
+                                        .collection('Users')
+                                        .doc(
+                                            widget.docToEdit.data()['sharedTo'])
+                                        .collection('Notes')
+                                        .doc(widget.docToEdit.id)
+                                        .update({
+                                      'title': title.text,
+                                      'content': content.text,
+                                      'sharedTo':
+                                          widget.docToEdit.data()['sharedTo'],
+                                      'images': returnURL
+                                    });
+                                  }).whenComplete(() => Navigator.pop(context)))
+                              : FirebaseFirestore.instance
+                                  .runTransaction((transaction) async {
+                                  FirebaseFirestore.instance
+                                      .collection('Users')
+                                      .doc(widget.docToEdit.data()['sharedTo'])
+                                      .collection('Notes')
+                                      .doc(widget.docToEdit.id)
+                                      .update({
+                                    'title': title.text,
+                                    'content': content.text,
+                                    'sharedTo':
+                                        widget.docToEdit.data()['sharedTo']
+                                  });
+                                }).whenComplete(() => Navigator.pop(context));
                           return ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               duration: Duration(seconds: 2),
                               content: Text('Saved'),
                             ),
                           );
-                        });
-
-                  if (widget.docToEdit.data()['sharedTo'] != null) {
-                    imagepicked
-                        ? await finalUpload().then((value) => FirebaseFirestore
-                                .instance
-                                .runTransaction((transaction) async {
-                              FirebaseFirestore.instance
-                                  .collection('Users')
-                                  .doc(widget.docToEdit.data()['sharedTo'])
-                                  .collection('Notes')
-                                  .doc(widget.docToEdit.id)
-                                  .update({
-                                'title': title.text,
-                                'content': content.text,
-                                'sharedTo': widget.docToEdit.data()['sharedTo'],
-                                'images': returnURL
-                              });
-                            }).whenComplete(() => Navigator.pop(context)))
-                        : FirebaseFirestore.instance
-                            .runTransaction((transaction) async {
-                            FirebaseFirestore.instance
-                                .collection('Users')
-                                .doc(widget.docToEdit.data()['sharedTo'])
-                                .collection('Notes')
-                                .doc(widget.docToEdit.id)
-                                .update({
-                              'title': title.text,
-                              'content': content.text,
-                              'sharedTo': widget.docToEdit.data()['sharedTo']
-                            });
-                          }).whenComplete(() => Navigator.pop(context));
-                    return ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: Duration(seconds: 2),
-                        content: Text('Saved'),
+                        } else {
+                          print("no");
+                        }
+                      },
+                      icon: Icon(
+                        Icons.check,
+                        color: Colors.white,
                       ),
-                    );
-                  } else {
-                    print("no");
-                  }
-                }),
-            SpeedDialChild(
-                backgroundColor: Color(0xffeb6765),
-                child: Icon(
-                  Icons.delete,
-                  color: Colors.white,
-                ),
-                onTap: () {
-                  widget.docToEdit.reference
-                      .delete()
-                      .whenComplete(() => Navigator.pop(context));
-                  return ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: Duration(seconds: 2),
-                      content: Text('Deleted'),
                     ),
-                  );
-                }),
-            SpeedDialChild(
-                backgroundColor: Color(0xffeb6765),
-                child: Icon(
-                  Icons.add_reaction_sharp,
-                  color: Colors.white,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          elevation: 0,
+          backgroundColor: Colors.white,
+        ),
+        backgroundColor: Colors.white,
+        body: Container(
+          margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Column(
+            children: [
+              // Divider(
+              //   color: Colors.black,
+              // ),
+              Container(
+                child: TextFormField(
+                  enableInteractiveSelection: true,
+                  focusNode: FocusNode(),
+                  cursorColor: Color(0xffddf0f7),
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold),
+                  controller: title,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 5, vertical: 6),
+                    hintText: 'Title',
+                    hintStyle: TextStyle(color: Colors.black, fontSize: 40),
+                  ),
                 ),
-                onTap: () {
-                  _addPeople(context);
-                }),
-            SpeedDialChild(
-                backgroundColor: Color(0xffeb6765),
-                child: Icon(
-                  Icons.image,
-                  color: Colors.white,
+              ),
+              Divider(
+                color: Colors.black,
+                thickness: 0.5,
+              ),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(),
+                  child: TextFormField(
+                    enableInteractiveSelection: true,
+                    focusNode: FocusNode(),
+                    cursorColor: Color(0xff2c2b4b),
+                    style: TextStyle(color: Colors.black, fontSize: 23),
+                    controller: content,
+                    maxLines: null,
+                    expands: true,
+                    decoration: InputDecoration(
+                      hintText: 'Content',
+                      hintStyle: TextStyle(
+                          color: Colors.black.withOpacity(0.7), fontSize: 23),
+                    ),
+                  ),
                 ),
-                onTap: () {
-                  getImage(true);
-                }),
-          ],
+              ),
+              hasImage
+                  ? InkWell(
+                      onLongPress: () {
+                        widget.docToEdit.reference
+                            .update({'images': null}).whenComplete(
+                                () => Navigator.pop(context));
+                        return ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: Duration(seconds: 2),
+                            content: Text('Deleted'),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.25,
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        child: InteractiveViewer(
+                          panEnabled: false, // Set it to false
+                          boundaryMargin: EdgeInsets.all(100),
+                          minScale: 0.5,
+                          maxScale: 2,
+                          child: Image.network(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (BuildContext context, Widget child,
+                                ImageChunkEvent loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes
+                                      : null,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    )
+                  : SizedBox(
+                      height: 5,
+                    ),
+              Container(
+                decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.all(Radius.circular(20))),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        widget.docToEdit.reference
+                            .delete()
+                            .whenComplete(() => Navigator.pop(context));
+                        return ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: Duration(seconds: 2),
+                            content: Text('Deleted'),
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _addPeople(context);
+                      },
+                      icon: Icon(
+                        Icons.add_reaction_sharp,
+                        color: Colors.white,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        getImage(true);
+                      },
+                      icon: Icon(
+                        Icons.image,
+                        color: Colors.white,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       );
     } else if ((defaultTargetPlatform == TargetPlatform.windows)) {

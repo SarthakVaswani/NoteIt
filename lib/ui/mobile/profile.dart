@@ -29,43 +29,49 @@ class _ProfileState extends State<Profile> {
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
-              color: Color(0xff2c2b4b),
+              color: Colors.white,
             ),
             child: SingleChildScrollView(
               child: Column(
                 children: [
+                  SizedBox(
+                    height: 10,
+                  ),
                   Row(
                     children: [
-                      IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: Icon(
-                          Icons.arrow_back_ios_new_outlined,
-                          color: Colors.white,
-                        ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.05,
                       ),
                       Text(
                         'Profile',
-                        style: TextStyle(fontSize: 27, color: Colors.white),
+                        style: TextStyle(
+                            fontSize: 27,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold),
                       ),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.55,
+                        width: MediaQuery.of(context).size.width * 0.62,
                       ),
-                      IconButton(
-                        icon: Icon(Icons.logout, color: Colors.white),
-                        onPressed: () async {
-                          Navigator.pop(context, true);
-                          bool shouldNavigate = await logOut();
-                          if (shouldNavigate) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => AuthDecider()));
-                          }
-                        },
+                      CircleAvatar(
+                        backgroundColor: Colors.black,
+                        child: IconButton(
+                          icon: Icon(Icons.logout, color: Colors.white),
+                          onPressed: () async {
+                            Navigator.pop(context, true);
+                            bool shouldNavigate = await logOut();
+                            if (shouldNavigate) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => AuthDecider()));
+                            }
+                          },
+                        ),
                       ),
                     ],
+                  ),
+                  SizedBox(
+                    height: 10,
                   ),
                   StreamBuilder(
                       stream: FirebaseFirestore.instance
@@ -87,10 +93,11 @@ class _ProfileState extends State<Profile> {
                                 //     color: Colors.white, width: 0.01),
                                 borderRadius: BorderRadius.circular(10)),
                             margin: EdgeInsets.all(10),
-                            color: Color(0xffddf0f7),
+                            color: Color(0xfff2f5f9),
                             elevation: 3,
                             child: Container(
                               height: MediaQuery.of(context).size.height * 0.24,
+                              width: MediaQuery.of(context).size.width * 0.8,
                               child: Column(
                                 children: [
                                   SizedBox(
@@ -125,15 +132,18 @@ class _ProfileState extends State<Profile> {
                             ),
                           ),
                           SizedBox(
-                            height: 10,
+                            height: 17,
                           ),
                           Container(
                             width: MediaQuery.of(context).size.width * 0.8,
                             child: Center(
-                              child: Text('Notifications',
+                              child: Text('Shared Notes',
                                   style: TextStyle(
-                                      fontSize: 30, color: Colors.white)),
+                                      fontSize: 30, color: Colors.black)),
                             ),
+                          ),
+                          SizedBox(
+                            height: 10,
                           ),
                           StreamBuilder(
                               stream: FirebaseFirestore.instance
@@ -160,8 +170,12 @@ class _ProfileState extends State<Profile> {
                                         height:
                                             MediaQuery.of(context).size.height *
                                                 0.125,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.9,
                                         child: Card(
-                                          color: Color(0xffddf0f7),
+                                          color: Color(0xfff2f5f9),
+                                          elevation: 4,
                                           shape: RoundedRectangleBorder(
                                               // side: BorderSide(
                                               //     color: Colors.white, width: 0.01),

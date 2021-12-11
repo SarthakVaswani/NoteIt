@@ -45,45 +45,47 @@ class _SearchPageState extends State<SearchPage> {
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
-              color: Color(0xff2c2b4b),
+              color: Colors.white,
             ),
             child: SingleChildScrollView(
               child: Column(
                 children: [
+                  SizedBox(
+                    height: 10,
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(
-                            Icons.arrow_back_ios_new_outlined,
-                            color: Colors.white,
-                          ),
-                        ),
                         Container(
                           height: 40,
                           width: 300,
                           child: TextField(
-                            autofocus: true,
+                            autofocus: false,
                             controller: search,
                             decoration: InputDecoration(
-                                border: OutlineInputBorder(
+                                enabledBorder: OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(40)),
+                                      BorderRadius.all(Radius.circular(45)),
+                                  borderSide: BorderSide(color: Colors.black),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(45)),
+                                  borderSide: BorderSide(color: Colors.black),
                                 ),
                                 filled: true,
-                                hintStyle: TextStyle(color: Colors.grey[800]),
+                                hintStyle: TextStyle(color: Colors.black),
                                 hintText: "Search your notes",
-                                fillColor: Colors.white70),
+                                fillColor: Colors.grey[200]),
                           ),
                         ),
                         SizedBox(
                           width: 10,
                         ),
                         CircleAvatar(
+                          backgroundColor: Colors.black,
                           child: IconButton(
                             onPressed: () async {
                               await userNotes(
@@ -94,7 +96,10 @@ class _SearchPageState extends State<SearchPage> {
                                 print(snapshot.docs);
                               });
                             },
-                            icon: Icon(Icons.search),
+                            icon: Icon(
+                              Icons.search,
+                              color: Colors.white,
+                            ),
                           ),
                         )
                       ],
