@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:notes_app/main.dart';
 import 'package:notes_app/service/services.dart';
 import 'package:notes_app/ui/screenDecider.dart';
+import 'package:notes_app/ui/widgets/colorPicker.dart';
 
 class EditNote extends StatefulWidget {
   DocumentSnapshot docToEdit;
@@ -40,6 +41,7 @@ class _EditNoteState extends State<EditNote> {
   void initState() {
     title = TextEditingController(text: widget.docToEdit.data()['title']);
     content = TextEditingController(text: widget.docToEdit.data()['content']);
+    newColor = Color(widget.docToEdit.data()['noteColor']);
     checkImage();
 
     super.initState();
@@ -75,6 +77,7 @@ class _EditNoteState extends State<EditNote> {
           'content': widget.docToEdit.data()['content'],
           'sharedTo': widget.docToEdit.data()['sharedTo'],
           'createdBy': widget.docToEdit.data()['createdBy'],
+          'noteColor': widget.docToEdit.data()['noteColor'],
         });
       });
       // FirebaseFirestore.instance.runTransaction((transaction) async {
@@ -172,6 +175,7 @@ class _EditNoteState extends State<EditNote> {
     });
   }
 
+  Color newColor;
   String selectedUserToken;
   String returnURL;
   uploadFile(File _image) async {
@@ -266,6 +270,50 @@ class _EditNoteState extends State<EditNote> {
     }
 
     StateSetter _setState;
+    Color _color = Color(0xffddf0f7);
+    Future<bool> _changeColor(BuildContext context) {
+      return showDialog(
+        // barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+            elevation: 2,
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                // side: BorderSide(
+                //     color: Colors.white, width: 0.01),
+                borderRadius: BorderRadius.circular(10)),
+            title: Text(
+              'Choose Note Color',
+              style: TextStyle(color: Colors.black, fontSize: 18),
+            ),
+            content: Container(
+              height: 200,
+              width: 200,
+              child: MyColorPicker(
+                  onSelectColor: (value) {
+                    setState(() {
+                      newColor = value;
+
+                      print(newColor.toString());
+                      Navigator.pop(context);
+                    });
+                  },
+                  availableColors: [
+                    Color(0xffe8a87c),
+                    Color(0xffd8f3dc),
+                    Colors.greenAccent,
+                    Color(0xfff1dca7),
+                    Color(0xffcad2c5),
+                    Colors.limeAccent.shade100,
+                    Colors.cyanAccent.shade100,
+                    Colors.redAccent.shade100,
+                    Colors.purpleAccent.shade100,
+                    Colors.indigoAccent.shade100
+                  ],
+                  initialColor: Colors.white),
+            )),
+      );
+    }
 
     Future<bool> _addPeople(BuildContext context) {
       return showDialog(
@@ -355,24 +403,26 @@ class _EditNoteState extends State<EditNote> {
                     child: IconButton(
                       onPressed: () async {
                         imagepicked
-                            ? await finalUpload().then((value) =>
-                                widget.docToEdit.reference.update({
-                                  'title': title.text,
-                                  'content': content.text,
-                                  'images': returnURL
-                                }).whenComplete(() {
-                                  Navigator.pop(context);
-                                  return ScaffoldMessenger.of(context)
-                                      .showSnackBar(
-                                    SnackBar(
-                                      duration: Duration(seconds: 2),
-                                      content: Text('Saved'),
-                                    ),
-                                  );
-                                }))
+                            ? await finalUpload().then(
+                                (value) => widget.docToEdit.reference.update({
+                                      'title': title.text,
+                                      'content': content.text,
+                                      'images': returnURL,
+                                      'noteColor': newColor.value
+                                    }).whenComplete(() {
+                                      Navigator.pop(context);
+                                      return ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          duration: Duration(seconds: 2),
+                                          content: Text('Saved'),
+                                        ),
+                                      );
+                                    }))
                             : widget.docToEdit.reference.update({
                                 'title': title.text,
-                                'content': content.text
+                                'content': content.text,
+                                'noteColor': newColor.value
                               }).whenComplete(() {
                                 Navigator.pop(context);
                                 return ScaffoldMessenger.of(context)
@@ -400,7 +450,8 @@ class _EditNoteState extends State<EditNote> {
                                       'content': content.text,
                                       'sharedTo':
                                           widget.docToEdit.data()['sharedTo'],
-                                      'images': returnURL
+                                      'images': returnURL,
+                                      'noteColor': newColor.value
                                     });
                                   }).whenComplete(() => Navigator.pop(context)))
                               : FirebaseFirestore.instance
@@ -414,7 +465,8 @@ class _EditNoteState extends State<EditNote> {
                                     'title': title.text,
                                     'content': content.text,
                                     'sharedTo':
-                                        widget.docToEdit.data()['sharedTo']
+                                        widget.docToEdit.data()['sharedTo'],
+                                    'noteColor': newColor.value
                                   });
                                 }).whenComplete(() => Navigator.pop(context));
                           return ScaffoldMessenger.of(context).showSnackBar(
@@ -440,7 +492,7 @@ class _EditNoteState extends State<EditNote> {
           elevation: 0,
           backgroundColor: Colors.white,
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: newColor,
         body: Container(
           margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Column(
@@ -578,7 +630,16 @@ class _EditNoteState extends State<EditNote> {
                         Icons.image,
                         color: Colors.white,
                       ),
-                    )
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _changeColor(context);
+                      },
+                      icon: Icon(
+                        Icons.color_lens_sharp,
+                        color: Colors.white,
+                      ),
+                    ),
                   ],
                 ),
               ),

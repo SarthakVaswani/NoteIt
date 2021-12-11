@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:notes_app/ui/widgets/colorPicker.dart';
 
 import '../screenDecider.dart';
 
@@ -36,6 +37,7 @@ class _AddNoteState extends State<AddNote> {
   List<File> _images = [];
   File _image; // Used only if you need a single picture
   bool imagepicked = false;
+  Color _color = Color(0xffddf0f7);
   PickedFile pickedFile;
   Future getImage(bool gallery) async {
     ImagePicker picker = ImagePicker();
@@ -117,7 +119,8 @@ class _AddNoteState extends State<AddNote> {
                     'sharedTo': null,
                     'Pin': "false",
                     'createdBy': firebaseUser.email,
-                    'images': returnURL
+                    'images': returnURL,
+                    'noteColor': _color.value
                   }))
               : ref.set({
                   'dateTime': FieldValue.serverTimestamp(),
@@ -125,7 +128,8 @@ class _AddNoteState extends State<AddNote> {
                   'content': content,
                   'Pin': "false",
                   'sharedTo': null,
-                  'createdBy': firebaseUser.email
+                  'createdBy': firebaseUser.email,
+                  'noteColor': _color.value
                 });
           print(ref.id);
           // setState(() {
@@ -138,6 +142,51 @@ class _AddNoteState extends State<AddNote> {
     } catch (e) {
       return false;
     }
+  }
+
+  StateSetter _setState;
+
+  Future<bool> _changeColor(BuildContext context) {
+    return showDialog(
+      // barrierDismissible: false,
+      context: context,
+      builder: (context) => AlertDialog(
+          elevation: 2,
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+              // side: BorderSide(
+              //     color: Colors.white, width: 0.01),
+              borderRadius: BorderRadius.circular(10)),
+          title: Text(
+            'Choose Note Color',
+            style: TextStyle(color: Colors.black, fontSize: 18),
+          ),
+          content: Container(
+            height: 200,
+            width: 200,
+            child: MyColorPicker(
+                onSelectColor: (value) {
+                  setState(() {
+                    _color = value;
+                    Navigator.pop(context);
+                    print(_color.value);
+                  });
+                },
+                availableColors: [
+                  Color(0xffe8a87c),
+                  Color(0xffd8f3dc),
+                  Colors.greenAccent,
+                  Color(0xfff1dca7),
+                  Color(0xffcad2c5),
+                  Colors.limeAccent.shade100,
+                  Colors.cyanAccent.shade100,
+                  Colors.redAccent.shade100,
+                  Colors.purpleAccent.shade100,
+                  Colors.indigoAccent.shade100
+                ],
+                initialColor: Colors.white),
+          )),
+    );
   }
 
   @override
@@ -193,7 +242,7 @@ class _AddNoteState extends State<AddNote> {
             ],
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: _color,
         body: Container(
           margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: Column(
@@ -268,9 +317,42 @@ class _AddNoteState extends State<AddNote> {
                         Icons.image,
                         color: Colors.white,
                       ),
-                    )
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _changeColor(context);
+                      },
+                      icon: Icon(
+                        Icons.color_lens_sharp,
+                        color: Colors.white,
+                      ),
+                    ),
                   ],
                 ),
+              ),
+              Column(
+                children: [
+                  SizedBox(height: 30),
+                  // MyColorPicker(
+                  //     onSelectColor: (value) {
+                  //       setState(() {
+                  //         _color = value;
+                  //       });
+                  //     },
+                  //     availableColors: [
+                  //       Colors.blue,
+                  //       Colors.green,
+                  //       Colors.greenAccent,
+                  //       Colors.yellow,
+                  //       Colors.orange,
+                  //       Colors.red,
+                  //       Colors.purple,
+                  //       Colors.grey,
+                  //       Colors.deepOrange,
+                  //       Colors.teal
+                  //     ],
+                  //     initialColor: Colors.blue)
+                ],
               ),
             ],
           ),
@@ -400,32 +482,33 @@ class _AddNoteState extends State<AddNote> {
                       getImage(true);
                     },
                   ),
+
                   SizedBox(
                     height: 10,
                   ),
-                  MaterialButton(
-                    elevation: 3,
-                    height: MediaQuery.of(context).size.height / 12,
-                    shape: CircleBorder(
-                      side: BorderSide(width: 2, color: Color(0xffeb6765)),
-                    ),
-                    child: Icon(
-                      Icons.check,
-                      color: Colors.white,
-                      size: 25,
-                    ),
-                    color: Color(0xffeb6765),
-                    onPressed: () async {
-                      await enterNotes(title.text, content.text)
-                          .whenComplete(() => Navigator.pop(context));
-                      return ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          duration: Duration(seconds: 2),
-                          content: Text('Saved'),
-                        ),
-                      );
-                    },
-                  ),
+                  // MaterialButton(
+                  //   elevation: 3,
+                  //   height: MediaQuery.of(context).size.height / 12,
+                  //   shape: CircleBorder(
+                  //     side: BorderSide(width: 2, color: Color(0xffeb6765)),
+                  //   ),
+                  //   child: Icon(
+                  //     Icons.check,
+                  //     color: Colors.white,
+                  //     size: 25,
+                  //   ),
+                  //   color: Color(0xffeb6765),
+                  //   onPressed: () async {
+                  //     await enterNotes(title.text, content.text)
+                  //         .whenComplete(() => Navigator.pop(context));
+                  //     return ScaffoldMessenger.of(context).showSnackBar(
+                  //       SnackBar(
+                  //         duration: Duration(seconds: 2),
+                  //         content: Text('Saved'),
+                  //       ),
+                  //     );
+                  //   },
+                  // ),
                 ],
               ),
             ),

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/service/services.dart';
@@ -68,7 +69,7 @@ class _LoginState extends State<Login> {
       onWillPop: () async => _exitApp(context),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Color(0xff283793),
+        backgroundColor: Colors.black,
         body: ModalProgressHUD(
           inAsyncCall: showSpinner1,
           child: SingleChildScrollView(
@@ -97,22 +98,25 @@ class _LoginState extends State<Login> {
                           ),
                           color: Colors.white,
                           child: TextField(
+                            style: TextStyle(color: Colors.white),
+                            keyboardType: TextInputType.emailAddress,
                             onEditingComplete: () => node.nextFocus(),
                             controller: _emailField,
                             decoration: InputDecoration(
-                              fillColor: Colors.white,
+                              filled: true,
+                              fillColor: Color(0xff3a3a3c),
                               focusColor: Colors.white,
                               focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(color: Colors.white)),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                               enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(color: Colors.white)),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                               border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(color: Colors.white)),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                               hintText: 'Add Email',
-                              hintStyle: TextStyle(color: Colors.black),
+                              hintStyle: TextStyle(color: Colors.white),
                             ),
                           ),
                         ),
@@ -155,6 +159,7 @@ class _LoginState extends State<Login> {
                                 ));
                               }
                             },
+                            style: TextStyle(color: Colors.white),
                             obscureText: _showPassword,
                             controller: _passField,
                             decoration: InputDecoration(
@@ -169,23 +174,24 @@ class _LoginState extends State<Login> {
                                     _showPassword
                                         ? Icons.visibility
                                         : Icons.visibility_off,
-                                    color: Colors.red,
+                                    color: Color(0xff5e5ce6),
                                   ),
                                 ),
                               ),
-                              fillColor: Colors.white,
+                              filled: true,
+                              fillColor: Color(0xff3a3a3c),
                               focusColor: Colors.white,
                               focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(color: Colors.white)),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                               enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(color: Colors.white)),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                               border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(color: Colors.white)),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                               hintText: 'Add Password',
-                              hintStyle: TextStyle(color: Colors.black),
+                              hintStyle: TextStyle(color: Colors.white),
                             ),
                           ),
                         ),
@@ -198,7 +204,7 @@ class _LoginState extends State<Login> {
                               borderRadius: BorderRadius.circular(20)),
                           child: FlatButton(
                             height: 20,
-                            color: Color(0xffeb6765),
+                            color: Color(0xff5e5ce5),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
@@ -265,7 +271,7 @@ class _LoginState extends State<Login> {
                     ),
                     FlatButton(
                       height: 20,
-                      color: Color(0xffeb6765),
+                      color: Color(0xff5e5ce5),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -292,7 +298,7 @@ class _LoginState extends State<Login> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: FlatButton(
                     height: 14,
-                    color: Color(0xffeb6765),
+                    color: Color(0xff5e5ce5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),

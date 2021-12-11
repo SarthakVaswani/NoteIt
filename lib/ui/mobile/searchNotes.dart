@@ -131,7 +131,8 @@ class _SearchPageState extends State<SearchPage> {
                                       //     color: Colors.white, width: 0.01),
                                       borderRadius: BorderRadius.circular(10)),
                                   margin: EdgeInsets.all(10),
-                                  color: Color(0xffddf0f7),
+                                  color: Color(
+                                      snapshot.docs[index].data()["noteColor"]),
                                   child: Column(
                                     children: [
                                       Align(

@@ -3,14 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
-import 'package:notes_app/service/services.dart';
-import 'package:notes_app/ui/mobile/profile.dart';
-import 'package:notes_app/ui/mobile/searchNotes.dart';
-import 'package:notes_app/ui/screenDecider.dart';
-import 'package:notes_app/ui/web/widgets/toggleBar.dart';
-import 'package:notes_app/ui/web/widgets/whiteboard.dart';
+import 'package:notes_app/ui/widgets/toggleBar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../noteview/addNote.dart';
 import 'package:transition/transition.dart';
@@ -384,9 +377,10 @@ class _HomeViewState extends State<HomeView> {
                                                 borderRadius:
                                                     BorderRadius.circular(10)),
                                             margin: EdgeInsets.all(10),
-                                            color: Colors.primaries[Random()
-                                                .nextInt(
-                                                    Colors.accents.length)],
+                                            color: Color(
+                                              snapshotPinned.data.docs[index]
+                                                  .data()["noteColor"],
+                                            ),
                                             child: Column(
                                               children: [
                                                 Align(
@@ -610,9 +604,10 @@ class _HomeViewState extends State<HomeView> {
                                                 borderRadius:
                                                     BorderRadius.circular(10)),
                                             margin: EdgeInsets.all(10),
-                                            color: Colors.primaries[Random()
-                                                .nextInt(
-                                                    Colors.accents.length)],
+                                            color: Color(
+                                              snapshotPinned.data.docs[index]
+                                                  .data()["noteColor"],
+                                            ),
                                             child: Column(
                                               children: [
                                                 Align(
@@ -861,9 +856,10 @@ class _HomeViewState extends State<HomeView> {
                                                 borderRadius:
                                                     BorderRadius.circular(10)),
                                             margin: EdgeInsets.all(10),
-                                            color: Colors.primaries[Random()
-                                                .nextInt(
-                                                    Colors.accents.length)],
+                                            color: Color(
+                                              snapshot.data.docs[index]
+                                                  .data()["noteColor"],
+                                            ),
                                             child: Column(
                                               children: [
                                                 Align(
@@ -1086,9 +1082,10 @@ class _HomeViewState extends State<HomeView> {
                                                 borderRadius:
                                                     BorderRadius.circular(10)),
                                             margin: EdgeInsets.all(10),
-                                            color: Colors.primaries[Random()
-                                                .nextInt(
-                                                    Colors.accents.length)],
+                                            color: Color(
+                                              snapshot.data.docs[index]
+                                                  .data()["noteColor"],
+                                            ),
                                             child: Column(
                                               children: [
                                                 Align(

@@ -3,13 +3,9 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:notes_app/service/services.dart';
 import 'package:notes_app/ui/mobile/profile.dart';
-import 'package:notes_app/ui/mobile/searchNotes.dart';
-import 'package:notes_app/ui/screenDecider.dart';
-import 'package:notes_app/ui/web/widgets/sidebar.dart';
+import 'package:notes_app/ui/widgets/sidebar.dart';
 import 'package:transition/transition.dart';
 import '../noteview/addNote.dart';
 import '../noteview/edtNote.dart';
