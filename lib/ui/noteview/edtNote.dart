@@ -29,11 +29,20 @@ class _EditNoteState extends State<EditNote> {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
   var firebaseUser = FirebaseAuth.instance.currentUser;
   bool hasImage = false;
+  bool hasNotes = false;
   String imageUrl;
+  String notesUrl;
   checkImage() async {
     if (widget.docToEdit.data()['images'] != null) {
       imageUrl = widget.docToEdit.data()['images'];
       hasImage = true;
+    }
+  }
+
+  checkNotes() async {
+    if (widget.docToEdit.data()['noteAdded'] != null) {
+      notesUrl = widget.docToEdit.data()['noteAdded'];
+      hasNotes = true;
     }
   }
 
@@ -43,6 +52,7 @@ class _EditNoteState extends State<EditNote> {
     content = TextEditingController(text: widget.docToEdit.data()['content']);
     newColor = Color(widget.docToEdit.data()['noteColor']);
     checkImage();
+    checkNotes();
 
     super.initState();
   }
@@ -78,34 +88,10 @@ class _EditNoteState extends State<EditNote> {
           'sharedTo': widget.docToEdit.data()['sharedTo'],
           'createdBy': widget.docToEdit.data()['createdBy'],
           'noteColor': widget.docToEdit.data()['noteColor'],
+          'images': widget.docToEdit.data()['images'],
+          'noteAdded': widget.docToEdit.data()['noteAdded'],
         });
       });
-      // FirebaseFirestore.instance.runTransaction((transaction) async {
-      //   DocumentSnapshot snapshot = await transaction.get(ref);
-      //   if (!snapshot.exists) {
-      //     ref.set({
-      //       'dateTime': await widget.docToEdit.reference.get().then((title) {
-      //         snapshot.data()['dateTime'].toString();
-      //       }),
-      //       'title': await widget.docToEdit.reference.get().then((title) {
-      //         snapshot.data()['dateTime'].toString();
-      //       }),
-      //       'content': await widget.docToEdit.reference.get().then((title) {
-      //         snapshot.data()['dateTime'].toString();
-      //       }),
-      //       'sharedTo': await widget.docToEdit.reference.get().then((title) {
-      //         snapshot.data()['dateTime'].toString();
-      //       }),
-      //     });
-      //     print(widget.docToEdit.data()['title']);
-      //     print(ref.id);
-      //     // setState(() {
-      //     //   noteId = ref.id;
-      //     // });
-      //     return true;
-      //   }
-      //   return true;
-      // });
     } catch (e) {
       return false;
     }
@@ -132,8 +118,6 @@ class _EditNoteState extends State<EditNote> {
         return true;
       }
       return true;
-      // ref.update({
-      //   "images": FieldValue.arrayUnion([imageURL])
       // });
     });
   }
@@ -586,9 +570,53 @@ class _EditNoteState extends State<EditNote> {
                         ),
                       ),
                     )
-                  : SizedBox(
-                      height: 5,
-                    ),
+                  : hasNotes
+                      ? InkWell(
+                          onLongPress: () {
+                            widget.docToEdit.reference
+                                .update({'noteAdded': null}).whenComplete(
+                                    () => Navigator.pop(context));
+                            return ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: Duration(seconds: 2),
+                                content: Text('Deleted'),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.25,
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            child: InteractiveViewer(
+                              panEnabled: false, // Set it to false
+                              boundaryMargin: EdgeInsets.all(100),
+                              minScale: 0.5,
+                              maxScale: 2,
+                              child: Image.network(
+                                notesUrl,
+                                fit: BoxFit.cover,
+                                loadingBuilder: (BuildContext context,
+                                    Widget child,
+                                    ImageChunkEvent loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value: loadingProgress
+                                                  .expectedTotalBytes !=
+                                              null
+                                          ? loadingProgress
+                                                  .cumulativeBytesLoaded /
+                                              loadingProgress.expectedTotalBytes
+                                          : null,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        )
+                      : SizedBox(
+                          height: 5,
+                        ),
               Container(
                 decoration: BoxDecoration(
                     color: Colors.black,

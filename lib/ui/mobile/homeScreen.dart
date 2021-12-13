@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavyBar(
-        curve: Curves.bounceInOut,
+        curve: Curves.easeIn,
         showElevation: true,
         backgroundColor: Colors.black,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

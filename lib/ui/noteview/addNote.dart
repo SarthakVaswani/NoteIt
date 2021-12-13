@@ -1,13 +1,21 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-
+import 'dart:ui' as ui;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:notes_app/ui/widgets/colorPicker.dart';
+import 'package:notes_app/ui/widgets/drawing/draw_line.dart';
+import 'package:notes_app/ui/widgets/drawing/sketcher.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
 
 import '../screenDecider.dart';
 
@@ -21,6 +29,46 @@ class _AddNoteState extends State<AddNote> {
   TextEditingController content = TextEditingController();
   var noteId;
   static var firebaseUser;
+
+  GlobalKey _globalKey = new GlobalKey();
+  List<DrawnLine> lines = <DrawnLine>[];
+  DrawnLine line;
+  Color selectedColor = Colors.black;
+  double selectedWidth = 5.0;
+  String bs64;
+  StreamController<List<DrawnLine>> linesStreamController =
+      StreamController<List<DrawnLine>>.broadcast();
+  StreamController<DrawnLine> currentLineStreamController =
+      StreamController<DrawnLine>.broadcast();
+  String path;
+  File imageFile;
+
+  Future<void> save() async {
+    await screenshotController
+        .capture(delay: const Duration(milliseconds: 10))
+        .then((Uint8List image) async {
+      if (image != null) {
+        final directory = await getApplicationDocumentsDirectory();
+        final imagePath = await File('${directory.path}/image.png').create();
+        await imagePath.writeAsBytes(image);
+        setState(() {
+          imageFile = imagePath;
+          noteAdded = true;
+        });
+
+        /// Share Plugin
+        await uploadNote(imageFile);
+      }
+    });
+  }
+
+  Future<void> clear() async {
+    setState(() {
+      lines = [];
+      line = null;
+    });
+  }
+
   bool desktop = false;
   checkPlatfrom() {
     if ((defaultTargetPlatform == TargetPlatform.windows)) {
@@ -30,6 +78,8 @@ class _AddNoteState extends State<AddNote> {
     }
   }
 
+  ScreenshotController screenshotController = ScreenshotController();
+
   getUser() async {
     firebaseUser = await FirebaseAuth.instance.currentUser;
   }
@@ -37,6 +87,7 @@ class _AddNoteState extends State<AddNote> {
   List<File> _images = [];
   File _image; // Used only if you need a single picture
   bool imagepicked = false;
+  bool noteAdded = false;
   Color _color = Color(0xffddf0f7);
   PickedFile pickedFile;
   Future getImage(bool gallery) async {
@@ -59,6 +110,7 @@ class _AddNoteState extends State<AddNote> {
       if (pickedFile != null) {
         // _images.add(File(pickedFile.path));
         _image = File(pickedFile.path);
+        print(pickedFile.path);
         imagepicked = true;
         // uploadFile(_image);
 
@@ -74,6 +126,22 @@ class _AddNoteState extends State<AddNote> {
   }
 
   String returnURL;
+  String noteUrl;
+
+  uploadNote(File _image) async {
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference ref = storage.ref().child("image1" + DateTime.now().toString());
+    UploadTask uploadTask;
+    uploadTask = ref.putFile(_image);
+
+    await uploadTask.whenComplete(() async {
+      await ref.getDownloadURL().then((fileURL) {
+        noteUrl = fileURL;
+        print(noteUrl);
+      });
+      return noteUrl;
+    });
+  }
 
   uploadFile(File _image) async {
     Uint8List bytes = await pickedFile.readAsBytes();
@@ -90,10 +158,6 @@ class _AddNoteState extends State<AddNote> {
         print(returnURL);
       });
       return returnURL;
-      // uploadTask.then((res) {
-      //   var url = res.ref.getDownloadURL();
-      //   print(url);
-      // });
     });
   }
 
@@ -120,7 +184,8 @@ class _AddNoteState extends State<AddNote> {
                     'Pin': "false",
                     'createdBy': firebaseUser.email,
                     'images': returnURL,
-                    'noteColor': _color.value
+                    'noteColor': _color.value,
+                    'noteAdded': noteUrl
                   }))
               : ref.set({
                   'dateTime': FieldValue.serverTimestamp(),
@@ -129,7 +194,8 @@ class _AddNoteState extends State<AddNote> {
                   'Pin': "false",
                   'sharedTo': null,
                   'createdBy': firebaseUser.email,
-                  'noteColor': _color.value
+                  'noteColor': _color.value,
+                  'noteAdded': noteUrl
                 });
           print(ref.id);
           // setState(() {
@@ -144,6 +210,7 @@ class _AddNoteState extends State<AddNote> {
     }
   }
 
+  bool drawBoard = false;
   StateSetter _setState;
 
   Future<bool> _changeColor(BuildContext context) {
@@ -185,6 +252,29 @@ class _AddNoteState extends State<AddNote> {
                   Colors.indigoAccent.shade100
                 ],
                 initialColor: Colors.white),
+          )),
+    );
+  }
+
+  Future<bool> _changeStroke(BuildContext context) {
+    return showDialog(
+      // barrierDismissible: false,
+      context: context,
+      builder: (context) => AlertDialog(
+          elevation: 2,
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+              // side: BorderSide(
+              //     color: Colors.white, width: 0.01),
+              borderRadius: BorderRadius.circular(10)),
+          title: Text(
+            'Choose Stroke size',
+            style: TextStyle(color: Colors.black, fontSize: 18),
+          ),
+          content: Container(
+            height: 60,
+            width: 60,
+            child: buildStrokeToolbar(),
           )),
     );
   }
@@ -253,7 +343,7 @@ class _AddNoteState extends State<AddNote> {
               Container(
                 child: TextFormField(
                   onEditingComplete: () => node.nextFocus(),
-                  autofocus: true,
+                  autofocus: false,
                   cursorColor: Color(0xffddf0f7),
                   style: TextStyle(
                       color: Colors.black,
@@ -271,88 +361,126 @@ class _AddNoteState extends State<AddNote> {
                   ),
                 ),
               ),
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(),
-                  child: TextFormField(
-                    onFieldSubmitted: (value) {
-                      enterNotes(title.text, content.text)
-                          .whenComplete(() => Navigator.pop(context));
-                      return ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          duration: Duration(seconds: 2),
-                          content: Text('Saved'),
-                        ),
-                      );
-                    },
-                    cursorColor: Color(0xff2c2b4b),
-                    style: TextStyle(color: Colors.black, fontSize: 25),
-                    controller: content,
-                    maxLines: null,
-                    expands: true,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+              drawBoard
+                  ? Expanded(
+                      child: Stack(
+                        children: [
+                          buildAllPaths(context),
+                          buildCurrentPath(context),
+                          buildColorToolbar(),
+                        ],
                       ),
-                      hintText: 'Content',
-                      hintStyle: TextStyle(
-                          color: Colors.black.withOpacity(0.7), fontSize: 25),
+                    )
+                  : Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(),
+                        child: TextFormField(
+                          onFieldSubmitted: (value) {
+                            enterNotes(title.text, content.text)
+                                .whenComplete(() => Navigator.pop(context));
+                            return ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: Duration(seconds: 2),
+                                content: Text('Saved'),
+                              ),
+                            );
+                          },
+                          cursorColor: Color(0xff2c2b4b),
+                          style: TextStyle(color: Colors.black, fontSize: 25),
+                          controller: content,
+                          maxLines: null,
+                          expands: true,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                            hintText: 'Content',
+                            hintStyle: TextStyle(
+                                color: Colors.black.withOpacity(0.7),
+                                fontSize: 25),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
               Container(
                 decoration: BoxDecoration(
                     color: Colors.black,
                     borderRadius: BorderRadius.all(Radius.circular(20))),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        getImage(true);
-                      },
-                      icon: Icon(
-                        Icons.image,
-                        color: Colors.white,
+                child: drawBoard
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: clear,
+                            icon: Icon(
+                              Icons.clear,
+                              color: Colors.white,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: save,
+                            icon: Icon(
+                              Icons.save_outlined,
+                              color: Colors.white,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              _changeStroke(context);
+                            },
+                            icon: Icon(
+                              Icons.line_weight_rounded,
+                              color: Colors.white,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                drawBoard = !drawBoard;
+                              });
+                            },
+                            icon: Icon(
+                              Icons.create,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              getImage(true);
+                            },
+                            icon: Icon(
+                              Icons.image,
+                              color: Colors.white,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              _changeColor(context);
+                            },
+                            icon: Icon(
+                              Icons.color_lens_sharp,
+                              color: Colors.white,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                drawBoard = !drawBoard;
+                              });
+                            },
+                            icon: Icon(
+                              Icons.create,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        _changeColor(context);
-                      },
-                      icon: Icon(
-                        Icons.color_lens_sharp,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Column(
-                children: [
-                  SizedBox(height: 30),
-                  // MyColorPicker(
-                  //     onSelectColor: (value) {
-                  //       setState(() {
-                  //         _color = value;
-                  //       });
-                  //     },
-                  //     availableColors: [
-                  //       Colors.blue,
-                  //       Colors.green,
-                  //       Colors.greenAccent,
-                  //       Colors.yellow,
-                  //       Colors.orange,
-                  //       Colors.red,
-                  //       Colors.purple,
-                  //       Colors.grey,
-                  //       Colors.deepOrange,
-                  //       Colors.teal
-                  //     ],
-                  //     initialColor: Colors.blue)
-                ],
               ),
             ],
           ),
@@ -376,7 +504,7 @@ class _AddNoteState extends State<AddNote> {
                       titlePadding: EdgeInsets.symmetric(horizontal: 15),
                       title: TextFormField(
                         onEditingComplete: () => node.nextFocus(),
-                        autofocus: true,
+                        autofocus: false,
                         cursorColor: Color(0xffddf0f7),
                         style: TextStyle(color: Colors.white, fontSize: 40),
                         controller: title,
@@ -515,5 +643,178 @@ class _AddNoteState extends State<AddNote> {
           ) // ),
           );
     }
+  }
+
+  Widget buildCurrentPath(BuildContext context) {
+    return GestureDetector(
+      onPanStart: onPanStart,
+      onPanUpdate: onPanUpdate,
+      onPanEnd: onPanEnd,
+      child: RepaintBoundary(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          padding: EdgeInsets.all(4.0),
+          color: Colors.transparent,
+          alignment: Alignment.topLeft,
+          child: StreamBuilder<DrawnLine>(
+            stream: currentLineStreamController.stream,
+            builder: (context, snapshot) {
+              return CustomPaint(
+                painter: Sketcher(
+                  lines: [line],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildAllPaths(BuildContext context) {
+    return RepaintBoundary(
+      key: _globalKey,
+      child: Screenshot(
+        controller: screenshotController,
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          color: Colors.transparent,
+          padding: EdgeInsets.all(4.0),
+          alignment: Alignment.topLeft,
+          child: StreamBuilder<List<DrawnLine>>(
+            stream: linesStreamController.stream,
+            builder: (context, snapshot) {
+              return CustomPaint(
+                painter: Sketcher(
+                  lines: lines,
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void onPanStart(DragStartDetails details) {
+    RenderBox box = context.findRenderObject();
+    Offset point = box.globalToLocal(details.localPosition);
+    line = DrawnLine([point], selectedColor, selectedWidth);
+  }
+
+  void onPanUpdate(DragUpdateDetails details) {
+    RenderBox box = context.findRenderObject();
+    Offset point = box.globalToLocal(details.localPosition);
+
+    List<Offset> path = List.from(line.path)..add(point);
+    line = DrawnLine(path, selectedColor, selectedWidth);
+    currentLineStreamController.add(line);
+  }
+
+  void onPanEnd(DragEndDetails details) {
+    lines = List.from(lines)..add(line);
+
+    linesStreamController.add(lines);
+  }
+
+  Widget buildStrokeToolbar() {
+    return Positioned(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          buildStrokeButton(5.0),
+          buildStrokeButton(10.0),
+          buildStrokeButton(15.0),
+        ],
+      ),
+    );
+  }
+
+  Widget buildStrokeButton(double strokeWidth) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedWidth = strokeWidth;
+          Navigator.pop(context);
+        });
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Container(
+          width: strokeWidth * 2,
+          height: strokeWidth * 2,
+          decoration: BoxDecoration(
+              color: selectedColor, borderRadius: BorderRadius.circular(50.0)),
+        ),
+      ),
+    );
+  }
+
+  Widget buildColorToolbar() {
+    return Positioned(
+      top: 40.0,
+      right: 2.0,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          buildColorButton(Colors.red),
+          buildColorButton(Colors.blueAccent),
+          buildColorButton(Colors.deepOrange),
+          buildColorButton(Colors.green),
+          buildColorButton(Colors.lightBlue),
+          buildColorButton(Colors.black),
+          buildColorButton(Colors.white),
+        ],
+      ),
+    );
+  }
+
+  Widget buildColorButton(Color color) {
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Container(
+        height: 35,
+        child: FloatingActionButton(
+          mini: true,
+          backgroundColor: color,
+          child: Container(),
+          onPressed: () {
+            setState(() {
+              selectedColor = color;
+            });
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget buildSaveButton() {
+    return GestureDetector(
+      onTap: save,
+      child: CircleAvatar(
+        child: Icon(
+          Icons.save,
+          size: 20.0,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget buildClearButton() {
+    return GestureDetector(
+      onTap: clear,
+      child: CircleAvatar(
+        child: Icon(
+          Icons.create,
+          size: 20.0,
+          color: Colors.white,
+        ),
+      ),
+    );
   }
 }
