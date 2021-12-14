@@ -131,6 +131,7 @@ class _AddNoteState extends State<AddNote> {
         _image = File(pickedFile.path);
         print(pickedFile.path);
         imagepicked = true;
+        finalUpload();
         // uploadFile(_image);
 
         // Use if you only need a single picture
@@ -144,6 +145,8 @@ class _AddNoteState extends State<AddNote> {
     await uploadFile(_image);
   }
 
+  bool loading = false;
+  bool imgLoading = false;
   String returnURL;
   String noteUrl;
   UploadTask uploadTask;
@@ -152,10 +155,13 @@ class _AddNoteState extends State<AddNote> {
     Reference ref = storage.ref().child("image1" + DateTime.now().toString());
 
     uploadTask = ref.putFile(_image);
-    setState(() {});
+
     await uploadTask.whenComplete(() async {
       await ref.getDownloadURL().then((fileURL) {
         noteUrl = fileURL;
+        setState(() {
+          loading = false;
+        });
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Draw Note Added')));
         print(noteUrl);
@@ -164,6 +170,7 @@ class _AddNoteState extends State<AddNote> {
     });
   }
 
+  bool uploadedImg = false;
   uploadFile(File _image) async {
     Uint8List bytes = await pickedFile.readAsBytes();
     FirebaseStorage storage = FirebaseStorage.instance;
@@ -176,6 +183,12 @@ class _AddNoteState extends State<AddNote> {
     await uploadTask.whenComplete(() async {
       await ref.getDownloadURL().then((fileURL) {
         returnURL = fileURL;
+        setState(() {
+          imgLoading = false;
+          uploadedImg = true;
+        });
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Image Added')));
         print(returnURL);
       });
       return returnURL;
@@ -197,17 +210,21 @@ class _AddNoteState extends State<AddNote> {
         DocumentSnapshot snapshot = await transaction.get(ref);
         if (!snapshot.exists) {
           imagepicked
-              ? await finalUpload().then((value) => ref.set({
-                    'dateTime': FieldValue.serverTimestamp(),
-                    'title': title,
-                    'content': content,
-                    'sharedTo': null,
-                    'Pin': "false",
-                    'createdBy': firebaseUser.email,
-                    'images': returnURL,
-                    'noteColor': _color.value,
-                    'noteAdded': noteUrl,
-                  }))
+              ? ref.set({
+                  'dateTime': FieldValue.serverTimestamp(),
+                  'title': title,
+                  'content': content,
+                  'sharedTo': null,
+                  'Pin': "false",
+                  'createdBy': firebaseUser.email,
+                  'images': returnURL,
+                  'noteColor': _color.value,
+                  'noteAdded': noteUrl,
+                  'lock': false,
+                  'listcheck': _todoList.map((e) {
+                    return e.toJson();
+                  }).toList()
+                })
               : ref.set({
                   'dateTime': FieldValue.serverTimestamp(),
                   'title': title,
@@ -374,6 +391,15 @@ class _AddNoteState extends State<AddNote> {
                       backgroundColor: Colors.black,
                       child: IconButton(
                           onPressed: () async {
+                            if (title.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: Duration(seconds: 2),
+                                  content: Text('Add title'),
+                                ),
+                              );
+                              return false;
+                            }
                             await enterNotes(title.text, content.text)
                                 .whenComplete(() => Navigator.pop(context));
                             return ScaffoldMessenger.of(context).showSnackBar(
@@ -421,6 +447,7 @@ class _AddNoteState extends State<AddNote> {
                   ),
                 ),
               ),
+
               drawBoard
                   ? Expanded(
                       child: Stack(
@@ -464,6 +491,35 @@ class _AddNoteState extends State<AddNote> {
                       ),
                     ),
               islist ? listTest() : Container(),
+              uploadedImg
+                  ? Container(
+                      height: MediaQuery.of(context).size.height * 0.25,
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      child: InteractiveViewer(
+                        panEnabled: false, // Set it to false
+                        boundaryMargin: EdgeInsets.all(100),
+                        minScale: 0.5,
+                        maxScale: 2,
+                        child: Image.network(
+                          returnURL,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes !=
+                                        null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes
+                                    : null,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    )
+                  : Container(),
               Container(
                 decoration: BoxDecoration(
                     color: Colors.black,
@@ -479,13 +535,20 @@ class _AddNoteState extends State<AddNote> {
                               color: Colors.white,
                             ),
                           ),
-                          IconButton(
-                            onPressed: save,
-                            icon: Icon(
-                              Icons.save_outlined,
-                              color: Colors.white,
-                            ),
-                          ),
+                          loading
+                              ? CircularProgressIndicator()
+                              : IconButton(
+                                  onPressed: () async {
+                                    save();
+                                    setState(() {
+                                      loading = true;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.save_outlined,
+                                    color: Colors.white,
+                                  ),
+                                ),
                           IconButton(
                             onPressed: () {
                               _changeStroke(context);
@@ -512,15 +575,20 @@ class _AddNoteState extends State<AddNote> {
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          IconButton(
-                            onPressed: () {
-                              getImage(true);
-                            },
-                            icon: Icon(
-                              Icons.image,
-                              color: Colors.white,
-                            ),
-                          ),
+                          imgLoading
+                              ? CircularProgressIndicator()
+                              : IconButton(
+                                  onPressed: () {
+                                    getImage(true);
+                                    setState(() {
+                                      imgLoading = true;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.image,
+                                    color: Colors.white,
+                                  ),
+                                ),
                           IconButton(
                             onPressed: () {
                               _changeColor(context);

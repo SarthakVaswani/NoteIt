@@ -64,11 +64,11 @@ class _EditNoteState extends State<EditNote> {
   bool hasImage = false;
   bool hasNotes = false;
   bool hasList = false;
-  String imageUrl;
+  String returnURL;
   var notesUrl;
   checkImage() async {
     if (widget.docToEdit.data()['images'] != null) {
-      imageUrl = widget.docToEdit.data()['images'];
+      returnURL = widget.docToEdit.data()['images'];
       hasImage = true;
     }
   }
@@ -175,6 +175,25 @@ class _EditNoteState extends State<EditNote> {
             ));
   }
 
+  Future<bool> _showImage(BuildContext context, String url) {
+    return showDialog(
+      // barrierDismissible: false,
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Container(
+          height: 300,
+          width: 300,
+          child: InteractiveViewer(
+              panEnabled: false, // Set it to false
+              boundaryMargin: EdgeInsets.all(55),
+              minScale: 0.5,
+              maxScale: 2,
+              child: Image.network(url, fit: BoxFit.contain)),
+        ),
+      ),
+    );
+  }
+
   Widget listTest() {
     return ListView.builder(
       shrinkWrap: true,
@@ -219,12 +238,10 @@ class _EditNoteState extends State<EditNote> {
   }
 
   bool desktop = false;
-
   TextEditingController search = TextEditingController();
   QuerySnapshot snapshot;
   bool isExecuted = false;
   Future<void> saveImages(File image) async {
-    String imageURL = await uploadFile(image);
     DocumentReference ref = FirebaseFirestore.instance
         .collection('Users')
         .doc(FirebaseAuth.instance.currentUser.email)
@@ -233,7 +250,7 @@ class _EditNoteState extends State<EditNote> {
     FirebaseFirestore.instance.runTransaction((transaction) async {
       DocumentSnapshot snapshot = await transaction.get(ref);
       if (!snapshot.exists) {
-        ref.set({"images": imageURL});
+        ref.set({"images": returnURL});
         // print(ref.id);
 
         return true;
@@ -272,7 +289,7 @@ class _EditNoteState extends State<EditNote> {
         _image = File(pickedFile.path);
         imagepicked = true;
         // uploadFile(_image);
-
+        finalUpload();
         // Use if you only need a single picture
       } else {
         print('No image selected.');
@@ -280,9 +297,9 @@ class _EditNoteState extends State<EditNote> {
     });
   }
 
+  bool imgLoading = false;
   Color newColor;
   String selectedUserToken;
-  String returnURL;
   uploadFile(File _image) async {
     Uint8List bytes = await pickedFile.readAsBytes();
     FirebaseStorage storage = FirebaseStorage.instance;
@@ -294,6 +311,11 @@ class _EditNoteState extends State<EditNote> {
     await uploadTask.whenComplete(() async {
       await ref.getDownloadURL().then((fileURL) {
         returnURL = fileURL;
+        setState(() {
+          imgLoading = false;
+        });
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Image Added')));
         print(returnURL);
       });
       return returnURL;
@@ -509,25 +531,24 @@ class _EditNoteState extends State<EditNote> {
                     child: IconButton(
                       onPressed: () async {
                         imagepicked
-                            ? await finalUpload().then(
-                                (value) => widget.docToEdit.reference.update({
-                                      'title': title.text,
-                                      'content': content.text,
-                                      'images': returnURL,
-                                      'noteColor': newColor.value,
-                                      'listcheck': _todoList.map((e) {
-                                        return e.toJson();
-                                      }).toList()
-                                    }).whenComplete(() {
-                                      Navigator.pop(context);
-                                      return ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          duration: Duration(seconds: 2),
-                                          content: Text('Saved'),
-                                        ),
-                                      );
-                                    }))
+                            ? widget.docToEdit.reference.update({
+                                'title': title.text,
+                                'content': content.text,
+                                'images': returnURL,
+                                'noteColor': newColor.value,
+                                'listcheck': _todoList.map((e) {
+                                  return e.toJson();
+                                }).toList()
+                              }).whenComplete(() {
+                                Navigator.pop(context);
+                                return ScaffoldMessenger.of(context)
+                                    .showSnackBar(
+                                  SnackBar(
+                                    duration: Duration(seconds: 2),
+                                    content: Text('Saved'),
+                                  ),
+                                );
+                              })
                             : widget.docToEdit.reference.update({
                                 'title': title.text,
                                 'content': content.text,
@@ -667,6 +688,9 @@ class _EditNoteState extends State<EditNote> {
                       ? Expanded(
                           flex: 2,
                           child: InkWell(
+                            onTap: () {
+                              _showImage(context, returnURL);
+                            },
                             onLongPress: () {
                               widget.docToEdit.reference
                                   .update({'images': null}).whenComplete(
@@ -687,7 +711,7 @@ class _EditNoteState extends State<EditNote> {
                                 minScale: 0.5,
                                 maxScale: 2,
                                 child: Image.network(
-                                  imageUrl,
+                                  returnURL,
                                   fit: BoxFit.cover,
                                   loadingBuilder: (BuildContext context,
                                       Widget child,
@@ -716,6 +740,9 @@ class _EditNoteState extends State<EditNote> {
                       ? Expanded(
                           flex: 2,
                           child: InkWell(
+                            onTap: () {
+                              _showImage(context, notesUrl);
+                            },
                             onLongPress: () {
                               widget.docToEdit.reference
                                   .update({'noteAdded': null}).whenComplete(
@@ -875,15 +902,20 @@ class _EditNoteState extends State<EditNote> {
                         color: Colors.white,
                       ),
                     ),
-                    IconButton(
-                      onPressed: () {
-                        getImage(true);
-                      },
-                      icon: Icon(
-                        Icons.image,
-                        color: Colors.white,
-                      ),
-                    ),
+                    imgLoading
+                        ? CircularProgressIndicator()
+                        : IconButton(
+                            onPressed: () {
+                              getImage(true);
+                              setState(() {
+                                imgLoading = true;
+                              });
+                            },
+                            icon: Icon(
+                              Icons.image,
+                              color: Colors.white,
+                            ),
+                          ),
                     IconButton(
                       onPressed: () {
                         _changeColor(context);
@@ -1001,7 +1033,7 @@ class _EditNoteState extends State<EditNote> {
                                 minScale: 0.5,
                                 maxScale: 2,
                                 child: Image.network(
-                                  imageUrl,
+                                  returnURL,
                                   fit: BoxFit.cover,
                                   loadingBuilder: (BuildContext context,
                                       Widget child,
