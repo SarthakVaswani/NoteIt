@@ -38,9 +38,6 @@ class _HomeScreenState extends State<HomeScreen> {
           children: <Widget>[
             HomeView(),
             SearchPage(),
-            Container(
-              color: Colors.green,
-            ),
             Profile(),
           ],
         ),
@@ -63,10 +60,6 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavyBarItem(
               title: Text('Search'),
               icon: Icon(Icons.search_rounded),
-              activeColor: Colors.white),
-          BottomNavyBarItem(
-              title: Text('Item Three'),
-              icon: Icon(Icons.chat_bubble),
               activeColor: Colors.white),
           BottomNavyBarItem(
               title: Text('Profile'),

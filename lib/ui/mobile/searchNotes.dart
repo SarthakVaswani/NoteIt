@@ -51,6 +51,20 @@ class _SearchPageState extends State<SearchPage> {
               child: Column(
                 children: [
                   SizedBox(
+                    height: 15,
+                  ),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Text(
+                        'Search',
+                        style: TextStyle(
+                            fontSize: 30, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
                     height: 10,
                   ),
                   Padding(
@@ -60,48 +74,47 @@ class _SearchPageState extends State<SearchPage> {
                       children: [
                         Container(
                           height: 40,
-                          width: 300,
-                          child: TextField(
-                            autofocus: false,
-                            controller: search,
-                            decoration: InputDecoration(
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(45)),
-                                  borderSide: BorderSide(color: Colors.black),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(45)),
-                                  borderSide: BorderSide(color: Colors.black),
-                                ),
-                                filled: true,
-                                hintStyle: TextStyle(color: Colors.black),
-                                hintText: "Search your notes",
-                                fillColor: Colors.grey[200]),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        CircleAvatar(
-                          backgroundColor: Colors.black,
-                          child: IconButton(
-                            onPressed: () async {
-                              await userNotes(
-                                      currentUser: firebaseUser.email,
-                                      keyword: search.text)
-                                  .then((value) => snapshot = value);
-                              setState(() {
-                                print(snapshot.docs);
-                              });
-                            },
-                            icon: Icon(
-                              Icons.search,
-                              color: Colors.white,
+                          width: 320,
+                          child: PhysicalModel(
+                            borderRadius: BorderRadius.circular(25),
+                            color: Colors.white,
+                            elevation: 7.0,
+                            shadowColor: Colors.black,
+                            child: TextField(
+                              onSubmitted: (value) async {
+                                await userNotes(
+                                        currentUser: firebaseUser.email,
+                                        keyword: search.text)
+                                    .then((value) => snapshot = value);
+                                setState(() {
+                                  print(snapshot.docs);
+                                });
+                              },
+                              autofocus: false,
+                              controller: search,
+                              textAlign: TextAlign.center,
+                              decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.zero,
+                                  border: InputBorder.none,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(45)),
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(45)),
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent),
+                                  ),
+                                  filled: true,
+                                  hintStyle: TextStyle(color: Colors.black),
+                                  hintText: "Search your notes",
+                                  fillColor: Colors.grey[200]),
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),

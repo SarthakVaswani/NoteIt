@@ -371,7 +371,7 @@ class _AddNoteState extends State<AddNote> {
                     style: TextStyle(color: Colors.black, fontSize: 28),
                   ),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.38,
+                    width: MediaQuery.of(context).size.width * 0.35,
                   ),
                   CircleAvatar(
                       backgroundColor: Colors.black,
@@ -502,6 +502,7 @@ class _AddNoteState extends State<AddNote> {
                             onPressed: () {
                               setState(() {
                                 drawBoard = !drawBoard;
+                                islist = !islist;
                               });
                             },
                             icon: Icon(
@@ -536,6 +537,7 @@ class _AddNoteState extends State<AddNote> {
                             onPressed: () {
                               setState(() {
                                 drawBoard = !drawBoard;
+                                islist = !islist;
                               });
                             },
                             icon: Icon(

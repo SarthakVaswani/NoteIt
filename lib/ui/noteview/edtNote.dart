@@ -493,7 +493,7 @@ class _EditNoteState extends State<EditNote> {
                     style: TextStyle(color: Colors.black, fontSize: 28),
                   ),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.38,
+                    width: MediaQuery.of(context).size.width * 0.35,
                   ),
                   CircleAvatar(
                     backgroundColor: Colors.black,
