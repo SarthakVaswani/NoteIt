@@ -9,6 +9,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:notes_app/main.dart';
+import 'package:notes_app/service/local_authS/localauthS.dart';
 import 'package:notes_app/service/services.dart';
 import 'package:notes_app/ui/screenDecider.dart';
 import 'package:notes_app/ui/widgets/colorPicker.dart';
@@ -79,12 +80,21 @@ class _EditNoteState extends State<EditNote> {
     }
   }
 
+  bool hasLock = false;
+  checkLock() async {
+    if (widget.docToEdit.data()['lock'] == true) {
+      setState(() {
+        hasLock = true;
+      });
+    }
+  }
+
   final List<_TodoItem> _todoList = [];
   final List<_NewTODO> _newTodo = [];
   var pp = [];
   final Map<String, bool> _map = {};
   checkList() async {
-    if (widget.docToEdit.data()['listcheck'] != null) {
+    if (widget.docToEdit.data()['listcheck'].toString().isNotEmpty) {
       // notesUrl = widget.docToEdit.data()['listcheck'];
       hasList = true;
       pp = widget.docToEdit.data()['listcheck'];
@@ -103,6 +113,7 @@ class _EditNoteState extends State<EditNote> {
     checkImage();
     checkNotes();
     checkList();
+    checkLock();
     super.initState();
   }
 
@@ -165,20 +176,18 @@ class _EditNoteState extends State<EditNote> {
   }
 
   Widget listTest() {
-    return Expanded(
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: _newTodo.length,
-        itemBuilder: (context, index) {
-          return CheckboxListTile(
-            value: _newTodo[index].completed,
-            title: Text(_newTodo[index].title),
-            onChanged: (value) => setState(
-              () => _newTodo[index].completed = value,
-            ),
-          );
-        },
-      ),
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: _newTodo.length,
+      itemBuilder: (context, index) {
+        return CheckboxListTile(
+          value: _newTodo[index].completed,
+          title: Text(_newTodo[index].title),
+          onChanged: (value) => setState(
+            () => _newTodo[index].completed = value,
+          ),
+        );
+      },
     );
   }
 
@@ -651,107 +660,122 @@ class _EditNoteState extends State<EditNote> {
                   ),
                 ),
               ),
-
-              hasImage
-                  ? InkWell(
-                      onLongPress: () {
-                        widget.docToEdit.reference
-                            .update({'images': null}).whenComplete(
-                                () => Navigator.pop(context));
-                        return ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: Duration(seconds: 2),
-                            content: Text('Deleted'),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        height: MediaQuery.of(context).size.height * 0.25,
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        child: InteractiveViewer(
-                          panEnabled: false, // Set it to false
-                          boundaryMargin: EdgeInsets.all(100),
-                          minScale: 0.5,
-                          maxScale: 2,
-                          child: Image.network(
-                            imageUrl,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (BuildContext context, Widget child,
-                                ImageChunkEvent loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes !=
-                                          null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes
-                                      : null,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  hasImage
+                      ? Expanded(
+                          flex: 2,
+                          child: InkWell(
+                            onLongPress: () {
+                              widget.docToEdit.reference
+                                  .update({'images': null}).whenComplete(
+                                      () => Navigator.pop(context));
+                              return ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: Duration(seconds: 2),
+                                  content: Text('Deleted'),
                                 ),
                               );
                             },
-                          ),
-                        ),
-                      ),
-                    )
-                  : hasNotes
-                      ? InkWell(
-                          onLongPress: () {
-                            widget.docToEdit.reference
-                                .update({'noteAdded': null}).whenComplete(
-                                    () => Navigator.pop(context));
-                            return ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                duration: Duration(seconds: 2),
-                                content: Text('Deleted'),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            height: MediaQuery.of(context).size.height * 0.25,
-                            width: MediaQuery.of(context).size.width * 0.5,
-                            child: InteractiveViewer(
-                              panEnabled: false, // Set it to false
-                              boundaryMargin: EdgeInsets.all(100),
-                              minScale: 0.5,
-                              maxScale: 2,
-                              child: Image.network(
-                                notesUrl,
-                                fit: BoxFit.cover,
-                                loadingBuilder: (BuildContext context,
-                                    Widget child,
-                                    ImageChunkEvent loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value: loadingProgress
-                                                  .expectedTotalBytes !=
-                                              null
-                                          ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                              loadingProgress.expectedTotalBytes
-                                          : null,
-                                    ),
-                                  );
-                                },
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.25,
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              child: InteractiveViewer(
+                                panEnabled: false, // Set it to false
+                                boundaryMargin: EdgeInsets.all(100),
+                                minScale: 0.5,
+                                maxScale: 2,
+                                child: Image.network(
+                                  imageUrl,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                           ),
                         )
                       : Container(),
+                  hasNotes
+                      ? Expanded(
+                          flex: 2,
+                          child: InkWell(
+                            onLongPress: () {
+                              widget.docToEdit.reference
+                                  .update({'noteAdded': null}).whenComplete(
+                                      () => Navigator.pop(context));
+                              return ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: Duration(seconds: 2),
+                                  content: Text('Deleted'),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.25,
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              child: InteractiveViewer(
+                                panEnabled: false, // Set it to false
+                                boundaryMargin: EdgeInsets.all(100),
+                                minScale: 0.5,
+                                maxScale: 2,
+                                child: Image.network(
+                                  notesUrl,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      : Container(),
+                ],
+              ),
               islist ? listTest() : Container(),
-              // hasList
               hasList
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 7),
-                          child: Text(
-                            'Previous Todo',
-                            style: TextStyle(
-                                fontSize: 17, fontWeight: FontWeight.bold),
-                          ),
-                        ),
+                        // Padding(
+                        //   padding: const EdgeInsets.symmetric(horizontal: 7),
+                        //   child: Text(
+                        //     'Previous Todo',
+                        //     style: TextStyle(
+                        //         fontSize: 17, fontWeight: FontWeight.bold),
+                        //   ),
+                        // ),
                         ListView.builder(
                             shrinkWrap: true,
                             itemCount: pp.length,
@@ -777,14 +801,6 @@ class _EditNoteState extends State<EditNote> {
                                             title: pp[index]['title'],
                                             completed: pp[index]['completed']));
                                       }
-                                      // _todoList.add(_TodoItem(
-                                      //     title: pp[index]['title'],
-                                      //     completed: pp[index]['completed']));
-                                      // for (int i = 0; i < pp.length; i++) {
-                                      //   _todoList.add(_TodoItem(
-                                      //       title: pp[i]['title'],
-                                      //       completed: pp[i]['completed']));
-                                      // }
                                     });
                                   });
                             }),
@@ -798,6 +814,41 @@ class _EditNoteState extends State<EditNote> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    hasLock
+                        ? IconButton(
+                            onPressed: () async {
+                              final isAuthenticated =
+                                  await LocalAuthApi.authenticate();
+                              if (isAuthenticated) {
+                                widget.docToEdit.reference
+                                    .update({'lock': false});
+                                setState(() {
+                                  hasLock = false;
+                                });
+                              }
+                            },
+                            icon: Icon(
+                              Icons.lock_open_rounded,
+                              color: Colors.white,
+                            ),
+                          )
+                        : IconButton(
+                            onPressed: () async {
+                              final isAuthenticated =
+                                  await LocalAuthApi.authenticate();
+                              if (isAuthenticated) {
+                                widget.docToEdit.reference
+                                    .update({'lock': true});
+                                setState(() {
+                                  hasLock = true;
+                                });
+                              }
+                            },
+                            icon: Icon(
+                              Icons.lock_sharp,
+                              color: Colors.white,
+                            ),
+                          ),
                     IconButton(
                       onPressed: () {
                         widget.docToEdit.reference

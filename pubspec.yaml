@@ -35,8 +35,6 @@ dependencies:
   transition: ^2.0.0
   url_launcher: ^6.0.2
   firebase: ^9.0.2
-  # flutter_local_notifications: 
-  # firebase_messaging:
   image_picker:
   firebase_storage:   
   onesignal_flutter:
@@ -48,6 +46,7 @@ dependencies:
   path_provider: ^2.0.8
   screenshot: ^1.2.3
   flutter_sound_lite: ^8.4.2
+  local_auth: ^1.1.9
 
 dev_dependencies:
   flutter_test:

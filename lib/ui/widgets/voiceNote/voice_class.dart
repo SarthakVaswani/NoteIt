@@ -1,7 +1,7 @@
 import 'package:flutter_sound_lite/flutter_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-final pathToSave = 'audio_ex.aac';
+final pathToSave = 'audio_ex.mp4';
 
 class NoteRecorder {
   FlutterSoundRecorder _flutterSoundRecorder;

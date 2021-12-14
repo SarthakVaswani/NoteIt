@@ -192,7 +192,11 @@ class _HomeViewState extends State<HomeView> {
                             .collection('Users')
                             .doc(FirebaseAuth.instance.currentUser.email)
                             .collection('Notes')
-                            .where("Pin", isGreaterThanOrEqualTo: "true")
+                            .where(
+                              "Pin",
+                              isGreaterThanOrEqualTo: "true",
+                            )
+                            .where('lock', isEqualTo: false)
                             .snapshots(),
                         builder: (BuildContext context,
                             AsyncSnapshot<QuerySnapshot> snapshotPinned) {
@@ -671,6 +675,7 @@ class _HomeViewState extends State<HomeView> {
                             .collection('Users')
                             .doc(FirebaseAuth.instance.currentUser.email)
                             .collection('Notes')
+                            .where('lock', isEqualTo: false)
                             .orderBy('dateTime', descending: true)
                             .snapshots(),
                         builder: (BuildContext context,

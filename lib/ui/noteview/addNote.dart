@@ -1,15 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:notes_app/ui/widgets/colorPicker.dart';
 import 'package:notes_app/ui/widgets/drawing/draw_line.dart';
@@ -221,6 +217,7 @@ class _AddNoteState extends State<AddNote> {
                   'createdBy': firebaseUser.email,
                   'noteColor': _color.value,
                   'noteAdded': noteUrl,
+                  'lock': false,
                   'listcheck': _todoList.map((e) {
                     return e.toJson();
                   }).toList()
@@ -537,7 +534,9 @@ class _AddNoteState extends State<AddNote> {
                             onPressed: () {
                               setState(() {
                                 drawBoard = !drawBoard;
-                                islist = !islist;
+                                if (islist) {
+                                  islist = false;
+                                }
                               });
                             },
                             icon: Icon(
@@ -722,8 +721,10 @@ class _AddNoteState extends State<AddNote> {
 
   TextEditingController editingController = TextEditingController();
   Widget listTest() {
-    return Expanded(
-      child: ListView.separated(
+    return Container(
+      height: 200,
+      child: ListView.builder(
+        shrinkWrap: true,
         itemCount: _todoList.length,
         itemBuilder: (context, index) {
           return CheckboxListTile(
@@ -736,21 +737,6 @@ class _AddNoteState extends State<AddNote> {
             ),
             onChanged: (value) => setState(
               () => _todoList[index].completed = value,
-            ),
-          );
-        },
-        separatorBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8.0,
-            ),
-            child: SizedBox.fromSize(
-              size: const Size.fromHeight(0.25),
-              child: const DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                ),
-              ),
             ),
           );
         },

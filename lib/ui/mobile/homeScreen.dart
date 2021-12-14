@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:notes_app/ui/mobile/homePage.dart';
 import 'package:notes_app/ui/mobile/profile.dart';
+import 'package:notes_app/ui/mobile/protectedNotes.dart';
 import 'package:notes_app/ui/mobile/searchNotes.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -38,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: <Widget>[
             HomeView(),
             SearchPage(),
+            ProtectedNotes(),
             Profile(),
           ],
         ),
@@ -60,6 +62,10 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavyBarItem(
               title: Text('Search'),
               icon: Icon(Icons.search_rounded),
+              activeColor: Colors.white),
+          BottomNavyBarItem(
+              title: Text('Protected'),
+              icon: Icon(Icons.lock),
               activeColor: Colors.white),
           BottomNavyBarItem(
               title: Text('Profile'),
