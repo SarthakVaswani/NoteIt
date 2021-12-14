@@ -15,6 +15,7 @@ import 'package:notes_app/ui/widgets/colorPicker.dart';
 import 'package:notes_app/ui/widgets/drawing/draw_line.dart';
 import 'package:notes_app/ui/widgets/drawing/sketcher.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:screenshot/screenshot.dart';
 
 import '../screenDecider.dart';
@@ -44,6 +45,10 @@ class _AddNoteState extends State<AddNote> {
   File imageFile;
 
   Future<void> save() async {
+    final status = await Permission.storage.request();
+    if (status != PermissionStatus.granted) {
+      print('Microphone Permission');
+    }
     await screenshotController
         .capture(delay: const Duration(milliseconds: 10))
         .then((Uint8List image) async {
@@ -61,6 +66,22 @@ class _AddNoteState extends State<AddNote> {
       }
     });
   }
+
+  Widget buildProgress(UploadTask uploadTask) => StreamBuilder<TaskSnapshot>(
+      stream: uploadTask.snapshotEvents,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final snap = snapshot.data;
+          final progress = snap.bytesTransferred / snap.totalBytes;
+          final percentage = (progress * 100).toStringAsFixed(2);
+          return Text(
+            '$percentage',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          );
+        } else {
+          return Container();
+        }
+      });
 
   Future<void> clear() async {
     setState(() {
@@ -84,6 +105,8 @@ class _AddNoteState extends State<AddNote> {
     firebaseUser = await FirebaseAuth.instance.currentUser;
   }
 
+  final Map<String, bool> _map = {};
+  int _count = 0;
   List<File> _images = [];
   File _image; // Used only if you need a single picture
   bool imagepicked = false;
@@ -127,16 +150,18 @@ class _AddNoteState extends State<AddNote> {
 
   String returnURL;
   String noteUrl;
-
+  UploadTask uploadTask;
   uploadNote(File _image) async {
     FirebaseStorage storage = FirebaseStorage.instance;
     Reference ref = storage.ref().child("image1" + DateTime.now().toString());
-    UploadTask uploadTask;
-    uploadTask = ref.putFile(_image);
 
+    uploadTask = ref.putFile(_image);
+    setState(() {});
     await uploadTask.whenComplete(() async {
       await ref.getDownloadURL().then((fileURL) {
         noteUrl = fileURL;
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Draw Note Added')));
         print(noteUrl);
       });
       return noteUrl;
@@ -147,11 +172,11 @@ class _AddNoteState extends State<AddNote> {
     Uint8List bytes = await pickedFile.readAsBytes();
     FirebaseStorage storage = FirebaseStorage.instance;
     Reference ref = storage.ref().child("image1" + DateTime.now().toString());
-    UploadTask uploadTask;
+
     uploadTask = desktop
         ? ref.putData(bytes, SettableMetadata(contentType: 'image/png'))
         : ref.putFile(_image);
-
+    setState(() {});
     await uploadTask.whenComplete(() async {
       await ref.getDownloadURL().then((fileURL) {
         returnURL = fileURL;
@@ -185,7 +210,7 @@ class _AddNoteState extends State<AddNote> {
                     'createdBy': firebaseUser.email,
                     'images': returnURL,
                     'noteColor': _color.value,
-                    'noteAdded': noteUrl
+                    'noteAdded': noteUrl,
                   }))
               : ref.set({
                   'dateTime': FieldValue.serverTimestamp(),
@@ -195,7 +220,10 @@ class _AddNoteState extends State<AddNote> {
                   'sharedTo': null,
                   'createdBy': firebaseUser.email,
                   'noteColor': _color.value,
-                  'noteAdded': noteUrl
+                  'noteAdded': noteUrl,
+                  'listcheck': _todoList.map((e) {
+                    return e.toJson();
+                  }).toList()
                 });
           print(ref.id);
           // setState(() {
@@ -279,6 +307,41 @@ class _AddNoteState extends State<AddNote> {
     );
   }
 
+  final TextEditingController _todoTitleController = TextEditingController();
+  final List<_TodoItem> _todoList = [];
+
+  Future<bool> _txtchange(BuildContext context) {
+    return showDialog(
+        // barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text('Add Todo Item'),
+              content: TextField(
+                controller: _todoTitleController,
+              ),
+              actions: [
+                TextButton(
+                  child: const Text('Add'),
+                  onPressed: () {
+                    setState(() {
+                      _todoList.add(
+                        _TodoItem(
+                          title: _todoTitleController.text,
+                          completed: false,
+                        ),
+                      );
+                      islist = true;
+                    });
+                    _todoTitleController.clear();
+                    FocusScope.of(context).unfocus();
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ));
+  }
+
+  bool islist = false;
   @override
   void initState() {
     getUser();
@@ -403,6 +466,7 @@ class _AddNoteState extends State<AddNote> {
                         ),
                       ),
                     ),
+              islist ? listTest() : Container(),
               Container(
                 decoration: BoxDecoration(
                     color: Colors.black,
@@ -476,6 +540,15 @@ class _AddNoteState extends State<AddNote> {
                             },
                             icon: Icon(
                               Icons.create,
+                              color: Colors.white,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              _txtchange(context);
+                            },
+                            icon: Icon(
+                              Icons.check_box,
                               color: Colors.white,
                             ),
                           ),
@@ -645,6 +718,44 @@ class _AddNoteState extends State<AddNote> {
     }
   }
 
+  TextEditingController editingController = TextEditingController();
+  Widget listTest() {
+    return Expanded(
+      child: ListView.separated(
+        itemCount: _todoList.length,
+        itemBuilder: (context, index) {
+          return CheckboxListTile(
+            value: _todoList[index].completed,
+            title: Text(
+              _todoList[index].title,
+              style: _todoList[index].completed
+                  ? TextStyle(decoration: TextDecoration.lineThrough)
+                  : TextStyle(decoration: TextDecoration.none),
+            ),
+            onChanged: (value) => setState(
+              () => _todoList[index].completed = value,
+            ),
+          );
+        },
+        separatorBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8.0,
+            ),
+            child: SizedBox.fromSize(
+              size: const Size.fromHeight(0.25),
+              child: const DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Widget buildCurrentPath(BuildContext context) {
     return GestureDetector(
       onPanStart: onPanStart,
@@ -720,16 +831,13 @@ class _AddNoteState extends State<AddNote> {
   }
 
   Widget buildStrokeToolbar() {
-    return Positioned(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          buildStrokeButton(5.0),
-          buildStrokeButton(10.0),
-          buildStrokeButton(15.0),
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        buildStrokeButton(5.0),
+        buildStrokeButton(10.0),
+        buildStrokeButton(15.0),
+      ],
     );
   }
 
@@ -816,5 +924,21 @@ class _AddNoteState extends State<AddNote> {
         ),
       ),
     );
+  }
+}
+
+class _TodoItem {
+  String title;
+  bool completed;
+
+  _TodoItem({
+    @required this.title,
+    @required this.completed,
+  });
+  Map<String, dynamic> toJson() {
+    return {
+      "title": title,
+      "completed": completed,
+    };
   }
 }

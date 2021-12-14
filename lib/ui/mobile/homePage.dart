@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/ui/widgets/toggleBar.dart';
-import 'package:notes_app/ui/widgets/whiteboard.dart';
+import 'package:notes_app/ui/widgets/voiceNote/voiceNote.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../noteview/addNote.dart';
 import 'package:transition/transition.dart';

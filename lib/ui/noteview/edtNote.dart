@@ -13,6 +13,38 @@ import 'package:notes_app/service/services.dart';
 import 'package:notes_app/ui/screenDecider.dart';
 import 'package:notes_app/ui/widgets/colorPicker.dart';
 
+class _TodoItem {
+  String title;
+  bool completed;
+
+  _TodoItem({
+    @required this.title,
+    @required this.completed,
+  });
+  Map<String, dynamic> toJson() {
+    return {
+      "title": title,
+      "completed": completed,
+    };
+  }
+}
+
+class _NewTODO {
+  String title;
+  bool completed;
+
+  _NewTODO({
+    @required this.title,
+    @required this.completed,
+  });
+  Map<String, dynamic> toJson() {
+    return {
+      "title": title,
+      "completed": completed,
+    };
+  }
+}
+
 class EditNote extends StatefulWidget {
   DocumentSnapshot docToEdit;
   EditNote({this.docToEdit});
@@ -30,8 +62,9 @@ class _EditNoteState extends State<EditNote> {
   var firebaseUser = FirebaseAuth.instance.currentUser;
   bool hasImage = false;
   bool hasNotes = false;
+  bool hasList = false;
   String imageUrl;
-  String notesUrl;
+  var notesUrl;
   checkImage() async {
     if (widget.docToEdit.data()['images'] != null) {
       imageUrl = widget.docToEdit.data()['images'];
@@ -46,6 +79,22 @@ class _EditNoteState extends State<EditNote> {
     }
   }
 
+  final List<_TodoItem> _todoList = [];
+  final List<_NewTODO> _newTodo = [];
+  var pp = [];
+  final Map<String, bool> _map = {};
+  checkList() async {
+    if (widget.docToEdit.data()['listcheck'] != null) {
+      // notesUrl = widget.docToEdit.data()['listcheck'];
+      hasList = true;
+      pp = widget.docToEdit.data()['listcheck'];
+      for (int i = 0; i < pp.length; i++) {
+        _todoList.add(
+            _TodoItem(title: pp[i]['title'], completed: pp[i]['completed']));
+      }
+    }
+  }
+
   @override
   void initState() {
     title = TextEditingController(text: widget.docToEdit.data()['title']);
@@ -53,7 +102,7 @@ class _EditNoteState extends State<EditNote> {
     newColor = Color(widget.docToEdit.data()['noteColor']);
     checkImage();
     checkNotes();
-
+    checkList();
     super.initState();
   }
 
@@ -73,7 +122,67 @@ class _EditNoteState extends State<EditNote> {
     }
   }
 
-  Future<bool> enterNotes() async {
+  final TextEditingController _todoTitleController = TextEditingController();
+
+  bool islist = false;
+  Future<bool> _txtchange(BuildContext context) {
+    return showDialog(
+        // barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text('Add Todo Item'),
+              content: TextField(
+                controller: _todoTitleController,
+              ),
+              actions: [
+                TextButton(
+                  child: const Text('Add'),
+                  onPressed: () {
+                    setState(() {
+                      _newTodo.add(
+                        _NewTODO(
+                          title: _todoTitleController.text,
+                          completed: false,
+                        ),
+                      );
+                      islist = true;
+                      if (islist) {
+                        for (int k = 0; k < _newTodo.length; k++) {
+                          _todoList.add(_TodoItem(
+                            title: _newTodo[k].title,
+                            completed: _newTodo[k].completed,
+                          ));
+                        }
+                      }
+                    });
+                    _todoTitleController.clear();
+                    FocusScope.of(context).unfocus();
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ));
+  }
+
+  Widget listTest() {
+    return Expanded(
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: _newTodo.length,
+        itemBuilder: (context, index) {
+          return CheckboxListTile(
+            value: _newTodo[index].completed,
+            title: Text(_newTodo[index].title),
+            onChanged: (value) => setState(
+              () => _newTodo[index].completed = value,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Future<bool> enterNotesToshared() async {
     try {
       FirebaseFirestore.instance.runTransaction((transaction) async {
         FirebaseFirestore.instance
@@ -90,6 +199,9 @@ class _EditNoteState extends State<EditNote> {
           'noteColor': widget.docToEdit.data()['noteColor'],
           'images': widget.docToEdit.data()['images'],
           'noteAdded': widget.docToEdit.data()['noteAdded'],
+          'listcheck': _todoList.map((e) {
+            return e.toJson();
+          }).toList()
         });
       });
     } catch (e) {
@@ -202,7 +314,7 @@ class _EditNoteState extends State<EditNote> {
                         setState(() {
                           widget.docToEdit.reference
                               .update({"sharedTo": selectedUser});
-                          enterNotes().whenComplete(() async {
+                          enterNotesToshared().whenComplete(() async {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 duration: Duration(seconds: 2),
@@ -299,6 +411,7 @@ class _EditNoteState extends State<EditNote> {
       );
     }
 
+    bool isUpdated = false;
     Future<bool> _addPeople(BuildContext context) {
       return showDialog(
         // barrierDismissible: false,
@@ -392,7 +505,10 @@ class _EditNoteState extends State<EditNote> {
                                       'title': title.text,
                                       'content': content.text,
                                       'images': returnURL,
-                                      'noteColor': newColor.value
+                                      'noteColor': newColor.value,
+                                      'listcheck': _todoList.map((e) {
+                                        return e.toJson();
+                                      }).toList()
                                     }).whenComplete(() {
                                       Navigator.pop(context);
                                       return ScaffoldMessenger.of(context)
@@ -406,7 +522,10 @@ class _EditNoteState extends State<EditNote> {
                             : widget.docToEdit.reference.update({
                                 'title': title.text,
                                 'content': content.text,
-                                'noteColor': newColor.value
+                                'noteColor': newColor.value,
+                                'listcheck': _todoList.map((e) {
+                                  return e.toJson();
+                                }).toList()
                               }).whenComplete(() {
                                 Navigator.pop(context);
                                 return ScaffoldMessenger.of(context)
@@ -435,7 +554,10 @@ class _EditNoteState extends State<EditNote> {
                                       'sharedTo':
                                           widget.docToEdit.data()['sharedTo'],
                                       'images': returnURL,
-                                      'noteColor': newColor.value
+                                      'noteColor': newColor.value,
+                                      'listcheck': _todoList.map((e) {
+                                        return e.toJson();
+                                      }).toList()
                                     });
                                   }).whenComplete(() => Navigator.pop(context)))
                               : FirebaseFirestore.instance
@@ -450,7 +572,10 @@ class _EditNoteState extends State<EditNote> {
                                     'content': content.text,
                                     'sharedTo':
                                         widget.docToEdit.data()['sharedTo'],
-                                    'noteColor': newColor.value
+                                    'noteColor': newColor.value,
+                                    'listcheck': _todoList.map((e) {
+                                      return e.toJson();
+                                    }).toList()
                                   });
                                 }).whenComplete(() => Navigator.pop(context));
                           return ScaffoldMessenger.of(context).showSnackBar(
@@ -481,9 +606,6 @@ class _EditNoteState extends State<EditNote> {
           margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Column(
             children: [
-              // Divider(
-              //   color: Colors.black,
-              // ),
               Container(
                 child: TextFormField(
                   enableInteractiveSelection: true,
@@ -529,6 +651,7 @@ class _EditNoteState extends State<EditNote> {
                   ),
                 ),
               ),
+
               hasImage
                   ? InkWell(
                       onLongPress: () {
@@ -614,9 +737,60 @@ class _EditNoteState extends State<EditNote> {
                             ),
                           ),
                         )
-                      : SizedBox(
-                          height: 5,
+                      : Container(),
+              islist ? listTest() : Container(),
+              // hasList
+              hasList
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 7),
+                          child: Text(
+                            'Previous Todo',
+                            style: TextStyle(
+                                fontSize: 17, fontWeight: FontWeight.bold),
+                          ),
                         ),
+                        ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: pp.length,
+                            itemBuilder: (context, index) {
+                              return CheckboxListTile(
+                                  value: pp[index]['completed'],
+                                  title: Text(
+                                    pp[index]['title'],
+                                    style: pp[index]['completed']
+                                        ? TextStyle(
+                                            decoration:
+                                                TextDecoration.lineThrough)
+                                        : TextStyle(
+                                            decoration: TextDecoration.none),
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isUpdated = true;
+                                      pp[index]['completed'] = value;
+                                      if (isUpdated) {
+                                        _todoList.removeAt(index);
+                                        _todoList.add(_TodoItem(
+                                            title: pp[index]['title'],
+                                            completed: pp[index]['completed']));
+                                      }
+                                      // _todoList.add(_TodoItem(
+                                      //     title: pp[index]['title'],
+                                      //     completed: pp[index]['completed']));
+                                      // for (int i = 0; i < pp.length; i++) {
+                                      //   _todoList.add(_TodoItem(
+                                      //       title: pp[i]['title'],
+                                      //       completed: pp[i]['completed']));
+                                      // }
+                                    });
+                                  });
+                            }),
+                      ],
+                    )
+                  : Container(),
               Container(
                 decoration: BoxDecoration(
                     color: Colors.black,
@@ -665,6 +839,15 @@ class _EditNoteState extends State<EditNote> {
                       },
                       icon: Icon(
                         Icons.color_lens_sharp,
+                        color: Colors.white,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _txtchange(context);
+                      },
+                      icon: Icon(
+                        Icons.check_box,
                         color: Colors.white,
                       ),
                     ),
