@@ -691,6 +691,7 @@ class _HomeViewState extends State<HomeView> {
                                   shrinkWrap: true,
                                   gridDelegate:
                                       SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisSpacing: 0.09,
                                           crossAxisCount: 2),
                                   itemCount: snapshot.hasData
                                       ? snapshot.data.docs.length
@@ -876,12 +877,18 @@ class _HomeViewState extends State<HomeView> {
                                                             .symmetric(
                                                         horizontal: 15,
                                                         vertical: 10),
-                                                    child: Text(
-                                                      snapshot.data.docs[index]
-                                                          .data()["title"],
-                                                      style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 25),
+                                                    child: Padding(
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          vertical: 20),
+                                                      child: Text(
+                                                        snapshot
+                                                            .data.docs[index]
+                                                            .data()["title"],
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 23),
+                                                      ),
                                                     ),
                                                   ),
                                                 ),

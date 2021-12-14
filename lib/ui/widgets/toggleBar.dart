@@ -77,7 +77,7 @@ class _AnimatedToggleState extends State<AnimatedToggle> {
           ),
           AnimatedAlign(
             duration: const Duration(milliseconds: 250),
-            curve: Curves.elasticIn,
+            curve: Curves.linear,
             alignment:
                 initialPosition ? Alignment.centerLeft : Alignment.centerRight,
             child: Container(
