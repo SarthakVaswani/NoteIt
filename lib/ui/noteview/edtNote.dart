@@ -13,6 +13,10 @@ import 'package:notes_app/service/local_authS/localauthS.dart';
 import 'package:notes_app/service/services.dart';
 import 'package:notes_app/ui/screenDecider.dart';
 import 'package:notes_app/ui/widgets/colorPicker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
 
 class _TodoItem {
   String title;
@@ -396,6 +400,28 @@ class _EditNoteState extends State<EditNote> {
       );
     }
 
+    ScreenshotController screenshotController = ScreenshotController();
+
+    File sharedFile;
+    Future<void> shareTo() async {
+      final status = await Permission.storage.request();
+      if (status != PermissionStatus.granted) {
+        print('Storage Permission');
+      }
+      await screenshotController
+          .capture(delay: const Duration(milliseconds: 3))
+          .then((Uint8List image) async {
+        if (image != null) {
+          final directory = await getApplicationDocumentsDirectory();
+          sharedFile = await File('${directory.path}/image.png').create();
+          await sharedFile.writeAsBytes(image);
+          await Share.shareFiles([sharedFile.path], text: title.text);
+
+          /// Share Plugin
+        }
+      });
+    }
+
     StateSetter _setState;
     Color _color = Color(0xffddf0f7);
     Future<bool> _changeColor(BuildContext context) {
@@ -524,7 +550,15 @@ class _EditNoteState extends State<EditNote> {
                     style: TextStyle(color: Colors.black, fontSize: 28),
                   ),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.35,
+                    width: MediaQuery.of(context).size.width * 0.25,
+                  ),
+                  IconButton(
+                      onPressed: () async {
+                        shareTo();
+                      },
+                      icon: Icon(Icons.share_rounded)),
+                  SizedBox(
+                    width: 5,
                   ),
                   CircleAvatar(
                     backgroundColor: Colors.black,
@@ -633,207 +667,234 @@ class _EditNoteState extends State<EditNote> {
         ),
         backgroundColor: newColor,
         body: Container(
-          margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          margin: EdgeInsets.symmetric(vertical: 10),
           child: Column(
             children: [
-              Container(
-                child: TextFormField(
-                  enableInteractiveSelection: true,
-                  focusNode: FocusNode(),
-                  cursorColor: Color(0xffddf0f7),
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold),
-                  controller: title,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 5, vertical: 6),
-                    hintText: 'Title',
-                    hintStyle: TextStyle(color: Colors.black, fontSize: 40),
-                  ),
-                ),
-              ),
-              Divider(
-                color: Colors.black,
-                thickness: 0.5,
-              ),
               Expanded(
-                child: Container(
-                  decoration: BoxDecoration(),
-                  child: TextFormField(
-                    enableInteractiveSelection: true,
-                    focusNode: FocusNode(),
-                    cursorColor: Color(0xff2c2b4b),
-                    style: TextStyle(color: Colors.black, fontSize: 23),
-                    controller: content,
-                    maxLines: null,
-                    expands: true,
-                    decoration: InputDecoration(
-                      hintText: 'Content',
-                      hintStyle: TextStyle(
-                          color: Colors.black.withOpacity(0.7), fontSize: 23),
-                    ),
+                child: Screenshot(
+                  controller: screenshotController,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 14),
+                    color: newColor,
+                    child: Column(children: [
+                      Container(
+                        child: TextFormField(
+                          enableInteractiveSelection: true,
+                          focusNode: FocusNode(),
+                          cursorColor: Color(0xffddf0f7),
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 36,
+                              fontWeight: FontWeight.bold),
+                          controller: title,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 5, vertical: 6),
+                            hintText: 'Title',
+                            hintStyle:
+                                TextStyle(color: Colors.black, fontSize: 40),
+                          ),
+                        ),
+                      ),
+                      Divider(
+                        color: Colors.black,
+                        thickness: 0.5,
+                      ),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(),
+                          child: TextFormField(
+                            enableInteractiveSelection: true,
+                            focusNode: FocusNode(),
+                            cursorColor: Color(0xff2c2b4b),
+                            style: TextStyle(color: Colors.black, fontSize: 23),
+                            controller: content,
+                            maxLines: null,
+                            expands: true,
+                            decoration: InputDecoration(
+                              hintText: 'Content',
+                              hintStyle: TextStyle(
+                                  color: Colors.black.withOpacity(0.7),
+                                  fontSize: 23),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          hasImage
+                              ? Expanded(
+                                  flex: 2,
+                                  child: InkWell(
+                                    onTap: () {
+                                      _showImage(context, returnURL);
+                                    },
+                                    onLongPress: () {
+                                      widget.docToEdit.reference.update({
+                                        'images': null
+                                      }).whenComplete(
+                                          () => Navigator.pop(context));
+                                      return ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          duration: Duration(seconds: 2),
+                                          content: Text('Deleted'),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.25,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.5,
+                                      child: InteractiveViewer(
+                                        panEnabled: false, // Set it to false
+                                        boundaryMargin: EdgeInsets.all(100),
+                                        minScale: 0.5,
+                                        maxScale: 2,
+                                        child: Image.network(
+                                          returnURL,
+                                          fit: BoxFit.cover,
+                                          loadingBuilder: (BuildContext context,
+                                              Widget child,
+                                              ImageChunkEvent loadingProgress) {
+                                            if (loadingProgress == null)
+                                              return child;
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                value: loadingProgress
+                                                            .expectedTotalBytes !=
+                                                        null
+                                                    ? loadingProgress
+                                                            .cumulativeBytesLoaded /
+                                                        loadingProgress
+                                                            .expectedTotalBytes
+                                                    : null,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Container(),
+                          hasNotes
+                              ? Expanded(
+                                  flex: 2,
+                                  child: InkWell(
+                                    onTap: () {
+                                      _showImage(context, notesUrl);
+                                    },
+                                    onLongPress: () {
+                                      widget.docToEdit.reference.update({
+                                        'noteAdded': null
+                                      }).whenComplete(
+                                          () => Navigator.pop(context));
+                                      return ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          duration: Duration(seconds: 2),
+                                          content: Text('Deleted'),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.25,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.5,
+                                      child: InteractiveViewer(
+                                        panEnabled: false, // Set it to false
+                                        boundaryMargin: EdgeInsets.all(100),
+                                        minScale: 0.5,
+                                        maxScale: 2,
+                                        child: Image.network(
+                                          notesUrl,
+                                          fit: BoxFit.cover,
+                                          loadingBuilder: (BuildContext context,
+                                              Widget child,
+                                              ImageChunkEvent loadingProgress) {
+                                            if (loadingProgress == null)
+                                              return child;
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                value: loadingProgress
+                                                            .expectedTotalBytes !=
+                                                        null
+                                                    ? loadingProgress
+                                                            .cumulativeBytesLoaded /
+                                                        loadingProgress
+                                                            .expectedTotalBytes
+                                                    : null,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Container(),
+                        ],
+                      ),
+                      islist ? listTest() : Container(),
+                      hasList
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Padding(
+                                //   padding: const EdgeInsets.symmetric(horizontal: 7),
+                                //   child: Text(
+                                //     'Previous Todo',
+                                //     style: TextStyle(
+                                //         fontSize: 17, fontWeight: FontWeight.bold),
+                                //   ),
+                                // ),
+                                ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: pp.length,
+                                    itemBuilder: (context, index) {
+                                      return CheckboxListTile(
+                                          value: pp[index]['completed'],
+                                          title: Text(
+                                            pp[index]['title'],
+                                            style: pp[index]['completed']
+                                                ? TextStyle(
+                                                    decoration: TextDecoration
+                                                        .lineThrough)
+                                                : TextStyle(
+                                                    decoration:
+                                                        TextDecoration.none),
+                                          ),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              isUpdated = true;
+                                              pp[index]['completed'] = value;
+                                              if (isUpdated) {
+                                                _todoList.removeAt(index);
+                                                _todoList.add(_TodoItem(
+                                                    title: pp[index]['title'],
+                                                    completed: pp[index]
+                                                        ['completed']));
+                                              }
+                                            });
+                                          });
+                                    }),
+                              ],
+                            )
+                          : Container(),
+                    ]),
                   ),
                 ),
               ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  hasImage
-                      ? Expanded(
-                          flex: 2,
-                          child: InkWell(
-                            onTap: () {
-                              _showImage(context, returnURL);
-                            },
-                            onLongPress: () {
-                              widget.docToEdit.reference
-                                  .update({'images': null}).whenComplete(
-                                      () => Navigator.pop(context));
-                              return ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: Duration(seconds: 2),
-                                  content: Text('Deleted'),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              height: MediaQuery.of(context).size.height * 0.25,
-                              width: MediaQuery.of(context).size.width * 0.5,
-                              child: InteractiveViewer(
-                                panEnabled: false, // Set it to false
-                                boundaryMargin: EdgeInsets.all(100),
-                                minScale: 0.5,
-                                maxScale: 2,
-                                child: Image.network(
-                                  returnURL,
-                                  fit: BoxFit.cover,
-                                  loadingBuilder: (BuildContext context,
-                                      Widget child,
-                                      ImageChunkEvent loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return Center(
-                                      child: CircularProgressIndicator(
-                                        value: loadingProgress
-                                                    .expectedTotalBytes !=
-                                                null
-                                            ? loadingProgress
-                                                    .cumulativeBytesLoaded /
-                                                loadingProgress
-                                                    .expectedTotalBytes
-                                            : null,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                      : Container(),
-                  hasNotes
-                      ? Expanded(
-                          flex: 2,
-                          child: InkWell(
-                            onTap: () {
-                              _showImage(context, notesUrl);
-                            },
-                            onLongPress: () {
-                              widget.docToEdit.reference
-                                  .update({'noteAdded': null}).whenComplete(
-                                      () => Navigator.pop(context));
-                              return ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: Duration(seconds: 2),
-                                  content: Text('Deleted'),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              height: MediaQuery.of(context).size.height * 0.25,
-                              width: MediaQuery.of(context).size.width * 0.5,
-                              child: InteractiveViewer(
-                                panEnabled: false, // Set it to false
-                                boundaryMargin: EdgeInsets.all(100),
-                                minScale: 0.5,
-                                maxScale: 2,
-                                child: Image.network(
-                                  notesUrl,
-                                  fit: BoxFit.cover,
-                                  loadingBuilder: (BuildContext context,
-                                      Widget child,
-                                      ImageChunkEvent loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return Center(
-                                      child: CircularProgressIndicator(
-                                        value: loadingProgress
-                                                    .expectedTotalBytes !=
-                                                null
-                                            ? loadingProgress
-                                                    .cumulativeBytesLoaded /
-                                                loadingProgress
-                                                    .expectedTotalBytes
-                                            : null,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                      : Container(),
-                ],
-              ),
-              islist ? listTest() : Container(),
-              hasList
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Padding(
-                        //   padding: const EdgeInsets.symmetric(horizontal: 7),
-                        //   child: Text(
-                        //     'Previous Todo',
-                        //     style: TextStyle(
-                        //         fontSize: 17, fontWeight: FontWeight.bold),
-                        //   ),
-                        // ),
-                        ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: pp.length,
-                            itemBuilder: (context, index) {
-                              return CheckboxListTile(
-                                  value: pp[index]['completed'],
-                                  title: Text(
-                                    pp[index]['title'],
-                                    style: pp[index]['completed']
-                                        ? TextStyle(
-                                            decoration:
-                                                TextDecoration.lineThrough)
-                                        : TextStyle(
-                                            decoration: TextDecoration.none),
-                                  ),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      isUpdated = true;
-                                      pp[index]['completed'] = value;
-                                      if (isUpdated) {
-                                        _todoList.removeAt(index);
-                                        _todoList.add(_TodoItem(
-                                            title: pp[index]['title'],
-                                            completed: pp[index]['completed']));
-                                      }
-                                    });
-                                  });
-                            }),
-                      ],
-                    )
-                  : Container(),
               Container(
                 decoration: BoxDecoration(
                     color: Colors.black,

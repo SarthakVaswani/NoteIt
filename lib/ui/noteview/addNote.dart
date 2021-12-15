@@ -43,7 +43,7 @@ class _AddNoteState extends State<AddNote> {
   Future<void> save() async {
     final status = await Permission.storage.request();
     if (status != PermissionStatus.granted) {
-      print('Microphone Permission');
+      print('Storage Permission');
     }
     await screenshotController
         .capture(delay: const Duration(milliseconds: 10))
