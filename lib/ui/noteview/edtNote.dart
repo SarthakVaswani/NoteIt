@@ -231,6 +231,7 @@ class _EditNoteState extends State<EditNote> {
           'noteColor': widget.docToEdit.data()['noteColor'],
           'images': widget.docToEdit.data()['images'],
           'noteAdded': widget.docToEdit.data()['noteAdded'],
+          'lock': false,
           'listcheck': _todoList.map((e) {
             return e.toJson();
           }).toList()

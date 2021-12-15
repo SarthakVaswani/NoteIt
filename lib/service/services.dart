@@ -134,7 +134,6 @@ Future<Response> sendNotification(
 
       // android_accent_color reprsent the color of the heading text in the notifiction
       "android_accent_color": "FF9976D2",
-      "isAnyWeb": true,
 
       "small_icon":
           "https://user-images.githubusercontent.com/55880923/111069791-b516f780-84f4-11eb-8af6-bdb33bdded0a.png",
@@ -144,7 +143,7 @@ Future<Response> sendNotification(
 
       "headings": {"en": userName},
 
-      "contents": {"en": "$fullName, shared Notes with you"},
+      "contents": {"en": "shared Notes with you"},
     }),
   );
 }
