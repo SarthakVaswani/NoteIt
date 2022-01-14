@@ -62,6 +62,7 @@ void main() async {
   // );
   runApp(MaterialApp(
     title: "NoteIt",
+    debugShowCheckedModeBanner: false,
     home: SplashScreen(),
   ));
 }

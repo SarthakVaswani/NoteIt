@@ -16,7 +16,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  bool _showPassword = false;
+  bool _showPassword = true;
   void _togglevisibility() {
     setState(() {
       _showPassword = !_showPassword;

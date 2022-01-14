@@ -16,58 +16,12 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  // var initializationSettingsAndroid =
-  //     new AndroidInitializationSettings('noteit');
   var firebaseUser = FirebaseAuth.instance.currentUser;
 
   bool isPinned = false;
   bool changeView = true;
   bool confirmPin = false;
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-  //     RemoteNotification notification = message.notification;
-  //     AndroidNotification android = message.notification?.android;
-  //     if (notification != null && android != null) {
-  //       flutterLocalNotificationsPlugin.show(
-  //           notification.hashCode,
-  //           notification.title,
-  //           notification.body,
-  //           NotificationDetails(
-  //             android: AndroidNotificationDetails(
-  //               channel.id,
-  //               channel.name,
-  //               // channel.description,
-  //               color: Colors.blue,
-  //               playSound: true,
-  //               icon: '@drawable/noteit',
-  //             ),
-  //           ));
-  //     }
-  //   });
-
-  //   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-  //     print('A new onMessageOpenedApp event was published!');
-  //     RemoteNotification notification = message.notification;
-  //     AndroidNotification android = message.notification?.android;
-  //     if (notification != null && android != null) {
-  //       showDialog(
-  //           context: context,
-  //           builder: (_) {
-  //             return AlertDialog(
-  //               title: Text(notification.title),
-  //               content: SingleChildScrollView(
-  //                 child: Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.start,
-  //                   children: [Text(notification.body)],
-  //                 ),
-  //               ),
-  //             );
-  //           });
-  //     }
-  //   });
-  // }
+  
 
   @override
   void initState() {
@@ -378,8 +332,7 @@ class _HomeViewState extends State<HomeView> {
                                           child: Card(
                                             elevation: 3,
                                             shape: RoundedRectangleBorder(
-                                                // side: BorderSide(
-                                                //     color: Colors.white, width: 0.01),
+                                              
                                                 borderRadius:
                                                     BorderRadius.circular(10)),
                                             margin: EdgeInsets.all(10),
@@ -844,11 +797,6 @@ class _HomeViewState extends State<HomeView> {
                                                           .data.docs[index]),
                                                   transitionEffect:
                                                       TransitionEffect.FADE)
-                                              // MaterialPageRoute(
-                                              //   builder: (context) => EditNote(
-                                              //     docToEdit: snapshot.data.docs[index],
-                                              //   ),
-                                              // ),
                                               );
                                           ScaffoldMessenger.of(context)
                                               .hideCurrentSnackBar();
