@@ -1,9 +1,10 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:notes_app/service/auth.dart';
-import 'package:notes_app/ui/screenDecider.dart';
+import 'package:notes_app/ui/widgets/toggleBar.dart';
+import 'package:notes_app/ui/widgets/voiceNote/voiceNote.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../noteview/addNote.dart';
 import 'package:transition/transition.dart';
@@ -15,6 +16,18 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  var firebaseUser = FirebaseAuth.instance.currentUser;
+
+  bool isPinned = false;
+  bool changeView = true;
+  bool confirmPin = false;
+  
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     Future<bool> _exitApp(BuildContext context) {
@@ -53,6 +66,7 @@ class _HomeViewState extends State<HomeView> {
       );
     }
 
+    int _toggleValue = 0;
     const _url = 'https://noteit.live';
     void _launchURL() async => await canLaunch(_url)
         ? await launch(_url)
@@ -60,159 +74,1041 @@ class _HomeViewState extends State<HomeView> {
     return WillPopScope(
       onWillPop: () async => _exitApp(context),
       child: Scaffold(
-        body: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                actions: [
-                  IconButton(
-                    icon: Icon(Icons.logout),
-                    onPressed: () async {
-                      Navigator.pop(context, true);
-                      bool shouldNavigate = await logOut();
-                      if (shouldNavigate) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AuthDecider()));
-                      }
-                    },
-                  ),
-                  IconButton(
-                      icon: Icon(Icons.web_asset),
-                      onPressed: () {
-                        _launchURL();
-                      }),
-                ],
-                elevation: 0,
-                automaticallyImplyLeading: false,
-                backgroundColor: Color(0xff2c2b4b),
-                expandedHeight: 200.0,
-                floating: false,
-                pinned: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  titlePadding: EdgeInsets.symmetric(horizontal: 15),
-                  title: Text(
-                    'Notes',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 50,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ];
-          },
-          body: Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              color: Color(0xff2c2b4b),
-            ),
-            child: SingleChildScrollView(
-              child: Column(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Column(
+            children: [
+              Row(
                 children: [
-                  StreamBuilder(
-                    stream: FirebaseFirestore.instance
-                        .collection('Users')
-                        .doc(FirebaseAuth.instance.currentUser.uid)
-                        .collection('Notes')
-                        .orderBy('dateTime', descending: true)
-                        .snapshots(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (!snapshot.hasData) {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                      return GridView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2),
-                        itemCount:
-                            snapshot.hasData ? snapshot.data.docs.length : 0,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  Transition(
-                                      child: EditNote(
-                                          docToEdit: snapshot.data.docs[index]),
-                                      transitionEffect: TransitionEffect.FADE)
-                                  // MaterialPageRoute(
-                                  //   builder: (context) => EditNote(
-                                  //     docToEdit: snapshot.data.docs[index],
-                                  //   ),
-                                  // ),
-                                  );
-                            },
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: Card(
-                                elevation: 3,
-                                shape: RoundedRectangleBorder(
-                                    // side: BorderSide(
-                                    //     color: Colors.white, width: 0.01),
-                                    borderRadius: BorderRadius.circular(10)),
-                                margin: EdgeInsets.all(10),
-                                color: Color(0xffddf0f7),
-                                child: Column(
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.topLeft,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 15, vertical: 10),
-                                        child: Text(
-                                          snapshot.data.docs[index]
-                                              .data()["title"],
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 25),
-                                        ),
-                                      ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.topLeft,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                        ),
-                                        child: Container(
-                                          child: Text(
-                                            snapshot.data.docs[index]
-                                                .data()["content"],
-                                            style: TextStyle(
-                                                color: Colors.black
-                                                    .withOpacity(0.5),
-                                                fontSize: 19),
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: true,
+                  Text(
+                    'NoteIt',
+                    style: TextStyle(color: Colors.black, fontSize: 28),
+                  )
+                ],
+              ),
+            ],
+          ),
+          elevation: 0,
+          backgroundColor: Colors.white,
+        ),
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            color: Colors.white,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 5,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AnimatedToggle(
+                      values: ['My Notes', 'Pinned'],
+                      onToggleCallback: (value) {
+                        setState(() {
+                          isPinned = !isPinned;
+                        });
+                      },
+                      buttonColor: Colors.black,
+                      backgroundColor: Color(0xfff6f6f6),
+                      textColor: Color(0xFFFFFFFF),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Align(
+                            alignment: Alignment.topLeft,
+                            child: Row(
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        changeView = !changeView;
+                                      });
+                                    },
+                                    icon: changeView
+                                        ? Icon(Icons.list, color: Colors.black)
+                                        : Icon(Icons.grid_view,
+                                            color: Colors.black)),
+                              ],
+                            )),
+                      ],
+                    ),
+                  ],
+                ),
+                isPinned
+                    ? StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection('Users')
+                            .doc(FirebaseAuth.instance.currentUser.email)
+                            .collection('Notes')
+                            .where(
+                              "Pin",
+                              isGreaterThanOrEqualTo: "true",
+                            )
+                            .where('lock', isEqualTo: false)
+                            .snapshots(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshotPinned) {
+                          if (!snapshotPinned.hasData) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          return changeView
+                              ? GridView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2),
+                                  itemCount: snapshotPinned.hasData
+                                      ? snapshotPinned.data.docs.length
+                                      : 0,
+                                  itemBuilder: (context, index) {
+                                    return Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        splashColor: Colors.black,
+                                        onLongPress: () {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  duration: Duration(days: 1),
+                                                  backgroundColor:
+                                                      Color(0xff131616),
+                                                  content: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: [
+                                                      SizedBox(
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            0.35,
+                                                        child: MaterialButton(
+                                                          onPressed: () {
+                                                            snapshotPinned
+                                                                .data
+                                                                .docs[index]
+                                                                .reference
+                                                                .update({
+                                                              'Pin': "false"
+                                                            });
+
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .hideCurrentSnackBar();
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(SnackBar(
+                                                                    duration: Duration(
+                                                                        seconds:
+                                                                            1),
+                                                                    content: Text(
+                                                                        'The note is unpinned')));
+                                                          },
+                                                          child: Text(
+                                                            "Unpin",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 17),
+                                                          ),
+                                                          color: Colors.white
+                                                              .withOpacity(0.8),
+                                                          minWidth: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.8,
+                                                          shape: RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          18.0),
+                                                              side: BorderSide(
+                                                                  color: Colors
+                                                                      .white)),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      SizedBox(
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            0.35,
+                                                        child: MaterialButton(
+                                                          onPressed: () {
+                                                            snapshotPinned
+                                                                .data
+                                                                .docs[index]
+                                                                .reference
+                                                                .delete();
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .hideCurrentSnackBar();
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(SnackBar(
+                                                                    duration: Duration(
+                                                                        seconds:
+                                                                            1),
+                                                                    content: Text(
+                                                                        'Deleted')));
+                                                          },
+                                                          child: Text(
+                                                            "Delete",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 17),
+                                                          ),
+                                                          color: Colors.white
+                                                              .withOpacity(0.8),
+                                                          minWidth: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.8,
+                                                          shape: RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          18.0),
+                                                              side: BorderSide(
+                                                                  color: Colors
+                                                                      .white)),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      CircleAvatar(
+                                                        backgroundColor:
+                                                            Colors.blueAccent,
+                                                        child: IconButton(
+                                                            onPressed: () {
+                                                              ScaffoldMessenger
+                                                                      .of(context)
+                                                                  .hideCurrentSnackBar();
+                                                            },
+                                                            icon: Icon(
+                                                              Icons.close,
+                                                            )),
+                                                      )
+                                                    ],
+                                                  )));
+                                        },
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              Transition(
+                                                  child: EditNote(
+                                                      docToEdit: snapshotPinned
+                                                          .data.docs[index]),
+                                                  transitionEffect:
+                                                      TransitionEffect.FADE)
+                                              // MaterialPageRoute(
+                                              //   builder: (context) => EditNote(
+                                              //     docToEdit: snapshot.data.docs[index],
+                                              //   ),
+                                              // ),
+                                              );
+                                          ScaffoldMessenger.of(context)
+                                              .hideCurrentSnackBar();
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          child: Card(
+                                            elevation: 3,
+                                            shape: RoundedRectangleBorder(
+                                              
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            margin: EdgeInsets.all(10),
+                                            color: Color(
+                                              snapshotPinned.data.docs[index]
+                                                  .data()["noteColor"],
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Align(
+                                                  alignment: Alignment.topLeft,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        horizontal: 15,
+                                                        vertical: 10),
+                                                    child: Text(
+                                                      snapshotPinned
+                                                          .data.docs[index]
+                                                          .data()["title"],
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 25),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Align(
+                                                  alignment: Alignment.topLeft,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 16,
+                                                    ),
+                                                    child: Container(
+                                                      child: Text(
+                                                        snapshotPinned
+                                                            .data.docs[index]
+                                                            .data()["content"],
+                                                        style: TextStyle(
+                                                            color: Colors.black
+                                                                .withOpacity(
+                                                                    0.5),
+                                                            fontSize: 19),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        softWrap: true,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
+                                    );
+                                  },
+                                )
+                              : ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: snapshotPinned.hasData
+                                      ? snapshotPinned.data.docs.length
+                                      : 0,
+                                  itemBuilder: (context, index) {
+                                    return Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        splashColor: Colors.black,
+                                        onLongPress: () {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  duration: Duration(days: 1),
+                                                  backgroundColor:
+                                                      Color(0xff131616),
+                                                  content: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: [
+                                                      SizedBox(
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            0.35,
+                                                        child: MaterialButton(
+                                                          onPressed: () {
+                                                            snapshotPinned
+                                                                .data
+                                                                .docs[index]
+                                                                .reference
+                                                                .update({
+                                                              'Pin': "false"
+                                                            });
+
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .hideCurrentSnackBar();
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(SnackBar(
+                                                                    duration: Duration(
+                                                                        seconds:
+                                                                            1),
+                                                                    content: Text(
+                                                                        'The note is unpinned')));
+                                                          },
+                                                          child: Text(
+                                                            "Unpin",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 17),
+                                                          ),
+                                                          color: Colors.white
+                                                              .withOpacity(0.8),
+                                                          minWidth: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.8,
+                                                          shape: RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          18.0),
+                                                              side: BorderSide(
+                                                                  color: Colors
+                                                                      .white)),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      SizedBox(
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            0.35,
+                                                        child: MaterialButton(
+                                                          onPressed: () {
+                                                            snapshotPinned
+                                                                .data
+                                                                .docs[index]
+                                                                .reference
+                                                                .delete();
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .hideCurrentSnackBar();
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(SnackBar(
+                                                                    duration: Duration(
+                                                                        seconds:
+                                                                            1),
+                                                                    content: Text(
+                                                                        'Deleted')));
+                                                          },
+                                                          child: Text(
+                                                            "Delete",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 17),
+                                                          ),
+                                                          color: Colors.white
+                                                              .withOpacity(0.8),
+                                                          minWidth: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.8,
+                                                          shape: RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          18.0),
+                                                              side: BorderSide(
+                                                                  color: Colors
+                                                                      .white)),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      CircleAvatar(
+                                                        backgroundColor:
+                                                            Colors.blueAccent,
+                                                        child: IconButton(
+                                                            onPressed: () {
+                                                              ScaffoldMessenger
+                                                                      .of(context)
+                                                                  .hideCurrentSnackBar();
+                                                            },
+                                                            icon: Icon(
+                                                              Icons.close,
+                                                            )),
+                                                      )
+                                                    ],
+                                                  )));
+                                        },
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              Transition(
+                                                  child: EditNote(
+                                                      docToEdit: snapshotPinned
+                                                          .data.docs[index]),
+                                                  transitionEffect:
+                                                      TransitionEffect.FADE)
+                                              // MaterialPageRoute(
+                                              //   builder: (context) => EditNote(
+                                              //     docToEdit: snapshot.data.docs[index],
+                                              //   ),
+                                              // ),
+                                              );
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8),
+                                          child: Card(
+                                            elevation: 3,
+                                            shape: RoundedRectangleBorder(
+                                                // side: BorderSide(
+                                                //     color: Colors.white, width: 0.01),
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            margin: EdgeInsets.all(10),
+                                            color: Color(
+                                              snapshotPinned.data.docs[index]
+                                                  .data()["noteColor"],
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Align(
+                                                  alignment: Alignment.topLeft,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        horizontal: 15,
+                                                        vertical: 10),
+                                                    child: Text(
+                                                      snapshotPinned
+                                                          .data.docs[index]
+                                                          .data()["title"],
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 23),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Align(
+                                                  alignment: Alignment.topLeft,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 16,
+                                                    ),
+                                                    child: Container(
+                                                      child: Text(
+                                                        snapshotPinned
+                                                            .data.docs[index]
+                                                            .data()["content"],
+                                                        style: TextStyle(
+                                                            color: Colors.black
+                                                                .withOpacity(
+                                                                    0.5),
+                                                            fontSize: 19),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        softWrap: true,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 10,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
                         },
-                      );
-                    },
-                  ),
-                ],
-              ),
+                      )
+                    : StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection('Users')
+                            .doc(FirebaseAuth.instance.currentUser.email)
+                            .collection('Notes')
+                            .where('lock', isEqualTo: false)
+                            .orderBy('dateTime', descending: true)
+                            .snapshots(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (!snapshot.hasData) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          return changeView
+                              ? GridView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisSpacing: 0.09,
+                                          crossAxisCount: 2),
+                                  itemCount: snapshot.hasData
+                                      ? snapshot.data.docs.length
+                                      : 0,
+                                  itemBuilder: (context, index) {
+                                    return Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        splashColor: Colors.black,
+                                        onLongPress: () {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  duration: Duration(days: 1),
+                                                  backgroundColor:
+                                                      Color(0xff131616),
+                                                  content: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: [
+                                                      SizedBox(
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            0.35,
+                                                        child: MaterialButton(
+                                                          onPressed: () {
+                                                            snapshot
+                                                                .data
+                                                                .docs[index]
+                                                                .reference
+                                                                .update({
+                                                              'Pin': "true"
+                                                            });
+
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .hideCurrentSnackBar();
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(SnackBar(
+                                                                    duration: Duration(
+                                                                        seconds:
+                                                                            1),
+                                                                    content: Text(
+                                                                        'The note is pinned')));
+                                                          },
+                                                          child: Text(
+                                                            "Pin",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 17),
+                                                          ),
+                                                          color: Colors.white
+                                                              .withOpacity(0.8),
+                                                          minWidth: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.8,
+                                                          shape: RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          18.0),
+                                                              side: BorderSide(
+                                                                  color: Colors
+                                                                      .white)),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      SizedBox(
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            0.35,
+                                                        child: MaterialButton(
+                                                          onPressed: () {
+                                                            snapshot
+                                                                .data
+                                                                .docs[index]
+                                                                .reference
+                                                                .delete();
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .hideCurrentSnackBar();
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(SnackBar(
+                                                                    duration: Duration(
+                                                                        seconds:
+                                                                            1),
+                                                                    content: Text(
+                                                                        'Deleted')));
+                                                          },
+                                                          child: Text(
+                                                            "Delete",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 17),
+                                                          ),
+                                                          color: Colors.white
+                                                              .withOpacity(0.8),
+                                                          minWidth: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.8,
+                                                          shape: RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          18.0),
+                                                              side: BorderSide(
+                                                                  color: Colors
+                                                                      .white)),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      CircleAvatar(
+                                                        backgroundColor:
+                                                            Colors.blueAccent,
+                                                        child: IconButton(
+                                                            onPressed: () {
+                                                              ScaffoldMessenger
+                                                                      .of(context)
+                                                                  .hideCurrentSnackBar();
+                                                            },
+                                                            icon: Icon(
+                                                              Icons.close,
+                                                            )),
+                                                      )
+                                                    ],
+                                                  )));
+                                        },
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              Transition(
+                                                  child: EditNote(
+                                                      docToEdit: snapshot
+                                                          .data.docs[index]),
+                                                  transitionEffect:
+                                                      TransitionEffect.FADE)
+                                              );
+                                          ScaffoldMessenger.of(context)
+                                              .hideCurrentSnackBar();
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          child: Card(
+                                            elevation: 3,
+                                            shape: RoundedRectangleBorder(
+                                                // side: BorderSide(
+                                                //     color: Colors.white, width: 0.01),
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            margin: EdgeInsets.all(10),
+                                            color: Color(
+                                              snapshot.data.docs[index]
+                                                  .data()["noteColor"],
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Align(
+                                                  alignment: Alignment.topLeft,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        horizontal: 15,
+                                                        vertical: 10),
+                                                    child: Padding(
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          vertical: 20),
+                                                      child: Text(
+                                                        snapshot
+                                                            .data.docs[index]
+                                                            .data()["title"],
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 23),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Align(
+                                                  alignment: Alignment.topLeft,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 16,
+                                                    ),
+                                                    child: Container(
+                                                      child: Text(
+                                                        snapshot
+                                                            .data.docs[index]
+                                                            .data()["content"],
+                                                        style: TextStyle(
+                                                            color: Colors.black
+                                                                .withOpacity(
+                                                                    0.5),
+                                                            fontSize: 19),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        softWrap: true,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                )
+                              : ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: snapshot.hasData
+                                      ? snapshot.data.docs.length
+                                      : 0,
+                                  itemBuilder: (context, index) {
+                                    return Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        splashColor: Colors.black,
+                                        onLongPress: () {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  duration: Duration(days: 1),
+                                                  backgroundColor:
+                                                      Color(0xff131616),
+                                                  content: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: [
+                                                      SizedBox(
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            0.35,
+                                                        child: MaterialButton(
+                                                          onPressed: () {
+                                                            snapshot
+                                                                .data
+                                                                .docs[index]
+                                                                .reference
+                                                                .update({
+                                                              'Pin': "true"
+                                                            });
+
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .hideCurrentSnackBar();
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(SnackBar(
+                                                                    duration: Duration(
+                                                                        seconds:
+                                                                            1),
+                                                                    content: Text(
+                                                                        'The note is pinned')));
+                                                          },
+                                                          child: Text(
+                                                            "Pin",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 17),
+                                                          ),
+                                                          color: Colors.white
+                                                              .withOpacity(0.8),
+                                                          minWidth: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.8,
+                                                          shape: RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          18.0),
+                                                              side: BorderSide(
+                                                                  color: Colors
+                                                                      .white)),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      SizedBox(
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            0.35,
+                                                        child: MaterialButton(
+                                                          onPressed: () {
+                                                            snapshot
+                                                                .data
+                                                                .docs[index]
+                                                                .reference
+                                                                .delete();
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .hideCurrentSnackBar();
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(SnackBar(
+                                                                    duration: Duration(
+                                                                        seconds:
+                                                                            1),
+                                                                    content: Text(
+                                                                        'Deleted')));
+                                                          },
+                                                          child: Text(
+                                                            "Delete",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 17),
+                                                          ),
+                                                          color: Colors.white
+                                                              .withOpacity(0.8),
+                                                          minWidth: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.8,
+                                                          shape: RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          18.0),
+                                                              side: BorderSide(
+                                                                  color: Colors
+                                                                      .white)),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      CircleAvatar(
+                                                        backgroundColor:
+                                                            Colors.blueAccent,
+                                                        child: IconButton(
+                                                            onPressed: () {
+                                                              ScaffoldMessenger
+                                                                      .of(context)
+                                                                  .hideCurrentSnackBar();
+                                                            },
+                                                            icon: Icon(
+                                                              Icons.close,
+                                                            )),
+                                                      )
+                                                    ],
+                                                  )));
+                                        },
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              Transition(
+                                                  child: EditNote(
+                                                      docToEdit: snapshot
+                                                          .data.docs[index]),
+                                                  transitionEffect:
+                                                      TransitionEffect.FADE)
+                                              // MaterialPageRoute(
+                                              //   builder: (context) => EditNote(
+                                              //     docToEdit: snapshot.data.docs[index],
+                                              //   ),
+                                              // ),
+                                              );
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8),
+                                          child: Card(
+                                            elevation: 3,
+                                            shape: RoundedRectangleBorder(
+                                                // side: BorderSide(
+                                                //     color: Colors.white, width: 0.01),
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            margin: EdgeInsets.all(10),
+                                            color: Color(
+                                              snapshot.data.docs[index]
+                                                  .data()["noteColor"],
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Align(
+                                                  alignment: Alignment.topLeft,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        horizontal: 15,
+                                                        vertical: 10),
+                                                    child: Text(
+                                                      snapshot.data.docs[index]
+                                                          .data()["title"],
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 23),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Align(
+                                                  alignment: Alignment.topLeft,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 16,
+                                                    ),
+                                                    child: Container(
+                                                      child: Text(
+                                                        snapshot
+                                                            .data.docs[index]
+                                                            .data()["content"],
+                                                        style: TextStyle(
+                                                            color: Colors.black
+                                                                .withOpacity(
+                                                                    0.5),
+                                                            fontSize: 19),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        softWrap: true,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 10,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                        },
+                      ),
+              ],
             ),
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Color(0xffeb6765),
+          backgroundColor: Colors.black,
           onPressed: () {
             Navigator.push(
               context,

@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:notes_app/service/auth.dart';
+import 'package:notes_app/service/services.dart';
 import 'package:notes_app/ui/mobile/login_page.dart';
 import 'package:notes_app/ui/screenDecider.dart';
 import 'package:transition/transition.dart';
@@ -13,7 +13,7 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  bool _showPassword = false;
+  bool _showPassword = true;
   void _togglevisibility() {
     setState(() {
       _showPassword = !_showPassword;
@@ -72,6 +72,7 @@ class _RegisterState extends State<Register> {
 
   TextEditingController _emailField = TextEditingController();
   TextEditingController _passField = TextEditingController();
+  TextEditingController _fullname = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final node = FocusScope.of(context);
@@ -79,7 +80,7 @@ class _RegisterState extends State<Register> {
       onWillPop: () async => _exitApp(context),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Color(0xff283793),
+        backgroundColor: Colors.black,
         body: ModalProgressHUD(
           inAsyncCall: showSpinner,
           child: SingleChildScrollView(
@@ -107,23 +108,55 @@ class _RegisterState extends State<Register> {
                               borderRadius: BorderRadius.circular(20)),
                           color: Colors.white,
                           child: TextField(
+                            style: TextStyle(color: Colors.white),
+                            onEditingComplete: () => node.nextFocus(),
+                            controller: _fullname,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Color(0xff3a3a3c),
+                              focusColor: Colors.white,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              hintText: 'Full Name',
+                              hintStyle: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Card(
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                          color: Colors.white,
+                          child: TextField(
                             onEditingComplete: () => node.nextFocus(),
                             controller: _emailField,
                             decoration: InputDecoration(
-                              fillColor: Colors.white,
+                              filled: true,
+                              fillColor: Color(0xff3a3a3c),
                               focusColor: Colors.white,
                               focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(color: Colors.white)),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                               enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(color: Colors.white)),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                               border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(color: Colors.white)),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                               hintText: 'Add Email',
-                              hintStyle: TextStyle(color: Colors.black),
+                              hintStyle: TextStyle(color: Colors.white),
                             ),
+                            style: TextStyle(color: Colors.white),
                           ),
                         ),
                         SizedBox(
@@ -140,7 +173,9 @@ class _RegisterState extends State<Register> {
                                 showSpinner = true;
                               });
                               bool shouldNavigate = await register(
-                                  _emailField.text, _passField.text);
+                                  _emailField.text,
+                                  _passField.text,
+                                  _fullname.text);
                               if (shouldNavigate) {
                                 Navigator.push(
                                   context,
@@ -181,24 +216,26 @@ class _RegisterState extends State<Register> {
                                     _showPassword
                                         ? Icons.visibility
                                         : Icons.visibility_off,
-                                    color: Colors.red,
+                                    color: Color(0xff5e5ce5),
                                   ),
                                 ),
                               ),
-                              fillColor: Colors.white,
+                              filled: true,
+                              fillColor: Color(0xff3a3a3c),
                               focusColor: Colors.white,
                               focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(color: Colors.white)),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                               enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(color: Colors.white)),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                               border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(color: Colors.white)),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                               hintText: 'Add Password',
-                              hintStyle: TextStyle(color: Colors.black),
+                              hintStyle: TextStyle(color: Colors.white),
                             ),
+                            style: TextStyle(color: Colors.white),
                           ),
                         ),
                         SizedBox(
@@ -210,7 +247,7 @@ class _RegisterState extends State<Register> {
                               borderRadius: BorderRadius.circular(20)),
                           child: FlatButton(
                             height: 20,
-                            color: Color(0xffeb6765),
+                            color: Color(0xff5e5ce5),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20)),
                             onPressed: () async {
@@ -218,7 +255,9 @@ class _RegisterState extends State<Register> {
                                 showSpinner = true;
                               });
                               bool shouldNavigate = await register(
-                                  _emailField.text, _passField.text);
+                                  _emailField.text,
+                                  _passField.text,
+                                  _fullname.text);
                               if (shouldNavigate) {
                                 Navigator.push(
                                   context,
@@ -260,7 +299,7 @@ class _RegisterState extends State<Register> {
                     ),
                   ),
                 ),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.21),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.11),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -276,7 +315,7 @@ class _RegisterState extends State<Register> {
                     ),
                     FlatButton(
                       height: 20,
-                      color: Color(0xffeb6765),
+                      color: Color(0xff5e5ce5),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20)),
                       onPressed: () {

@@ -1,6 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-import 'package:notes_app/service/auth.dart';
+import 'package:notes_app/service/services.dart';
 import 'package:notes_app/ui/mobile/login_page.dart';
 import 'package:transition/transition.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -18,7 +18,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     final node = FocusScope.of(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color(0xff283793),
+      backgroundColor: Colors.black,
       body: ModalProgressHUD(
         inAsyncCall: showSpinner1,
         child: SingleChildScrollView(
@@ -60,22 +60,24 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         ),
                         color: Colors.white,
                         child: TextField(
+                          style: TextStyle(color: Colors.white),
                           onEditingComplete: () => node.nextFocus(),
                           controller: _emailField,
                           decoration: InputDecoration(
-                            fillColor: Colors.white,
+                            filled: true,
+                            fillColor: Color(0xff3a3a3c),
                             focusColor: Colors.white,
                             focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                borderSide: BorderSide(color: Colors.white)),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                             enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                borderSide: BorderSide(color: Colors.white)),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                             border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                borderSide: BorderSide(color: Colors.white)),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                             hintText: 'Email',
-                            hintStyle: TextStyle(color: Colors.black),
+                            hintStyle: TextStyle(color: Colors.white),
                           ),
                         ),
                       ),
@@ -91,7 +93,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             borderRadius: BorderRadius.circular(20)),
                         child: FlatButton(
                           height: 20,
-                          color: Color(0xffeb6765),
+                          color: Color(0xff5e5ce5),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notes_app/ui/mobile/homePage.dart';
+import 'package:notes_app/ui/mobile/homeScreen.dart';
 import 'package:notes_app/ui/mobile/login_page.dart';
 import 'package:notes_app/ui/web/loginWeb.dart';
 
@@ -15,7 +16,7 @@ class ScreenDecider extends StatelessWidget {
         } else if (constraints.maxWidth > 800 && constraints.maxWidth < 1200) {
           return HomeViewDesktop();
         } else
-          return HomeView();
+          return HomeScreen();
       },
     );
   }
