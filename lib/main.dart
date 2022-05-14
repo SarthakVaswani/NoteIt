@@ -61,6 +61,9 @@ void main() async {
   //   sound: true,
   // );
   runApp(MaterialApp(
+theme: ThemeData(
+  useMaterial3: true
+),
     title: "NoteIt",
     debugShowCheckedModeBanner: false,
     home: SplashScreen(),

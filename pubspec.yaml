@@ -47,7 +47,7 @@ dependencies:
   screenshot: ^1.2.3
   flutter_sound_lite: ^8.4.2
   local_auth: ^1.1.9
-  share_plus: ^3.0.4
+  share_plus: ^4.0.4
 
 dev_dependencies:
   flutter_test:
