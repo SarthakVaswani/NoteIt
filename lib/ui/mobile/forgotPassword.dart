@@ -91,12 +91,15 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         elevation: 5,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20)),
-                        child: FlatButton(
-                          height: 20,
-                          color: Color(0xff5e5ce5),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: Color.fromARGB(255, 53, 50, 205),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                           ),
+                          // height: 20,
+
                           onPressed: () async {
                             if (checkValidation()) {
                               setState(() {

@@ -27,9 +27,10 @@ class LocalAuthApi {
     try {
       return await _auth.authenticate(
         localizedReason: 'Scan Fingerprint to Authenticate',
-        useErrorDialogs: true,
-        biometricOnly: false,
-        stickyAuth: false,
+          options: const AuthenticationOptions( useErrorDialogs: true,
+            biometricOnly: false,
+            stickyAuth: false,)
+
       );
     } on PlatformException catch (e) {
       return false;

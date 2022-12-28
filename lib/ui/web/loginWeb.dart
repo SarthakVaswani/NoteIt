@@ -167,11 +167,12 @@ class _LoginWebState extends State<LoginWeb> {
                             elevation: 5,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20)),
-                            child: FlatButton(
-                              height: 20,
-                              color: Color(0xffeb6765),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                foregroundColor: Color(0xffeb6765),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
                               ),
                               onPressed: () async {
                                 setState(() {
@@ -235,11 +236,12 @@ class _LoginWebState extends State<LoginWeb> {
                     SizedBox(
                       width: 70,
                     ),
-                    FlatButton(
-                      height: 20,
-                      color: Color(0xffeb6765),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        foregroundColor: Color(0xffeb6765),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                       ),
                       onPressed: () {
                         Navigator.push(
@@ -265,11 +267,12 @@ class _LoginWebState extends State<LoginWeb> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: FlatButton(
-                    height: 14,
-                    color: Color(0xffeb6765),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: Color(0xffeb6765),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                     ),
                     onPressed: () {
                       Navigator.push(

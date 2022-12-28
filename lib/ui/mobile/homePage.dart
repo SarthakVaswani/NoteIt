@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/ui/widgets/toggleBar.dart';
-import 'package:notes_app/ui/widgets/voiceNote/voiceNote.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../noteview/addNote.dart';
 import 'package:transition/transition.dart';
@@ -21,7 +20,6 @@ class _HomeViewState extends State<HomeView> {
   bool isPinned = false;
   bool changeView = true;
   bool confirmPin = false;
-  
 
   @override
   void initState() {
@@ -45,16 +43,20 @@ class _HomeViewState extends State<HomeView> {
             style: TextStyle(color: Colors.black, fontSize: 18),
           ),
           actions: [
-            FlatButton(
-              splashColor: Colors.blueGrey,
+            TextButton(
+              style: ButtonStyle(
+                overlayColor: MaterialStateProperty.all(Colors.blueGrey),
+              ),
               onPressed: () => Navigator.of(context).pop(false),
               child: Text(
                 'No',
                 style: TextStyle(color: Colors.black, fontSize: 17),
               ),
             ),
-            FlatButton(
-              splashColor: Colors.blueGrey,
+            TextButton(
+              style: ButtonStyle(
+                overlayColor: MaterialStateProperty.all(Colors.blueGrey),
+              ),
               onPressed: () => exit(0),
               child: Text(
                 'Yes',
@@ -332,13 +334,12 @@ class _HomeViewState extends State<HomeView> {
                                           child: Card(
                                             elevation: 3,
                                             shape: RoundedRectangleBorder(
-                                              
                                                 borderRadius:
                                                     BorderRadius.circular(10)),
                                             margin: EdgeInsets.all(10),
                                             color: Color(
                                               snapshotPinned.data.docs[index]
-                                                  .data()["noteColor"],
+                                                  .get("noteColor"),
                                             ),
                                             child: Column(
                                               children: [
@@ -352,7 +353,7 @@ class _HomeViewState extends State<HomeView> {
                                                     child: Text(
                                                       snapshotPinned
                                                           .data.docs[index]
-                                                          .data()["title"],
+                                                          .get("title"),
                                                       style: TextStyle(
                                                           color: Colors.black,
                                                           fontSize: 25),
@@ -370,7 +371,7 @@ class _HomeViewState extends State<HomeView> {
                                                       child: Text(
                                                         snapshotPinned
                                                             .data.docs[index]
-                                                            .data()["content"],
+                                                            .get("content"),
                                                         style: TextStyle(
                                                             color: Colors.black
                                                                 .withOpacity(
@@ -565,7 +566,7 @@ class _HomeViewState extends State<HomeView> {
                                             margin: EdgeInsets.all(10),
                                             color: Color(
                                               snapshotPinned.data.docs[index]
-                                                  .data()["noteColor"],
+                                                  .get("noteColor"),
                                             ),
                                             child: Column(
                                               children: [
@@ -579,7 +580,7 @@ class _HomeViewState extends State<HomeView> {
                                                     child: Text(
                                                       snapshotPinned
                                                           .data.docs[index]
-                                                          .data()["title"],
+                                                          .get("title"),
                                                       style: TextStyle(
                                                           color: Colors.black,
                                                           fontSize: 23),
@@ -597,7 +598,7 @@ class _HomeViewState extends State<HomeView> {
                                                       child: Text(
                                                         snapshotPinned
                                                             .data.docs[index]
-                                                            .data()["content"],
+                                                            .get("content"),
                                                         style: TextStyle(
                                                             color: Colors.black
                                                                 .withOpacity(
@@ -796,8 +797,7 @@ class _HomeViewState extends State<HomeView> {
                                                       docToEdit: snapshot
                                                           .data.docs[index]),
                                                   transitionEffect:
-                                                      TransitionEffect.FADE)
-                                              );
+                                                      TransitionEffect.FADE));
                                           ScaffoldMessenger.of(context)
                                               .hideCurrentSnackBar();
                                         },
@@ -814,7 +814,7 @@ class _HomeViewState extends State<HomeView> {
                                             margin: EdgeInsets.all(10),
                                             color: Color(
                                               snapshot.data.docs[index]
-                                                  .data()["noteColor"],
+                                                  .get("noteColor"),
                                             ),
                                             child: Column(
                                               children: [
@@ -832,7 +832,7 @@ class _HomeViewState extends State<HomeView> {
                                                       child: Text(
                                                         snapshot
                                                             .data.docs[index]
-                                                            .data()["title"],
+                                                            .get("title"),
                                                         style: TextStyle(
                                                             color: Colors.black,
                                                             fontSize: 23),
@@ -851,7 +851,7 @@ class _HomeViewState extends State<HomeView> {
                                                       child: Text(
                                                         snapshot
                                                             .data.docs[index]
-                                                            .data()["content"],
+                                                            .get("content"),
                                                         style: TextStyle(
                                                             color: Colors.black
                                                                 .withOpacity(
@@ -1046,7 +1046,7 @@ class _HomeViewState extends State<HomeView> {
                                             margin: EdgeInsets.all(10),
                                             color: Color(
                                               snapshot.data.docs[index]
-                                                  .data()["noteColor"],
+                                                  .get("noteColor"),
                                             ),
                                             child: Column(
                                               children: [
@@ -1059,7 +1059,7 @@ class _HomeViewState extends State<HomeView> {
                                                         vertical: 10),
                                                     child: Text(
                                                       snapshot.data.docs[index]
-                                                          .data()["title"],
+                                                          .get("title"),
                                                       style: TextStyle(
                                                           color: Colors.black,
                                                           fontSize: 23),
@@ -1077,7 +1077,7 @@ class _HomeViewState extends State<HomeView> {
                                                       child: Text(
                                                         snapshot
                                                             .data.docs[index]
-                                                            .data()["content"],
+                                                            .get("content"),
                                                         style: TextStyle(
                                                             color: Colors.black
                                                                 .withOpacity(

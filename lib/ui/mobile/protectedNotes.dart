@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/service/local_authS/localauthS.dart';
 import 'package:notes_app/ui/widgets/toggleBar.dart';
-import 'package:notes_app/ui/widgets/voiceNote/voiceNote.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../noteview/addNote.dart';
 import 'package:transition/transition.dart';
@@ -103,16 +102,20 @@ class _ProtectedNotesState extends State<ProtectedNotes> {
             style: TextStyle(color: Colors.black, fontSize: 18),
           ),
           actions: [
-            FlatButton(
-              splashColor: Colors.blueGrey,
+            TextButton(
+              style: ButtonStyle(
+                overlayColor: MaterialStateProperty.all(Colors.blueGrey),
+              ),
               onPressed: () => Navigator.of(context).pop(false),
               child: Text(
                 'No',
                 style: TextStyle(color: Colors.black, fontSize: 17),
               ),
             ),
-            FlatButton(
-              splashColor: Colors.blueGrey,
+            TextButton(
+              style: ButtonStyle(
+                overlayColor: MaterialStateProperty.all(Colors.blueGrey),
+              ),
               onPressed: () => exit(0),
               child: Text(
                 'Yes',
@@ -362,7 +365,7 @@ class _ProtectedNotesState extends State<ProtectedNotes> {
                                       margin: EdgeInsets.all(10),
                                       color: Color(
                                         snapshot.data.docs[index]
-                                            .data()["noteColor"],
+                                            .get("noteColor"),
                                       ),
                                       child: Column(
                                         children: [
@@ -375,7 +378,7 @@ class _ProtectedNotesState extends State<ProtectedNotes> {
                                                       vertical: 10),
                                               child: Text(
                                                 snapshot.data.docs[index]
-                                                    .data()["title"],
+                                                    .get("title"),
                                                 style: TextStyle(
                                                     color: Colors.black,
                                                     fontSize: 25),
@@ -392,7 +395,7 @@ class _ProtectedNotesState extends State<ProtectedNotes> {
                                               child: Container(
                                                 child: Text(
                                                   snapshot.data.docs[index]
-                                                      .data()["content"],
+                                                      .get("content"),
                                                   style: TextStyle(
                                                       color: Colors.black
                                                           .withOpacity(0.5),

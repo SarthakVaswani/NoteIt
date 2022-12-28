@@ -14,6 +14,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:screenshot/screenshot.dart';
 
+import '../../service/encrypt_aes.dart';
 import '../screenDecider.dart';
 
 class AddNote extends StatefulWidget {
@@ -149,6 +150,8 @@ class _AddNoteState extends State<AddNote> {
   bool imgLoading = false;
   String returnURL;
   String noteUrl;
+
+  String encryptedTitle;
   UploadTask uploadTask;
   uploadNote(File _image) async {
     FirebaseStorage storage = FirebaseStorage.instance;
@@ -193,6 +196,12 @@ class _AddNoteState extends State<AddNote> {
       });
       return returnURL;
     });
+  }
+
+  encryptUserData(data) {
+    String enDAta = EncryptData.encryptAES(data);
+    print("Enj=${enDAta}");
+    return enDAta;
   }
 
   String dateCreated = DateTime.now().toIso8601String();
@@ -400,7 +409,8 @@ class _AddNoteState extends State<AddNote> {
                               );
                               return false;
                             }
-                            await enterNotes(title.text, content.text)
+                            print("encrypted:${encryptedTitle}");
+                            await enterNotes(encryptedTitle, content.text)
                                 .whenComplete(() => Navigator.pop(context));
                             return ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -428,7 +438,13 @@ class _AddNoteState extends State<AddNote> {
               // ),
               Container(
                 child: TextFormField(
-                  onEditingComplete: () => node.nextFocus(),
+                  onEditingComplete: () {
+                    setState(() {
+                      encryptedTitle = encryptUserData(title.text);
+                    });
+                    print(encryptedTitle);
+                    node.nextFocus();
+                  },
                   autofocus: false,
                   cursorColor: Color(0xffddf0f7),
                   style: TextStyle(

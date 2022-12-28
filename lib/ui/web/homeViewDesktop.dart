@@ -50,16 +50,16 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
           style: TextStyle(color: Colors.black, fontSize: 18),
         ),
         actions: [
-          FlatButton(
-            splashColor: Colors.blueGrey,
+          TextButton(
+            style: TextButton.styleFrom(),
             onPressed: () => call1(),
             child: Text(
               text1,
               style: TextStyle(color: Colors.black, fontSize: 17),
             ),
           ),
-          FlatButton(
-            splashColor: Colors.blueGrey,
+          TextButton(
+            // splashColor: Colors.blueGrey,
             onPressed: () => call2(),
             child: Text(
               text2,
@@ -354,8 +354,8 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                                                               snapshotPinned
                                                                       .data
                                                                       .docs[index]
-                                                                      .data()[
-                                                                  "title"],
+                                                                      .get(
+                                                                  "title"),
                                                               style: TextStyle(
                                                                   color: Colors
                                                                       .black,
@@ -377,8 +377,8 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                                                                 snapshotPinned
                                                                         .data
                                                                         .docs[index]
-                                                                        .data()[
-                                                                    "content"],
+                                                                        .get(
+                                                                    "content"),
                                                                 style: TextStyle(
                                                                     color: Colors
                                                                         .black
@@ -513,8 +513,8 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                                                               snapshotPinned
                                                                       .data
                                                                       .docs[index]
-                                                                      .data()[
-                                                                  "title"],
+                                                                      .get(
+                                                                  "title"),
                                                               style: TextStyle(
                                                                   color: Colors
                                                                       .black,
@@ -536,8 +536,8 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                                                                 snapshotPinned
                                                                         .data
                                                                         .docs[index]
-                                                                        .data()[
-                                                                    "content"],
+                                                                        .get(
+                                                                    "content"),
                                                                 style: TextStyle(
                                                                     color: Colors
                                                                         .black
@@ -694,8 +694,8 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                                                             child: Text(
                                                               snapshot.data
                                                                       .docs[index]
-                                                                      .data()[
-                                                                  "title"],
+                                                                      .get(
+                                                                  "title"),
                                                               style: TextStyle(
                                                                   color: Colors
                                                                       .black,
@@ -716,8 +716,8 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                                                               child: Text(
                                                                 snapshot.data
                                                                         .docs[index]
-                                                                        .data()[
-                                                                    "content"],
+                                                                        .get(
+                                                                    "content"),
                                                                 style: TextStyle(
                                                                     color: Colors
                                                                         .black
@@ -850,8 +850,8 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                                                             child: Text(
                                                               snapshot.data
                                                                       .docs[index]
-                                                                      .data()[
-                                                                  "title"],
+                                                                      .get(
+                                                                  "title"),
                                                               style: TextStyle(
                                                                   color: Colors
                                                                       .black,
@@ -872,8 +872,8 @@ class _HomeViewDesktopState extends State<HomeViewDesktop> {
                                                               child: Text(
                                                                 snapshot.data
                                                                         .docs[index]
-                                                                        .data()[
-                                                                    "content"],
+                                                                        .get(
+                                                                    "content"),
                                                                 style: TextStyle(
                                                                     color: Colors
                                                                         .black

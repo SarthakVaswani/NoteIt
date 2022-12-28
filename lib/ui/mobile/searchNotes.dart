@@ -145,7 +145,7 @@ class _SearchPageState extends State<SearchPage> {
                                       borderRadius: BorderRadius.circular(10)),
                                   margin: EdgeInsets.all(10),
                                   color: Color(
-                                      snapshot.docs[index].data()["noteColor"]),
+                                      snapshot.docs[index].get("noteColor")),
                                   child: Column(
                                     children: [
                                       Align(
@@ -155,7 +155,7 @@ class _SearchPageState extends State<SearchPage> {
                                               horizontal: 15, vertical: 10),
                                           child: Text(
                                             snapshot.docs[index]
-                                                .data()["title"],
+                                                .get("title"),
                                             style: TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 23),
@@ -171,7 +171,7 @@ class _SearchPageState extends State<SearchPage> {
                                           child: Container(
                                             child: Text(
                                               snapshot.docs[index]
-                                                  .data()["content"],
+                                                  .get("content"),
                                               style: TextStyle(
                                                   color: Colors.black
                                                       .withOpacity(0.5),

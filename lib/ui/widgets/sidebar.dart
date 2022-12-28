@@ -123,7 +123,7 @@ class _SideLayoutState extends State<SideLayout> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 15, vertical: 10),
                                       child: Text(
-                                        snapshot.docs[index].data()["title"],
+                                        snapshot.docs[index].get("title"),
                                         style: TextStyle(
                                             color: Colors.black, fontSize: 23),
                                       ),
@@ -138,7 +138,7 @@ class _SideLayoutState extends State<SideLayout> {
                                       child: Container(
                                         child: Text(
                                           snapshot.docs[index]
-                                              .data()["content"],
+                                              .get("content"),
                                           style: TextStyle(
                                               color:
                                                   Colors.black.withOpacity(0.5),

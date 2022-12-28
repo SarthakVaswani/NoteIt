@@ -71,22 +71,22 @@ class _EditNoteState extends State<EditNote> {
   String returnURL;
   var notesUrl;
   checkImage() async {
-    if (widget.docToEdit.data()['images'] != null) {
-      returnURL = widget.docToEdit.data()['images'];
+    if (widget.docToEdit.get('images') != null) {
+      returnURL = widget.docToEdit.get('images');
       hasImage = true;
     }
   }
 
   checkNotes() async {
-    if (widget.docToEdit.data()['noteAdded'] != null) {
-      notesUrl = widget.docToEdit.data()['noteAdded'];
+    if (widget.docToEdit.get('noteAdded') != null) {
+      notesUrl = widget.docToEdit.get('noteAdded');
       hasNotes = true;
     }
   }
 
   bool hasLock = false;
   checkLock() async {
-    if (widget.docToEdit.data()['lock'] == true) {
+    if (widget.docToEdit.get('lock') == true) {
       setState(() {
         hasLock = true;
       });
@@ -98,10 +98,10 @@ class _EditNoteState extends State<EditNote> {
   var pp = [];
   final Map<String, bool> _map = {};
   checkList() async {
-    if (widget.docToEdit.data()['listcheck'].toString().isNotEmpty) {
+    if (widget.docToEdit.get('listcheck').toString().isNotEmpty) {
       // notesUrl = widget.docToEdit.data()['listcheck'];
       hasList = true;
-      pp = widget.docToEdit.data()['listcheck'];
+      pp = widget.docToEdit.get('listcheck');
       for (int i = 0; i < pp.length; i++) {
         _todoList.add(
             _TodoItem(title: pp[i]['title'], completed: pp[i]['completed']));
@@ -111,9 +111,9 @@ class _EditNoteState extends State<EditNote> {
 
   @override
   void initState() {
-    title = TextEditingController(text: widget.docToEdit.data()['title']);
-    content = TextEditingController(text: widget.docToEdit.data()['content']);
-    newColor = Color(widget.docToEdit.data()['noteColor']);
+    title = TextEditingController(text: widget.docToEdit.get('title'));
+    content = TextEditingController(text: widget.docToEdit.get('content'));
+    newColor = Color(widget.docToEdit.get('noteColor'));
     checkImage();
     checkNotes();
     checkList();
@@ -223,14 +223,14 @@ class _EditNoteState extends State<EditNote> {
             .collection('Notes')
             .doc(widget.docToEdit.id)
             .set({
-          'dateTime': widget.docToEdit.data()['dateTime'],
-          'title': widget.docToEdit.data()['title'],
-          'content': widget.docToEdit.data()['content'],
-          'sharedTo': widget.docToEdit.data()['sharedTo'],
-          'createdBy': widget.docToEdit.data()['createdBy'],
-          'noteColor': widget.docToEdit.data()['noteColor'],
-          'images': widget.docToEdit.data()['images'],
-          'noteAdded': widget.docToEdit.data()['noteAdded'],
+          'dateTime': widget.docToEdit.get('dateTime'),
+          'title': widget.docToEdit.get('title'),
+          'content': widget.docToEdit.get('content'),
+          'sharedTo': widget.docToEdit.get('sharedTo'),
+          'createdBy': widget.docToEdit.get('createdBy'),
+          'noteColor': widget.docToEdit.get('noteColor'),
+          'images': widget.docToEdit.get('images'),
+          'noteAdded': widget.docToEdit.get('noteAdded'),
           'lock': false,
           'listcheck': _todoList.map((e) {
             return e.toJson();
@@ -602,7 +602,7 @@ class _EditNoteState extends State<EditNote> {
                                 );
                               });
 
-                        if (widget.docToEdit.data()['sharedTo'] != null) {
+                        if (widget.docToEdit.get('sharedTo') != null) {
                           imagepicked
                               ? await finalUpload().then((value) =>
                                   FirebaseFirestore.instance
@@ -610,14 +610,14 @@ class _EditNoteState extends State<EditNote> {
                                     FirebaseFirestore.instance
                                         .collection('Users')
                                         .doc(
-                                            widget.docToEdit.data()['sharedTo'])
+                                            widget.docToEdit.get('sharedTo'))
                                         .collection('Notes')
                                         .doc(widget.docToEdit.id)
                                         .update({
                                       'title': title.text,
                                       'content': content.text,
                                       'sharedTo':
-                                          widget.docToEdit.data()['sharedTo'],
+                                          widget.docToEdit.get('sharedTo'),
                                       'images': returnURL,
                                       'noteColor': newColor.value,
                                       'listcheck': _todoList.map((e) {
@@ -629,14 +629,14 @@ class _EditNoteState extends State<EditNote> {
                                   .runTransaction((transaction) async {
                                   FirebaseFirestore.instance
                                       .collection('Users')
-                                      .doc(widget.docToEdit.data()['sharedTo'])
+                                      .doc(widget.docToEdit.get('sharedTo'))
                                       .collection('Notes')
                                       .doc(widget.docToEdit.id)
                                       .update({
                                     'title': title.text,
                                     'content': content.text,
                                     'sharedTo':
-                                        widget.docToEdit.data()['sharedTo'],
+                                        widget.docToEdit.get('sharedTo'),
                                     'noteColor': newColor.value,
                                     'listcheck': _todoList.map((e) {
                                       return e.toJson();
@@ -1170,21 +1170,21 @@ class _EditNoteState extends State<EditNote> {
                               );
                             });
 
-                      if (widget.docToEdit.data()['sharedTo'] != null) {
+                      if (widget.docToEdit.get('sharedTo') != null) {
                         imagepicked
                             ? await finalUpload().then((value) =>
                                 FirebaseFirestore.instance
                                     .runTransaction((transaction) async {
                                   FirebaseFirestore.instance
                                       .collection('Users')
-                                      .doc(widget.docToEdit.data()['sharedTo'])
+                                      .doc(widget.docToEdit.get('sharedTo'))
                                       .collection('Notes')
                                       .doc(widget.docToEdit.id)
                                       .update({
                                     'title': title.text,
                                     'content': content.text,
                                     'sharedTo':
-                                        widget.docToEdit.data()['sharedTo'],
+                                        widget.docToEdit.get('sharedTo'),
                                     'images': returnURL
                                   });
                                 }).whenComplete(() => Navigator.pop(context)))
@@ -1192,14 +1192,14 @@ class _EditNoteState extends State<EditNote> {
                                 .runTransaction((transaction) async {
                                 FirebaseFirestore.instance
                                     .collection('Users')
-                                    .doc(widget.docToEdit.data()['sharedTo'])
+                                    .doc(widget.docToEdit.get('sharedTo'))
                                     .collection('Notes')
                                     .doc(widget.docToEdit.id)
                                     .update({
                                   'title': title.text,
                                   'content': content.text,
                                   'sharedTo':
-                                      widget.docToEdit.data()['sharedTo']
+                                      widget.docToEdit.get('sharedTo')
                                 });
                               }).whenComplete(() => Navigator.pop(context));
                         return ScaffoldMessenger.of(context).showSnackBar(

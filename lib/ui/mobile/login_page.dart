@@ -38,16 +38,20 @@ class _LoginState extends State<Login> {
           style: TextStyle(color: Colors.black, fontSize: 18),
         ),
         actions: [
-          FlatButton(
-            splashColor: Colors.blueGrey,
+          TextButton(
+            style: ButtonStyle(
+              overlayColor: MaterialStateProperty.all(Colors.blueGrey),
+            ),
             onPressed: () => Navigator.of(context).pop(false),
             child: Text(
               'No',
               style: TextStyle(color: Colors.black, fontSize: 17),
             ),
           ),
-          FlatButton(
-            splashColor: Colors.blueGrey,
+          TextButton(
+            style: ButtonStyle(
+              overlayColor: MaterialStateProperty.all(Colors.blueGrey),
+            ),
             onPressed: () => exit(0),
             child: Text(
               'Yes',
@@ -202,11 +206,12 @@ class _LoginState extends State<Login> {
                           elevation: 5,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20)),
-                          child: FlatButton(
-                            height: 20,
-                            color: Color(0xff5e5ce5),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              foregroundColor: Color.fromARGB(255, 53, 50, 205),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                             ),
                             onPressed: () async {
                               setState(() {
@@ -269,12 +274,12 @@ class _LoginState extends State<Login> {
                     SizedBox(
                       width: 70,
                     ),
-                    FlatButton(
-                      height: 20,
-                      color: Color(0xff5e5ce5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                          foregroundColor: Color.fromARGB(255, 53, 50, 205),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          )),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -296,12 +301,12 @@ class _LoginState extends State<Login> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: FlatButton(
-                    height: 14,
-                    color: Color(0xff5e5ce5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                        foregroundColor: Color.fromARGB(255, 53, 50, 205),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        )),
                     onPressed: () {
                       Navigator.push(
                         context,

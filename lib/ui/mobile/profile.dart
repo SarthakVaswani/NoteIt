@@ -106,7 +106,7 @@ class _ProfileState extends State<Profile> {
                                   CircleAvatar(
                                     radius: 38,
                                     child: Text(
-                                      ("${snapshot.data.docs[0].data()['fullname']}")
+                                      ("${snapshot.data.docs[0].get('fullname')}")
                                           .substring(0, 1),
                                       style: TextStyle(fontSize: 38),
                                     ),
@@ -122,7 +122,7 @@ class _ProfileState extends State<Profile> {
                                       ),
                                       Text(
                                         snapshot.data.docs[0]
-                                            .data()['fullname'],
+                                            .get('fullname'),
                                         style: TextStyle(fontSize: 35),
                                       ),
                                     ],
@@ -189,7 +189,7 @@ class _ProfileState extends State<Profile> {
                                                     const EdgeInsets.all(1.0),
                                                 child: Text(
                                                   snapshot.data.docs[index]
-                                                      .data()['sharedBy'],
+                                                      .get('sharedBy'),
                                                   style:
                                                       TextStyle(fontSize: 20),
                                                 ),
@@ -198,7 +198,7 @@ class _ProfileState extends State<Profile> {
                                                 padding:
                                                     const EdgeInsets.all(8.0),
                                                 child: Text(
-                                                    "Shared ${snapshot.data.docs[index].data()['title']} with you",
+                                                    "Shared ${snapshot.data.docs[index].get('title')} with you",
                                                     style: TextStyle(
                                                         fontSize: 18)),
                                               ),

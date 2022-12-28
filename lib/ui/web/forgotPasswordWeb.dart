@@ -103,11 +103,12 @@ class _ForgotPasswordWebState extends State<ForgotPasswordWeb> {
                             elevation: 5,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20)),
-                            child: FlatButton(
-                              height: 20,
-                              color: Color(0xffeb6765),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                foregroundColor: Color(0xffeb6765),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
                               ),
                               onPressed: () async {
                                 if (checkValidation()) {
@@ -153,11 +154,12 @@ class _ForgotPasswordWebState extends State<ForgotPasswordWeb> {
                             elevation: 5,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20)),
-                            child: FlatButton(
-                              height: 18,
-                              color: Color(0xffeb6765),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                foregroundColor: Color(0xffeb6765),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
                               ),
                               onPressed: () async {
                                 Navigator.push(
