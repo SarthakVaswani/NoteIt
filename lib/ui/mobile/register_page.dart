@@ -84,7 +84,7 @@ class _RegisterState extends State<Register> {
       onWillPop: () async => _exitApp(context),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.black,
+        backgroundColor: Theme.of(context).colorScheme.onBackground,
         body: ModalProgressHUD(
           inAsyncCall: showSpinner,
           child: SingleChildScrollView(
@@ -110,14 +110,15 @@ class _RegisterState extends State<Register> {
                           elevation: 5,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20)),
-                          color: Colors.white,
+                          color: Colors.black,
                           child: TextField(
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.black),
                             onEditingComplete: () => node.nextFocus(),
                             controller: _fullname,
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: Color(0xff3a3a3c),
+                              fillColor:
+                              Theme.of(context).colorScheme.onSecondary,
                               focusColor: Colors.white,
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
@@ -129,7 +130,7 @@ class _RegisterState extends State<Register> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               hintText: 'Full Name',
-                              hintStyle: TextStyle(color: Colors.white),
+                              hintStyle: TextStyle(color: Colors.black),
                             ),
                           ),
                         ),
@@ -140,14 +141,15 @@ class _RegisterState extends State<Register> {
                           elevation: 5,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20)),
-                          color: Colors.white,
+                          color: Colors.black,
                           child: TextField(
                             onEditingComplete: () => node.nextFocus(),
                             controller: _emailField,
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: Color(0xff3a3a3c),
-                              focusColor: Colors.white,
+                              fillColor:
+                              Theme.of(context).colorScheme.onSecondary,
+                              focusColor: Colors.black,
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -158,9 +160,9 @@ class _RegisterState extends State<Register> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               hintText: 'Add Email',
-                              hintStyle: TextStyle(color: Colors.white),
+                              hintStyle: TextStyle(color: Colors.black),
                             ),
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.black),
                           ),
                         ),
                         SizedBox(
@@ -170,7 +172,7 @@ class _RegisterState extends State<Register> {
                           elevation: 5,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20)),
-                          color: Colors.white,
+                          color: Colors.black,
                           child: TextField(
                             onSubmitted: (value) async {
                               setState(() {
@@ -220,13 +222,16 @@ class _RegisterState extends State<Register> {
                                     _showPassword
                                         ? Icons.visibility
                                         : Icons.visibility_off,
-                                    color: Color.fromARGB(255, 53, 50, 205),
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer,
                                   ),
                                 ),
                               ),
                               filled: true,
-                              fillColor: Color(0xff3a3a3c),
-                              focusColor: Colors.white,
+                              fillColor:
+                              Theme.of(context).colorScheme.onSecondary,
+                              focusColor: Colors.black,
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -237,21 +242,21 @@ class _RegisterState extends State<Register> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               hintText: 'Add Password',
-                              hintStyle: TextStyle(color: Colors.white),
+                              hintStyle: TextStyle(color: Colors.black),
                             ),
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.black
+                            ),
                           ),
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
+                        SizedBox(height: MediaQuery.of(context).size.height /28),
                         Card(
                           elevation: 5,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20)),
                           child: TextButton(
                             style: TextButton.styleFrom(
-                              foregroundColor: Color.fromARGB(255, 53, 50, 205),
+                              foregroundColor:          Theme.of(context).colorScheme.background,
+                              backgroundColor:            Theme.of(context).colorScheme.tertiary,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20)),
                             ),
@@ -304,7 +309,7 @@ class _RegisterState extends State<Register> {
                     ),
                   ),
                 ),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.11),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -320,7 +325,8 @@ class _RegisterState extends State<Register> {
                     ),
                     TextButton(
                       style: TextButton.styleFrom(
-                        foregroundColor: Color.fromARGB(255, 53, 50, 205),
+                        foregroundColor:Theme.of(context).colorScheme.primary,
+                        backgroundColor:              Theme.of(context).colorScheme.secondary,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20)),
                       ),

@@ -28,7 +28,7 @@ class _LoginState extends State<Login> {
       context: context,
       builder: (context) => AlertDialog(
         elevation: 2,
-        backgroundColor: Colors.white,
+        // backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
             // side: BorderSide(
             //     color: Colors.white, width: 0.01),
@@ -40,22 +40,22 @@ class _LoginState extends State<Login> {
         actions: [
           TextButton(
             style: ButtonStyle(
-              overlayColor: MaterialStateProperty.all(Colors.blueGrey),
-            ),
+                // overlayColor: MaterialStateProperty.all(Colors.blueGrey),
+                ),
             onPressed: () => Navigator.of(context).pop(false),
             child: Text(
               'No',
-              style: TextStyle(color: Colors.black, fontSize: 17),
+              // style: TextStyle(color: Colors.black, fontSize: 17),
             ),
           ),
           TextButton(
             style: ButtonStyle(
-              overlayColor: MaterialStateProperty.all(Colors.blueGrey),
-            ),
+                // overlayColor: MaterialStateProperty.all(Colors.blueGrey),
+                ),
             onPressed: () => exit(0),
             child: Text(
               'Yes',
-              style: TextStyle(color: Colors.black, fontSize: 17),
+              // style: TextStyle(color: Colors.black, fontSize: 17),
             ),
           ),
         ],
@@ -73,7 +73,7 @@ class _LoginState extends State<Login> {
       onWillPop: () async => _exitApp(context),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.black,
+        backgroundColor: Theme.of(context).colorScheme.onBackground,
         body: ModalProgressHUD(
           inAsyncCall: showSpinner1,
           child: SingleChildScrollView(
@@ -100,16 +100,17 @@ class _LoginState extends State<Login> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          color: Colors.white,
+                          color: Colors.black,
                           child: TextField(
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.black),
                             keyboardType: TextInputType.emailAddress,
                             onEditingComplete: () => node.nextFocus(),
                             controller: _emailField,
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: Color(0xff3a3a3c),
-                              focusColor: Colors.white,
+                              fillColor:
+                                  Theme.of(context).colorScheme.onSecondary,
+                              focusColor: Colors.black,
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -120,7 +121,7 @@ class _LoginState extends State<Login> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               hintText: 'Add Email',
-                              hintStyle: TextStyle(color: Colors.white),
+                              hintStyle: TextStyle(color: Colors.black),
                             ),
                           ),
                         ),
@@ -131,7 +132,7 @@ class _LoginState extends State<Login> {
                           elevation: 5,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20)),
-                          color: Colors.white,
+                          color: Colors.black,
                           child: TextField(
                             onSubmitted: (value) async {
                               setState(() {
@@ -163,7 +164,7 @@ class _LoginState extends State<Login> {
                                 ));
                               }
                             },
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.black),
                             obscureText: _showPassword,
                             controller: _passField,
                             decoration: InputDecoration(
@@ -178,13 +179,16 @@ class _LoginState extends State<Login> {
                                     _showPassword
                                         ? Icons.visibility
                                         : Icons.visibility_off,
-                                    color: Color(0xff5e5ce6),
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer,
                                   ),
                                 ),
                               ),
                               filled: true,
-                              fillColor: Color(0xff3a3a3c),
-                              focusColor: Colors.white,
+                              fillColor:
+                              Theme.of(context).colorScheme.onSecondary,
+                              focusColor: Colors.black,
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -195,12 +199,12 @@ class _LoginState extends State<Login> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               hintText: 'Add Password',
-                              hintStyle: TextStyle(color: Colors.white),
+                              hintStyle: TextStyle(color: Colors.black),
                             ),
                           ),
                         ),
                         SizedBox(
-                          height: 10,
+                          height: MediaQuery.of(context).size.height/12,
                         ),
                         Card(
                           elevation: 5,
@@ -208,7 +212,10 @@ class _LoginState extends State<Login> {
                               borderRadius: BorderRadius.circular(20)),
                           child: TextButton(
                             style: TextButton.styleFrom(
-                              foregroundColor: Color.fromARGB(255, 53, 50, 205),
+                              foregroundColor:          Theme.of(context).colorScheme.background,
+                              backgroundColor:            Theme.of(context).colorScheme.tertiary,
+
+
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -260,24 +267,24 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                 ),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.21),
-                Row(
+                SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 7),
                       child: Text(
                         'New here? Lets Register ',
-                        style: TextStyle(color: Colors.white, fontSize: 17),
+                        style: TextStyle(color: Colors.white, fontSize: 20),
                       ),
                     ),
-                    SizedBox(
-                      width: 70,
-                    ),
+                    SizedBox(height: MediaQuery.of(context).size.height /90),
                     TextButton(
                       style: TextButton.styleFrom(
-                          foregroundColor: Color.fromARGB(255, 53, 50, 205),
-                          shape: RoundedRectangleBorder(
+                          foregroundColor:          Theme.of(context).colorScheme.background,
+backgroundColor:            Theme.of(context).colorScheme.tertiary,
+
+                        shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           )),
                       onPressed: () {
@@ -293,12 +300,12 @@ class _LoginState extends State<Login> {
                             horizontal: 4, vertical: 7),
                         child: Text(
                           'Register',
-                          style: TextStyle(fontSize: 20, color: Colors.white),
+                          style: TextStyle(fontSize: 25, color: Colors.white),
                         ),
                       ),
                     ),
                   ],
-                ),
+                ),          SizedBox(height: MediaQuery.of(context).size.height/32),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: TextButton(
@@ -320,7 +327,7 @@ class _LoginState extends State<Login> {
                           horizontal: 4, vertical: 7),
                       child: Text(
                         'Forgot Password?',
-                        style: TextStyle(fontSize: 15, color: Colors.white),
+                        style: TextStyle(fontSize: 17, color: Colors.white),
                       ),
                     ),
                   ),
@@ -334,5 +341,4 @@ class _LoginState extends State<Login> {
   }
 }
 
-
-// 
+//

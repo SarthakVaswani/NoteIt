@@ -33,7 +33,7 @@ class _HomeViewState extends State<HomeView> {
         context: context,
         builder: (context) => AlertDialog(
           elevation: 2,
-          backgroundColor: Colors.white,
+          // backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
               // side: BorderSide(
               //     color: Colors.white, width: 0.01),
@@ -45,22 +45,22 @@ class _HomeViewState extends State<HomeView> {
           actions: [
             TextButton(
               style: ButtonStyle(
-                overlayColor: MaterialStateProperty.all(Colors.blueGrey),
+                // overlayColor: MaterialStateProperty.all(Colors.blueGrey),
               ),
               onPressed: () => Navigator.of(context).pop(false),
               child: Text(
                 'No',
-                style: TextStyle(color: Colors.black, fontSize: 17),
+                // style: TextStyle(color: Colors.black, fontSize: 17),
               ),
             ),
             TextButton(
               style: ButtonStyle(
-                overlayColor: MaterialStateProperty.all(Colors.blueGrey),
+                // overlayColor: MaterialStateProperty.all(Colors.blueGrey),
               ),
               onPressed: () => exit(0),
               child: Text(
                 'Yes',
-                style: TextStyle(color: Colors.black, fontSize: 17),
+                // style: TextStyle(color: Colors.black, fontSize: 17),
               ),
             ),
           ],
@@ -91,13 +91,13 @@ class _HomeViewState extends State<HomeView> {
             ],
           ),
           elevation: 0,
-          backgroundColor: Colors.white,
+          // backgroundColor: Theme.of(context).colorScheme.onSecondary,
         ),
         body: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.background,
           ),
           child: SingleChildScrollView(
             child: Column(
@@ -115,8 +115,8 @@ class _HomeViewState extends State<HomeView> {
                           isPinned = !isPinned;
                         });
                       },
-                      buttonColor: Colors.black,
-                      backgroundColor: Color(0xfff6f6f6),
+                      buttonColor: Theme.of(context).colorScheme.tertiary,
+                   backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
                       textColor: Color(0xFFFFFFFF),
                     ),
                     Row(
@@ -126,16 +126,18 @@ class _HomeViewState extends State<HomeView> {
                             alignment: Alignment.topLeft,
                             child: Row(
                               children: [
-                                IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        changeView = !changeView;
-                                      });
-                                    },
-                                    icon: changeView
-                                        ? Icon(Icons.list, color: Colors.black)
-                                        : Icon(Icons.grid_view,
-                                            color: Colors.black)),
+                                CircleAvatar(
+                                  child: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          changeView = !changeView;
+                                        });
+                                      },
+                                      icon: changeView
+                                          ? Icon(Icons.list,)
+                                          : Icon(Icons.grid_view,
+                                             )),
+                                ),
                               ],
                             )),
                       ],
@@ -175,13 +177,13 @@ class _HomeViewState extends State<HomeView> {
                                     return Material(
                                       color: Colors.transparent,
                                       child: InkWell(
-                                        splashColor: Colors.black,
+                                        splashColor: Theme.of(context).colorScheme.onTertiaryContainer,
                                         onLongPress: () {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                                   duration: Duration(days: 1),
-                                                  backgroundColor:
-                                                      Color(0xff131616),
+                                                  // backgroundColor:
+                                                  //     Color(0xff131616),
                                                   content: Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -222,8 +224,7 @@ class _HomeViewState extends State<HomeView> {
                                                                     .black,
                                                                 fontSize: 17),
                                                           ),
-                                                          color: Colors.white
-                                                              .withOpacity(0.8),
+                                                            color: Theme.of(context).colorScheme.surface,
                                                           minWidth: MediaQuery.of(
                                                                       context)
                                                                   .size
@@ -234,9 +235,10 @@ class _HomeViewState extends State<HomeView> {
                                                                   BorderRadius
                                                                       .circular(
                                                                           18.0),
-                                                              side: BorderSide(
-                                                                  color: Colors
-                                                                      .white)),
+                                                              // side: BorderSide(
+                                                              //     color: Colors
+                                                              //         .white)),
+                                                          )
                                                         ),
                                                       ),
                                                       SizedBox(
@@ -274,8 +276,7 @@ class _HomeViewState extends State<HomeView> {
                                                                     .black,
                                                                 fontSize: 17),
                                                           ),
-                                                          color: Colors.white
-                                                              .withOpacity(0.8),
+                                                          color: Theme.of(context).colorScheme.surface,
                                                           minWidth: MediaQuery.of(
                                                                       context)
                                                                   .size
@@ -286,9 +287,10 @@ class _HomeViewState extends State<HomeView> {
                                                                   BorderRadius
                                                                       .circular(
                                                                           18.0),
-                                                              side: BorderSide(
-                                                                  color: Colors
-                                                                      .white)),
+                                                              // side: BorderSide(
+                                                              //     color: Colors
+                                                              //         .white)
+                                                          ),
                                                         ),
                                                       ),
                                                       SizedBox(
@@ -296,7 +298,7 @@ class _HomeViewState extends State<HomeView> {
                                                       ),
                                                       CircleAvatar(
                                                         backgroundColor:
-                                                            Colors.blueAccent,
+                                                        Theme.of(context).colorScheme.tertiaryContainer,
                                                         child: IconButton(
                                                             onPressed: () {
                                                               ScaffoldMessenger
@@ -402,13 +404,13 @@ class _HomeViewState extends State<HomeView> {
                                     return Material(
                                       color: Colors.transparent,
                                       child: InkWell(
-                                        splashColor: Colors.black,
+                                        splashColor: Theme.of(context).colorScheme.onTertiaryContainer,
                                         onLongPress: () {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                                   duration: Duration(days: 1),
-                                                  backgroundColor:
-                                                      Color(0xff131616),
+                                                  // backgroundColor:
+                                                  //     Color(0xff131616),
                                                   content: Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -445,12 +447,10 @@ class _HomeViewState extends State<HomeView> {
                                                           child: Text(
                                                             "Unpin",
                                                             style: TextStyle(
-                                                                color: Colors
-                                                                    .black,
+                                                                color: Colors.black,
                                                                 fontSize: 17),
                                                           ),
-                                                          color: Colors.white
-                                                              .withOpacity(0.8),
+                                                          color:Theme.of(context).colorScheme.surface,
                                                           minWidth: MediaQuery.of(
                                                                       context)
                                                                   .size
@@ -461,9 +461,10 @@ class _HomeViewState extends State<HomeView> {
                                                                   BorderRadius
                                                                       .circular(
                                                                           18.0),
-                                                              side: BorderSide(
-                                                                  color: Colors
-                                                                      .white)),
+                                                              // side: BorderSide(
+                                                              //     color: Colors
+                                                              //         .white)
+                                                          ),
                                                         ),
                                                       ),
                                                       SizedBox(
@@ -496,13 +497,10 @@ class _HomeViewState extends State<HomeView> {
                                                           },
                                                           child: Text(
                                                             "Delete",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .black,
+                                                            style: TextStyle( color: Colors.black,
                                                                 fontSize: 17),
                                                           ),
-                                                          color: Colors.white
-                                                              .withOpacity(0.8),
+                                                          color: Theme.of(context).colorScheme.surface,
                                                           minWidth: MediaQuery.of(
                                                                       context)
                                                                   .size
@@ -513,9 +511,10 @@ class _HomeViewState extends State<HomeView> {
                                                                   BorderRadius
                                                                       .circular(
                                                                           18.0),
-                                                              side: BorderSide(
-                                                                  color: Colors
-                                                                      .white)),
+                                                              // side: BorderSide(
+                                                              //     color: Colors
+                                                              //         .white)
+                                                          ),
                                                         ),
                                                       ),
                                                       SizedBox(
@@ -523,7 +522,8 @@ class _HomeViewState extends State<HomeView> {
                                                       ),
                                                       CircleAvatar(
                                                         backgroundColor:
-                                                            Colors.blueAccent,
+                                                        Theme.of(context).colorScheme.tertiaryContainer,
+
                                                         child: IconButton(
                                                             onPressed: () {
                                                               ScaffoldMessenger
@@ -654,13 +654,13 @@ class _HomeViewState extends State<HomeView> {
                                     return Material(
                                       color: Colors.transparent,
                                       child: InkWell(
-                                        splashColor: Colors.black,
+                                        splashColor: Theme.of(context).colorScheme.onTertiaryContainer,
                                         onLongPress: () {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                                   duration: Duration(days: 1),
-                                                  backgroundColor:
-                                                      Color(0xff131616),
+                                                  // backgroundColor:
+                                                  //     Color(0xff131616),
                                                   content: Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -697,12 +697,10 @@ class _HomeViewState extends State<HomeView> {
                                                           child: Text(
                                                             "Pin",
                                                             style: TextStyle(
-                                                                color: Colors
-                                                                    .black,
+                                                                color: Colors.black,
                                                                 fontSize: 17),
                                                           ),
-                                                          color: Colors.white
-                                                              .withOpacity(0.8),
+                                                          color: Theme.of(context).colorScheme.surface,
                                                           minWidth: MediaQuery.of(
                                                                       context)
                                                                   .size
@@ -713,9 +711,10 @@ class _HomeViewState extends State<HomeView> {
                                                                   BorderRadius
                                                                       .circular(
                                                                           18.0),
-                                                              side: BorderSide(
-                                                                  color: Colors
-                                                                      .white)),
+                                                              // side: BorderSide(
+                                                              //     color: Colors
+                                                              //         .white)
+                                                          ),
                                                         ),
                                                       ),
                                                       SizedBox(
@@ -749,12 +748,10 @@ class _HomeViewState extends State<HomeView> {
                                                           child: Text(
                                                             "Delete",
                                                             style: TextStyle(
-                                                                color: Colors
-                                                                    .black,
+                                                                color:Colors.black,
                                                                 fontSize: 17),
                                                           ),
-                                                          color: Colors.white
-                                                              .withOpacity(0.8),
+                                                          color: Theme.of(context).colorScheme.surface,
                                                           minWidth: MediaQuery.of(
                                                                       context)
                                                                   .size
@@ -765,9 +762,10 @@ class _HomeViewState extends State<HomeView> {
                                                                   BorderRadius
                                                                       .circular(
                                                                           18.0),
-                                                              side: BorderSide(
-                                                                  color: Colors
-                                                                      .white)),
+                                                              // side: BorderSide(
+                                                              //     color: Colors
+                                                              //         .white)
+                                                          ),
                                                         ),
                                                       ),
                                                       SizedBox(
@@ -775,7 +773,8 @@ class _HomeViewState extends State<HomeView> {
                                                       ),
                                                       CircleAvatar(
                                                         backgroundColor:
-                                                            Colors.blueAccent,
+                                                        Theme.of(context).colorScheme.tertiaryContainer,
+
                                                         child: IconButton(
                                                             onPressed: () {
                                                               ScaffoldMessenger
@@ -882,13 +881,13 @@ class _HomeViewState extends State<HomeView> {
                                     return Material(
                                       color: Colors.transparent,
                                       child: InkWell(
-                                        splashColor: Colors.black,
+                                        splashColor: Theme.of(context).colorScheme.onTertiaryContainer,
                                         onLongPress: () {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                                   duration: Duration(days: 1),
-                                                  backgroundColor:
-                                                      Color(0xff131616),
+                                                  // backgroundColor:
+                                                  //     Color(0xff131616),
                                                   content: Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -929,8 +928,7 @@ class _HomeViewState extends State<HomeView> {
                                                                     .black,
                                                                 fontSize: 17),
                                                           ),
-                                                          color: Colors.white
-                                                              .withOpacity(0.8),
+                                                          color: Theme.of(context).colorScheme.surface,
                                                           minWidth: MediaQuery.of(
                                                                       context)
                                                                   .size
@@ -941,9 +939,10 @@ class _HomeViewState extends State<HomeView> {
                                                                   BorderRadius
                                                                       .circular(
                                                                           18.0),
-                                                              side: BorderSide(
-                                                                  color: Colors
-                                                                      .white)),
+                                                              // side: BorderSide(
+                                                              //     color: Colors
+                                                              //         .white)
+                                                          ),
                                                         ),
                                                       ),
                                                       SizedBox(
@@ -981,8 +980,7 @@ class _HomeViewState extends State<HomeView> {
                                                                     .black,
                                                                 fontSize: 17),
                                                           ),
-                                                          color: Colors.white
-                                                              .withOpacity(0.8),
+                                                          color:Theme.of(context).colorScheme.surface,
                                                           minWidth: MediaQuery.of(
                                                                       context)
                                                                   .size
@@ -993,9 +991,10 @@ class _HomeViewState extends State<HomeView> {
                                                                   BorderRadius
                                                                       .circular(
                                                                           18.0),
-                                                              side: BorderSide(
-                                                                  color: Colors
-                                                                      .white)),
+                                                              // side: BorderSide(
+                                                              //     color: Colors
+                                                              //         .white)
+                                                          ),
                                                         ),
                                                       ),
                                                       SizedBox(
@@ -1003,7 +1002,8 @@ class _HomeViewState extends State<HomeView> {
                                                       ),
                                                       CircleAvatar(
                                                         backgroundColor:
-                                                            Colors.blueAccent,
+                                                        Theme.of(context).colorScheme.tertiaryContainer,
+
                                                         child: IconButton(
                                                             onPressed: () {
                                                               ScaffoldMessenger
@@ -1108,7 +1108,7 @@ class _HomeViewState extends State<HomeView> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.black,
+          backgroundColor:Theme.of(context).colorScheme.secondary,
           onPressed: () {
             Navigator.push(
               context,

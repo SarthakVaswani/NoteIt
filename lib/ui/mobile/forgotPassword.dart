@@ -18,7 +18,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     final node = FocusScope.of(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).colorScheme.onBackground,
       body: ModalProgressHUD(
         inAsyncCall: showSpinner1,
         child: SingleChildScrollView(
@@ -60,13 +60,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         ),
                         color: Colors.white,
                         child: TextField(
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.black),
                           onEditingComplete: () => node.nextFocus(),
                           controller: _emailField,
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: Color(0xff3a3a3c),
-                            focusColor: Colors.white,
+                            fillColor:     Theme.of(context).colorScheme.onSecondary,
+                            focusColor: Colors.black,
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
@@ -77,7 +77,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             hintText: 'Email',
-                            hintStyle: TextStyle(color: Colors.white),
+                            hintStyle: TextStyle(color: Colors.black),
                           ),
                         ),
                       ),
@@ -93,7 +93,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             borderRadius: BorderRadius.circular(20)),
                         child: TextButton(
                           style: TextButton.styleFrom(
-                            foregroundColor: Color.fromARGB(255, 53, 50, 205),
+                            foregroundColor:Theme.of(context).colorScheme.primary,
+                            backgroundColor:              Theme.of(context).colorScheme.secondary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
@@ -129,7 +130,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 7),
                             child: Text(
-                              'Send Request',
+                              'Send Link',
                               style:
                                   TextStyle(fontSize: 30, color: Colors.white),
                             ),

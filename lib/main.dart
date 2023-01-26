@@ -1,5 +1,7 @@
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/ui/splashScreen.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -17,6 +19,7 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 //   await Firebase.initializeApp();
 //   print('A bg message just showed up :  ${message.messageId}');
 // }
+ColorScheme lightColorScheme; ColorScheme darkColorScheme;
 String kAppId = "8aedfc1b-f167-4754-bb9f-69c71e0d673e";
 String tokenId;
 Future<void> initPlatformState() async {
@@ -60,14 +63,24 @@ void main() async {
   //   badge: true,
   //   sound: true,
   // );
-  runApp(MaterialApp(
-theme: ThemeData(
-  useMaterial3: true
-),
-    title: "NoteIt",
-    debugShowCheckedModeBanner: false,
-    home: SplashScreen(),
-  ));
+  runApp(DynamicColorBuilder(
+      builder: ( lightColorScheme,  darkColorScheme) {
+    return MaterialApp(
+      theme: ThemeData(
+          useMaterial3: true,
+          primarySwatch: Colors.blue,
+          brightness: Brightness.light,
+          colorScheme: lightColorScheme),
+      // darkTheme: ThemeData(
+      //   colorScheme: darkColorScheme,
+      //   brightness: Brightness.dark,
+      //   useMaterial3: true,
+      // ),
+      title: "NoteIt",
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(),
+    );
+  }));
 }
 
 class MyApp extends StatefulWidget {

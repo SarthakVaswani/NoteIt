@@ -476,7 +476,7 @@ class _EditNoteState extends State<EditNote> {
         context: context,
         builder: (context) => AlertDialog(
           elevation: 2,
-          backgroundColor: Colors.white,
+          // backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
               // side: BorderSide(
               //     color: Colors.white, width: 0.01),
@@ -500,9 +500,9 @@ class _EditNoteState extends State<EditNote> {
                       ),
                       TextButton(
                           style: TextButton.styleFrom(
-                            primary: Colors.white,
-                            backgroundColor: Colors.black,
-                            onSurface: Colors.grey,
+                            foregroundColor:          Theme.of(context).colorScheme.background,
+                            backgroundColor:            Theme.of(context).colorScheme.tertiary,
+
                           ),
                           onPressed: () async {
                             isExecuted = false;
@@ -562,7 +562,7 @@ class _EditNoteState extends State<EditNote> {
                     width: 5,
                   ),
                   CircleAvatar(
-                    backgroundColor: Colors.black,
+                    backgroundColor:    Theme.of(context).colorScheme.onTertiaryContainer,
                     child: IconButton(
                       onPressed: () async {
                         imagepicked
@@ -711,7 +711,7 @@ class _EditNoteState extends State<EditNote> {
                           child: TextFormField(
                             enableInteractiveSelection: true,
                             focusNode: FocusNode(),
-                            cursorColor: Color(0xff2c2b4b),
+
                             style: TextStyle(color: Colors.black, fontSize: 23),
                             controller: content,
                             maxLines: null,
@@ -898,7 +898,7 @@ class _EditNoteState extends State<EditNote> {
               ),
               Container(
                 decoration: BoxDecoration(
-                    color: Colors.black,
+                    color:  Theme.of(context).colorScheme.onBackground,
                     borderRadius: BorderRadius.all(Radius.circular(20))),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -918,7 +918,7 @@ class _EditNoteState extends State<EditNote> {
                             },
                             icon: Icon(
                               Icons.lock_open_rounded,
-                              color: Colors.white,
+                              color:Theme.of(context).colorScheme.tertiaryContainer,
                             ),
                           )
                         : IconButton(
@@ -935,7 +935,7 @@ class _EditNoteState extends State<EditNote> {
                             },
                             icon: Icon(
                               Icons.lock_sharp,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.tertiaryContainer,
                             ),
                           ),
                     IconButton(
@@ -952,7 +952,7 @@ class _EditNoteState extends State<EditNote> {
                       },
                       icon: Icon(
                         Icons.delete,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.tertiaryContainer,
                       ),
                     ),
                     IconButton(
@@ -961,7 +961,7 @@ class _EditNoteState extends State<EditNote> {
                       },
                       icon: Icon(
                         Icons.add_reaction_sharp,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.tertiaryContainer,
                       ),
                     ),
                     imgLoading
@@ -975,7 +975,7 @@ class _EditNoteState extends State<EditNote> {
                             },
                             icon: Icon(
                               Icons.image,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.tertiaryContainer,
                             ),
                           ),
                     IconButton(
@@ -984,7 +984,7 @@ class _EditNoteState extends State<EditNote> {
                       },
                       icon: Icon(
                         Icons.color_lens_sharp,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.tertiaryContainer,
                       ),
                     ),
                     IconButton(
@@ -993,7 +993,7 @@ class _EditNoteState extends State<EditNote> {
                       },
                       icon: Icon(
                         Icons.check_box,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.tertiaryContainer,
                       ),
                     ),
                   ],

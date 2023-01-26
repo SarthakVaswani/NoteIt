@@ -48,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavyBar(
         curve: Curves.easeIn,
         showElevation: true,
-        backgroundColor: Colors.black,
+        backgroundColor: Theme.of(context).colorScheme.onBackground,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         selectedIndex: _currentIndex,
         onItemSelected: (index) {
@@ -59,19 +59,19 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavyBarItem(
               title: Text('Home'),
               icon: Icon(Icons.home),
-              activeColor: Colors.white),
+              activeColor: Theme.of(context).colorScheme.tertiaryContainer,),
           BottomNavyBarItem(
               title: Text('Search'),
               icon: Icon(Icons.search_rounded),
-              activeColor: Colors.white),
+              activeColor: Theme.of(context).colorScheme.tertiaryContainer),
           BottomNavyBarItem(
               title: Text('Protected'),
               icon: Icon(Icons.lock),
-              activeColor: Colors.white),
+              activeColor: Theme.of(context).colorScheme.tertiaryContainer),
           BottomNavyBarItem(
               title: Text('Profile'),
               icon: Icon(Icons.account_circle),
-              activeColor: Colors.white),
+              activeColor: Theme.of(context).colorScheme.tertiaryContainer),
         ],
       ),
     );

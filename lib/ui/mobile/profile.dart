@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,21 +17,56 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
-    Future<bool> _willPopCallback() async {
-      // await showDialog or Show add banners or whatever
-      // then
-      return true; // return true if the route to be popped
+    Future<bool> _exitApp(BuildContext context) {
+      return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          elevation: 2,
+          // backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            // side: BorderSide(
+            //     color: Colors.white, width: 0.01),
+              borderRadius: BorderRadius.circular(10)),
+          title: Text(
+            'Are you sure want to Exit ?',
+            style: TextStyle(color: Colors.black, fontSize: 18),
+          ),
+          actions: [
+            TextButton(
+              style: ButtonStyle(
+                // overlayColor: MaterialStateProperty.all(Colors.blueGrey),
+              ),
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(
+                'No',
+                // style: TextStyle(color: Colors.black, fontSize: 17),
+              ),
+            ),
+            TextButton(
+              style: ButtonStyle(
+                // overlayColor: MaterialStateProperty.all(Colors.blueGrey),
+              ),
+              onPressed: () => exit(0),
+              child: Text(
+                'Yes',
+                // style: TextStyle(color: Colors.black, fontSize: 17),
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
+
     return WillPopScope(
-      onWillPop: () async => _willPopCallback(),
+      onWillPop: () async => _exitApp(context),
       child: SafeArea(
         child: Scaffold(
           body: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color:  Theme.of(context).colorScheme.background,
             ),
             child: SingleChildScrollView(
               child: Column(
@@ -53,7 +90,7 @@ class _ProfileState extends State<Profile> {
                         width: MediaQuery.of(context).size.width * 0.62,
                       ),
                       CircleAvatar(
-                        backgroundColor: Colors.black,
+                        backgroundColor:  Theme.of(context).colorScheme.onTertiaryContainer,
                         child: IconButton(
                           icon: Icon(Icons.logout, color: Colors.white),
                           onPressed: () async {
@@ -93,7 +130,7 @@ class _ProfileState extends State<Profile> {
                                 //     color: Colors.white, width: 0.01),
                                 borderRadius: BorderRadius.circular(10)),
                             margin: EdgeInsets.all(10),
-                            color: Color(0xfff2f5f9),
+                            color:  Theme.of(context).colorScheme.secondaryContainer,
                             elevation: 3,
                             child: Container(
                               height: MediaQuery.of(context).size.height * 0.24,

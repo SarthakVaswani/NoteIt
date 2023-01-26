@@ -92,7 +92,7 @@ class _ProtectedNotesState extends State<ProtectedNotes> {
         context: context,
         builder: (context) => AlertDialog(
           elevation: 2,
-          backgroundColor: Colors.white,
+          // backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
               // side: BorderSide(
               //     color: Colors.white, width: 0.01),
@@ -104,22 +104,22 @@ class _ProtectedNotesState extends State<ProtectedNotes> {
           actions: [
             TextButton(
               style: ButtonStyle(
-                overlayColor: MaterialStateProperty.all(Colors.blueGrey),
-              ),
+                  // overlayColor: MaterialStateProperty.all(Colors.blueGrey),
+                  ),
               onPressed: () => Navigator.of(context).pop(false),
               child: Text(
                 'No',
-                style: TextStyle(color: Colors.black, fontSize: 17),
+                // style: TextStyle(color: Colors.black, fontSize: 17),
               ),
             ),
             TextButton(
               style: ButtonStyle(
-                overlayColor: MaterialStateProperty.all(Colors.blueGrey),
-              ),
+                  // overlayColor: MaterialStateProperty.all(Colors.blueGrey),
+                  ),
               onPressed: () => exit(0),
               child: Text(
                 'Yes',
-                style: TextStyle(color: Colors.black, fontSize: 17),
+                // style: TextStyle(color: Colors.black, fontSize: 17),
               ),
             ),
           ],
@@ -150,15 +150,14 @@ class _ProtectedNotesState extends State<ProtectedNotes> {
             ],
           ),
           elevation: 0,
-          backgroundColor: Colors.white,
+          // backgroundColor:Theme.of(context).colorScheme.background,
         ),
         body: isLock
             ? Container(
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                ),
+                    color: Theme.of(context).colorScheme.background),
                 child: Center(
                   child: Icon(
                     Icons.lock,
@@ -170,8 +169,7 @@ class _ProtectedNotesState extends State<ProtectedNotes> {
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                ),
+                    color: Theme.of(context).colorScheme.background),
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
@@ -206,12 +204,12 @@ class _ProtectedNotesState extends State<ProtectedNotes> {
                               return Material(
                                 color: Colors.transparent,
                                 child: InkWell(
-                                  splashColor: Colors.black,
+                                  splashColor: Theme.of(context).colorScheme.onTertiaryContainer,
                                   onLongPress: () {
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(SnackBar(
                                             duration: Duration(days: 1),
-                                            backgroundColor: Color(0xff131616),
+                                            // backgroundColor: Color(0xff131616),
                                             content: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.spaceEvenly,
@@ -247,8 +245,9 @@ class _ProtectedNotesState extends State<ProtectedNotes> {
                                                           color: Colors.black,
                                                           fontSize: 17),
                                                     ),
-                                                    color: Colors.white
-                                                        .withOpacity(0.8),
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .surface,
                                                     minWidth:
                                                         MediaQuery.of(context)
                                                                 .size
@@ -297,8 +296,7 @@ class _ProtectedNotesState extends State<ProtectedNotes> {
                                                           color: Colors.black,
                                                           fontSize: 17),
                                                     ),
-                                                    color: Colors.white
-                                                        .withOpacity(0.8),
+                                                    color: Theme.of(context).colorScheme.surface,
                                                     minWidth:
                                                         MediaQuery.of(context)
                                                                 .size
@@ -320,7 +318,7 @@ class _ProtectedNotesState extends State<ProtectedNotes> {
                                                 ),
                                                 CircleAvatar(
                                                   backgroundColor:
-                                                      Colors.blueAccent,
+                                                  Theme.of(context).colorScheme.tertiaryContainer,
                                                   child: IconButton(
                                                       onPressed: () {
                                                         ScaffoldMessenger.of(

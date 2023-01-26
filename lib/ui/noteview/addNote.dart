@@ -388,7 +388,7 @@ class _AddNoteState extends State<AddNote> {
                     width: MediaQuery.of(context).size.width * 0.35,
                   ),
                   CircleAvatar(
-                      backgroundColor: Colors.black,
+                      backgroundColor:    Theme.of(context).colorScheme.onTertiaryContainer,
                       child: IconButton(
                           onPressed: () async {
                             if (title.text.isEmpty) {
@@ -524,7 +524,7 @@ class _AddNoteState extends State<AddNote> {
                   : Container(),
               Container(
                 decoration: BoxDecoration(
-                    color: Colors.black,
+                    color:  Theme.of(context).colorScheme.onBackground,
                     borderRadius: BorderRadius.all(Radius.circular(20))),
                 child: drawBoard
                     ? Row(
@@ -534,7 +534,7 @@ class _AddNoteState extends State<AddNote> {
                             onPressed: clear,
                             icon: Icon(
                               Icons.clear,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.tertiaryContainer,
                             ),
                           ),
                           loading
@@ -548,7 +548,7 @@ class _AddNoteState extends State<AddNote> {
                                   },
                                   icon: Icon(
                                     Icons.save_outlined,
-                                    color: Colors.white,
+                                    color: Theme.of(context).colorScheme.tertiaryContainer,
                                   ),
                                 ),
                           IconButton(
@@ -557,7 +557,7 @@ class _AddNoteState extends State<AddNote> {
                             },
                             icon: Icon(
                               Icons.line_weight_rounded,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.tertiaryContainer,
                             ),
                           ),
                           IconButton(
@@ -569,7 +569,7 @@ class _AddNoteState extends State<AddNote> {
                             },
                             icon: Icon(
                               Icons.create,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.tertiaryContainer,
                             ),
                           ),
                         ],
@@ -588,7 +588,7 @@ class _AddNoteState extends State<AddNote> {
                                   },
                                   icon: Icon(
                                     Icons.image,
-                                    color: Colors.white,
+                                    color: Theme.of(context).colorScheme.tertiaryContainer,
                                   ),
                                 ),
                           IconButton(
@@ -597,7 +597,7 @@ class _AddNoteState extends State<AddNote> {
                             },
                             icon: Icon(
                               Icons.color_lens_sharp,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.tertiaryContainer,
                             ),
                           ),
                           IconButton(
@@ -611,7 +611,7 @@ class _AddNoteState extends State<AddNote> {
                             },
                             icon: Icon(
                               Icons.create,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.tertiaryContainer,
                             ),
                           ),
                           IconButton(
@@ -620,7 +620,7 @@ class _AddNoteState extends State<AddNote> {
                             },
                             icon: Icon(
                               Icons.check_box,
-                              color: Colors.white,
+                              color:Theme.of(context).colorScheme.tertiaryContainer,
                             ),
                           ),
                         ],
@@ -726,7 +726,7 @@ class _AddNoteState extends State<AddNote> {
                     )),
                     child: Icon(
                       Icons.close_rounded,
-                      color: Colors.white,
+                      color:Theme.of(context).colorScheme.tertiaryContainer,
                     ),
                     color: Color(0xffeb6765),
                     onPressed: () {
@@ -747,7 +747,7 @@ class _AddNoteState extends State<AddNote> {
                     )),
                     child: Icon(
                       Icons.image,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.tertiaryContainer,
                     ),
                     color: Color(0xffeb6765),
                     onPressed: () {
@@ -965,7 +965,7 @@ class _AddNoteState extends State<AddNote> {
         child: Icon(
           Icons.save,
           size: 20.0,
-          color: Colors.white,
+          color:Theme.of(context).colorScheme.tertiaryContainer,
         ),
       ),
     );
@@ -978,7 +978,7 @@ class _AddNoteState extends State<AddNote> {
         child: Icon(
           Icons.create,
           size: 20.0,
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.tertiaryContainer,
         ),
       ),
     );
